@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+
+    <nav class="teal">
+        <div class="nav-wrapper">
+            <a href="#home" class="brand-logo">Let's Collab</a>
+            <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
+
+    <ul id="slide-out" class="sidenav">
+        <li>
+            <div class="user-view">
+                <div class="background teal">
+
+                </div>
+                <a href="#"><img class="circle" src="images/profile.png"></a>
+                <a href="#"><span class="white-text name">John Doe</span></a>
+                <a href="#"><span class="white-text email">jdoe@gmail.com</span></a>
+            </div>
+        </li>
+        <li><a href="#browsecollab"><i class="material-icons">search</i>Browse Collaborations</a></li>
+        <li><a href="#startcollab"><i class="material-icons">add</i>Start Collaboration</a></li>
+        <li><a href="#usercollab"><i class="material-icons">group</i>My Collaborations</a></li>
+        <li><a href="#profile"><i class="material-icons">person</i>My Profile</a></li>
+        <li><a href="#signup"><i class="material-icons">login</i>Sign Up/ Login</a></li>
+        <li><a href="#settings"><i class="material-icons">settings</i>Settings</a></li>
+    </ul>
+
+    <div class="container">
+        <!-- BROWSE COLLAB  -->
+        <div id="browsecollab" class="hide">
+
+        </div>
+        <!-- END BROWSE COLLAB -->
+
+        <!-- START COLLAB -->
+        <div id="startcollab" class="hide">
+            <div class="row">
+                <form id="submitcollabform" METHOD="POST" action="../api/api.php?getData=addcollab" class="col s12">
+
+                    <fieldset>
+                        <legend>Collaboration Details <i class="small material-icons">info</i></legend>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="ctitle" name="ctitle" class="validate" type="text" minlength="2" maxlength="50" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                <label for="ctitle">Collaboration Title</label>
+                                <span id="ctitleerror" class="helper-text"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <textarea id="cdescript" name="cdescript" class="materialize-textarea validate" required></textarea>
+                                <label for="cdescript">Collaboration Description</label>
+                                <span id="cdescripterror" class="helper-text"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend> When is the Collaboration? <i class="small material-icons">today</i></legend>
+                        <div class="row">
+                            <div class="col s6">
+                                <label for="cdate">Date</label>
+                                <input id="cdate" name="cdate" type="text" class="datepicker validate" required>
+                                <span id="cdateerror" class="helper-text"></span>
+                            </div>
+                            <div class="col s6">
+                                <label for="ctime">Time</label>
+                                <input id="ctime" name="ctime" type="text" class="timepicker validate" required>
+                                <span id="ctimeerror" class="helper-text"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+
+                        <legend> Where is the Collaboration? <i class="small material-icons">place</i></legend>
+                        <p>
+                            <label for="checkaddlocation">
+                                <input id="checkaddlocation" name="checkaddlocation" type="checkbox" class="filled-in" />
+                                <span>I have a location</span>
+                            </label>
+                        </p>
+
+                        <fieldset id="addlocation" hidden>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="locationuname" name="locationuname" class="validate" type="text" minlength="5" maxlength="30" required>
+                                    <label for="locationuname">Username</label>
+                                    <span id="locationunameerror" class="helper-text"></span>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <p>
+                            <label for="checksearchlocation">
+                                <input id="checksearchlocation" name="checksearchlocation" type="checkbox" class="filled-in" />
+                                <span>I'm looking for a location</span>
+                            </label>
+                        </p>
+
+                        <fieldset id="searchlocation" hidden>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="lcity" name="lcity" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <label for="lcity">City</label>
+                                    <span id="lcityerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="lbookingfee" name="lbookingfee" class="validate" type="number" min="0" max="1000000" required>
+                                    <label for="lbookingfee">Booking Fee</label>
+                                    <span id="lbookingfeeerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <textarea id="ldescript" name="ldescript" class="materialize-textarea validate" required></textarea>
+                                    <label for="ldescript">Description</label>
+                                    <span id="ldescripterror" class="helper-text"></span>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                    </fieldset>
+
+                    <fieldset>
+                        <legend> Collaboration Team <i class="small material-icons">people_alt</i></legend>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <select id="ownerrole" name="ownerrole" class="validate" required>
+                                    <option value="" disabled selected>Choose your role</option>
+                                    <option value="photographer">Photographer</option>
+                                    <option value="model">Model</option>
+                                    <option value="makeupartist">Make-up Artist</option>
+                                </select>
+                                <label for="ownerrole">My Role</label>
+                                <span id="ownerroleerror" class="helper-text"></span>
+                            </div>
+                        </div>
+
+                        <p>
+                            <label>
+                                <input id="checkaddmember" name="checkaddmember" type="checkbox" class="filled-in" />
+                                <span>Add people to the collaboration</span>
+                            </label>
+                        </p>
+
+                        <fieldset id="addmember" hidden>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <select id="tmrole" name="tmrole" class="validate" required>
+                                        <option value="" disabled selected>Choose their role</option>
+                                        <option value="photographer">Photographer</option>
+                                        <option value="model">Model</option>
+                                        <option value="makeupartist">Make-up Artist</option>
+                                    </select>
+                                    <label for="tmrole">Role</label>
+                                    <span id="tmroleerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="tmuname" name="tmuname" class="validate" type="text" minlength="5" maxlength="30" required>
+                                    <label for="tmuname">Username</label>
+                                    <span id="tmunameerror" class="helper-text"></span>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <p>
+                            <label>
+                                <input id="checksearchmember" name="checksearchmember" type="checkbox" class="filled-in" />
+                                <span>Look for people to join the collaboration</span>
+                            </label>
+                        </p>
+
+                        <fieldset id="searchmember" hidden>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <select id="tmsearchrole" name="tmsearchrole" class="validate" required>
+                                        <option value="" disabled selected>Choose their role</option>
+                                        <option value="photographer">Photographer</option>
+                                        <option value="model">Model</option>
+                                        <option value="makeupartist">Make-up Artist</option>
+                                    </select>
+                                    <label for="tmsearchrole">Role</label>
+                                    <span id="tmsearchroleerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="tmbookingfee" name="tmbookingfee" class="validate" type="number" min="0" max="1000000" required>
+                                    <label for="tmbookingfee">Booking Fee</label>
+                                    <span id="tmbookingfeeerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <textarea id="tmdescript" name="tmdescript" class="materialize-textarea validate" required></textarea>
+                                    <label for="tmdescript">Description</label>
+                                    <span id="tmdescripterror" class="helper-text"></span>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </fieldset>
+
+                    <fieldset>
+                        <button id="submitcollabbtn" class="btn waves-effect waves-light" type="button" disabled>Submit<i class="material-icons right">send</i></button>
+                    </fieldset>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- END START COLLAB -->
+
+        <!-- PROFILE -->
+
+        <div id="profile" class="hide">
+            <div class="row">
+                <div class="col s6">
+                    <img class="profileimg circle" src="images/profile.png" />
+                </div>
+
+                <div class="col s6">
+                    <h5>FirstName LastName</h5>
+                    <p>Email</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <p>About FirstName</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
+                    aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+
+            <div class="section">
+                <p><a href="#">INSTAGRAM</a></p>
+                <p><a href="#">VIEW PORTFOLIO</a></p>
+            </div>
+        </div>
+
+        <!-- END PROFILE -->
+
+        <!-- SIGN UP -->
+
+        <div id="signup" class="hide">
+            <div class="row">
+                <form id="signupform" METHOD="POST" action="../api/api.php?getData=adduseracc" col s12>
+
+                    <fieldset>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="uname" name="uname" class="validate" type="text" minlength="5" maxlength="30" required>
+                                <label for="uname">Username</label>
+                                <span id="unameerror" class="helper-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="pword" name="pword" class="validate" type="password" minlength="8" maxlength="50" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
+                                <label for="pword">Password</label>
+                                <span id="pworderror" class="helper-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="cnfpword" name="cnfpword" class="validate" type="password" minlength="8" maxlength="50" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
+                                <label for="cnfpword">Confirm Password</label>
+                                <span id="cnfpworderror" class="helper-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="email" name="email" class="validate" type="email" minlength="5" maxlength="50" pattern="^.+@.+\..+$" required>
+                                <label for="email">Email</label>
+                                <span id="emailerror" class="helper-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="profilepic" name="profilepic" class="validate" type="text" required>
+                                <label for="profilepic">Profile Pic</label>
+                                <span id="profilepicerror" class="helper-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="ighandle" name="ighandle" class="validate" type="text" maxlength="30" required>
+                                <label for="ighandle">Instagram Handle</label>
+                                <span id="ighandleerror" class="helper-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="workurl" name="workurl" class="validate" type="text" maxlength="255" required>
+                                <label for="workurl">Portfolio OR Website URL</label>
+                                <span id="workurlerror" class="helper-text"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <p>
+                            <label>
+                                <input id="checkadduseracc" name="checkadduseracc" type="checkbox" class="filled-in" />
+                                <span>User Account</span>
+                            </label>
+                        </p>
+                        <fieldset id="adduseracc" hidden>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="fname" name="fname" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <label for="fname">First Name</label>
+                                    <span id="fnameerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="lname" name="lname" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <label for="lname">Last Name</label>
+                                    <span id="lnameerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="bio" name="bio" class="validate" type="text" required>
+                                    <label for="bio">Bio</label>
+                                    <span id="bioerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                        </fieldset>
+
+                        <p>
+                            <label>
+                                <input id="checkaddlocationacc" name="checkaddlocationacc" type="checkbox" class="filled-in" />
+                                <span>Location Account</span>
+                            </label>
+                        </p>
+
+                        <fieldset id="addlocationacc" hidden>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="locname" name="locname" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <label for="locname">Location Name</label>
+                                    <span id="locnameerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="locaddress" name="locaddress" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <label for="locaddress">Address</label>
+                                    <span id="locaddresserror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="loccity" name="loccity" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <label for="loccity">City</label>
+                                    <span id="loccityerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="locstate" name="locstate" class="validate" type="text" minlength="2" maxlength="3" pattern="\D" required>
+                                    <label for="locstate">State</label>
+                                    <span id="locstateerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="locpostcode" name="locpostcode" class="validate" type="number" max="9999" required>
+                                    <label for="locpostcode">Post Code</label>
+                                    <span id="locpostcodeerror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="locdescript" name="locdescript" class="validate" type="text" required>
+                                    <label for="locdescript">Description</label>
+                                    <span id="locdescripterror" class="helper-text"></span>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </fieldset>
+
+                    <fieldset>
+                        <p>
+                            <label for="terms">
+                                <input type="checkbox" checked="checked" id="terms"/>
+                                <span>Agree to <a class="modal-trigger" href="#termsmodal">Terms</a></span>
+                            </label>
+                        </p>
+
+                        <div id="termsmodal" class="modal modal-fixed-footer">
+                            <div class="modal-content">
+                                <h4>Modal Header</h4>
+                                <p>A bunch of text</p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="agree">Agree</a>
+                                <a href="#!" class="modal-close waves-effect waves-red btn-flat" id="disagree">Disagree</a>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <button id="signupbtn" class="btn waves-effect waves-light" type="button" disabled>SIGN UP<i class="material-icons right">send</i></button>
+                    </fieldset>
+
+
+                </form>
+
+                <p>Already have an account? <a class="modal-trigger" href="#login">Login</a></p>
+                <div id="login" class="modal">
+                    <div class="modal-content">
+                        <form class="col s12">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="lemail" type="email">
+                                    <label for="lemail">Email</label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="lpword" type="password">
+                                    <label for="lpword">Password</label>
+                                </div>
+                            </div>
+
+                            <button id="loginbtn" class="modal-close btn waves-effect waves-light" type="submit">LOGIN<i class="material-icons right">send</i></button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- END SIGN UP -->
+
+        <div id="settings" class="hide">
+            <h4>Settings</h4>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p>Dark Mode</p>
+                        </td>
+                        <td>
+                            <div class="switch">
+                                <label>
+                                    Off
+                                    <input type="checkbox">
+                                    <span class="lever"></span>
+                                    On
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <p>Dark Mode</p>
+                        </td>
+                        <td>
+                            <div class="switch">
+                                <label>
+                                    Off
+                                    <input type="checkbox">
+                                    <span class="lever"></span>
+                                    On
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>Dark Mode</p>
+                        </td>
+                        <td>
+                            <div class="switch">
+                                <label>
+                                    Off
+                                    <input type="checkbox">
+                                    <span class="lever"></span>
+                                    On
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>Dark Mode</p>
+                        </td>
+                        <td>
+                            <div class="switch">
+                                <label>
+                                    Off
+                                    <input type="checkbox">
+                                    <span class="lever"></span>
+                                    On
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- USER COLLABS  -->
+
+    <div id="usercollab" class="hide">
+
+        <div class="col s12">
+            <div class="teal">
+                <ul class="tabs tabs-transparent">
+                    <li class="tab col s6"><a href="#mycollab">My Collabs</a></li>
+                    <li class="tab col s6"><a href="#joinedcollab">Joined Collabs</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div id="mycollab" class="col s12">
+                <h5>Collaboration Title</h5>
+                <p>By Creator - Role</p>
+                <p>Date and Time</p>
+                <p>Collaboration Description. I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.</p>
+
+                <h5>Location</h5>
+                <table id="mycollabloctbl" class="highlight">
+                    <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th>Profile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>LocationName - City, State</td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">location_on</i></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5>Location Requests</h5>
+                <table id="mycollablocreqtbl" class="highlight">
+                    <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th>Profile</th>
+                            <th>Approve</th>
+                            <th>Deny</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>LocationName - City, State</td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">location_on</i></a></td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light green"><i class="material-icons">done</i></a></td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5>Team</h5>
+                <table id="mycollabteamtbl" class="highlight">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Profile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>FirstLastName - Model</td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">person</i></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5>Team Requests</h5>
+                <table id="mycollabteamreqtbl" class="highlight">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Profile</th>
+                            <th>Approve</th>
+                            <th>Deny</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>FirstLastName - Model</td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">person</i></a></td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light green"><i class="material-icons">done</i></a></td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="joinedcollab" class="col s12">
+                <h5>Joined Collab Requests</h5>
+                <table id="myreqtbl" class="highlight">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Details</th>
+                            <th>Status</th>
+                            <th>Withdraw</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CollabTitle</td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a></td>
+                            <td>
+                                <p class="yellow-text text-darken-4">Pending</p>
+                            </td>
+                            <td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- END USER COLLABS -->
+
+    <!-- JOIN COLLAB -->
+
+    <div id="joincollab" class="hide">
+
+        <div class="col s12">
+            <div class="teal">
+                <ul class="tabs tabs-transparent">
+                    <li class="tab col s6"><a href="#collabsearch">JOIN THE TEAM</a></li>
+                    <li class="tab col s6"><a href="#collabteam">CHECK OUT THE TEAM</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div id="collabsearch">
+                <div id="collabsearchinfo" class="section">
+                    <h5>Collaboration Title</h5>
+                    <p>Date and Time</p>
+                    <p>Collaboration Description. I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.</p>
+                </div>
+
+                <div id="locationsearchinfo" class="section">
+                    <h5>Have this location?</h5>
+                    <form id="locrequestform">
+                        <p>City</p>
+                        <p>$xxxxxx</p>
+                        <p>Loction Description</p>
+                        <input id="locrequest" name="locrequest" type="hidden">
+                        <button id="addlocbtn" class="btn waves-effect waves-light" type="button">ADD LOCATION<i class="material-icons right">send</i></button>
+                    </form>
+                </div>
+
+                <div id="teamsearchinfo" class="section">
+                    <h5> Sound like you?</h5>
+                    <form id="teamrequestform">
+                        <p>Role</p>
+                        <p>$xxxxxx</p>
+                        <p>Role Description</p>
+                        <input id="teamrequest" name="teamrequest" type="hidden">
+                        <button id="jointeambtn" class="btn waves-effect waves-light" type="button">JOIN COLLAB<i class="material-icons right">send</i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="collabteam">
+                <h5>Check Out The Location</h5>
+                <table id="collabloctbl" class="highlight">
+                    <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th>Profile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <h5>Check Out The Team</h5>
+                <table id="collabteamtbl" class="highlight">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Profile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- END JOIN COLLAB -->
+
+    <nav class="teal">
+        <ul id="bottom-nav">
+            <li><a href="#browsecollab"><i class="material-icons">search</i></a></li>
+            <li><a href="#startcollab"><i class="material-icons">add</i></a></li>
+            <li><a href="#usercollab"><i class="material-icons">group</i></a></li>
+            <li><a href="#profile"><i class="material-icons">person</i></a></li>
+            <li><a href="#signup"><i class="material-icons">login</i></a></li>
+        </ul>
+    </nav>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="js/script.js" type="text/javascript"></script>
+
+</body>
+
+</html>

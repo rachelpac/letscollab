@@ -1,0 +1,66 @@
+body {
+    visibility: hidden;
+}
+
+nav .brand-logo {
+    padding-left: 15px;
+}
+
+form>fieldset {
+    border: none;
+}
+
+legend {
+    font-weight: bold;
+    padding: 5px;
+    color: #00695c;
+    font-size: 20px;
+    text-align: center;
+}
+
+legend i {
+    text-align: right;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #004d40;
+}
+
+h3 {
+    text-align: center;
+}
+
+.medium.material-icons {
+    color: #009688;
+}
+
+#home,
+#startcollab,
+#browsecollab,
+#signup,
+#profile,
+#joincollab,
+#usercollab,
+#settings {
+    min-height: 100vh;
+}
+
+.collabpost:first-child,
+#profile {
+    margin-top: 15px;
+}
+
+#usercollab .tabs,
+#joincollab .tabs {
+    border-top: solid white 3px;
+}
+
+.profileimg {
+    max-height: 150px;
+    max-width: 150px;
+}
