@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 19, 2020 at 12:26 AM
+-- Generation Time: Oct 20, 2020 at 04:24 AM
 -- Server version: 5.7.26
 -- PHP Version: 7.3.9
 
@@ -52,7 +52,7 @@ INSERT INTO `Collaboration` (`CollaborationID`, `Title`, `Description`, `Date`, 
 (9, '', '', '2020-10-13 12:03:48', 'Open', NULL, 1),
 (10, 'cc', 'cd', '2020-10-22 17:31:00', 'Open', NULL, 1),
 (11, 'Celebrate Our Creatives', '50 local creatives celebrated by the inspired co', '2020-10-01 08:15:00', 'Open', NULL, 1),
-(12, 'Celebrate Our Creatives', '50 local creatives celebrated by the inspired co', '2020-10-01 08:15:00', 'Open', NULL, 1),
+(12, 'Celebrate Our Creatives', '50 local creatives celebrated by the inspired co', '2020-10-01 08:15:00', 'Open', 1, 1),
 (13, 'Celebrate Our Creatives', '50 local creatives celebrated by the inspired co', '2020-10-01 08:15:00', 'Open', NULL, 1),
 (14, 'editorial', 'graphic makeup', '2020-10-25 15:14:00', 'Open', NULL, 1),
 (15, 'editorial', 'graphic makeup', '2020-10-25 15:14:00', 'Open', NULL, 1),
@@ -117,7 +117,9 @@ INSERT INTO `LocationRequest` (`LocationRequestID`, `RequestStatus`, `LocationID
 (1, 'Pending', 1, 1),
 (2, 'Pending', 2, 1),
 (3, 'Denied', 2, 2),
-(4, 'Approved', 1, 2);
+(4, 'Approved', 1, 2),
+(5, 'Approved', 1, 3),
+(6, 'Denied', 1, 5);
 
 -- --------------------------------------------------------
 
@@ -141,7 +143,7 @@ CREATE TABLE `LocationSearch` (
 INSERT INTO `LocationSearch` (`LocationSearchID`, `City`, `LocationBookingFee`, `LocationDescription`, `SearchStatus`, `CollaborationID`) VALUES
 (1, 'test', '300.00', 'test', 'In Progress', 1),
 (2, 'citysearch', '700.00', 'citydesript', 'Complete', 5),
-(3, 'Brisbane', '400.00', 'Studio', 'In Progress', 12),
+(3, 'Brisbane', '400.00', 'Studio', 'Complete', 12),
 (4, 'Brisbane', '400.00', 'Studio', 'In Progress', 13),
 (5, 'test all loc', '700.00', 'test all loc', 'In Progress', 16),
 (6, 'test all loc', '700.00', 'test all loc', 'In Progress', 17);
@@ -223,7 +225,10 @@ INSERT INTO `TeamMember` (`TeamMemberID`, `Role`, `UserID`, `CollaborationID`) V
 (33, 'makeupartist', 1, 23),
 (34, 'model', 1, 24),
 (35, 'makeupartist', 3, 24),
-(36, 'model', 1, 25);
+(36, 'model', 1, 25),
+(37, 'makeupartist', 1, 1),
+(38, 'makeupartist', 1, 1),
+(39, 'photographer', 1, 25);
 
 -- --------------------------------------------------------
 
@@ -244,7 +249,10 @@ CREATE TABLE `TeamMemberRequest` (
 
 INSERT INTO `TeamMemberRequest` (`TeamMemberRequestID`, `RequestStatus`, `TeamMemberSearchID`, `UserID`) VALUES
 (1, 'Approved', 1, 1),
-(2, 'Pending', 2, 2);
+(2, 'Pending', 2, 2),
+(3, 'Pending', 2, 1),
+(4, 'Approved', 9, 1),
+(5, 'Denied', 6, 1);
 
 -- --------------------------------------------------------
 
@@ -274,7 +282,7 @@ INSERT INTO `TeamMemberSearch` (`TeamMemberSearchID`, `Role`, `TeamMemberBooking
 (6, 'model', '300.00', 'testlocmodel', 'In Progress', 19),
 (7, 'photographer', '150.00', 'portfolio', 'In Progress', 23),
 (8, 'photographer', '150.00', 'portfolio', 'In Progress', 24),
-(9, 'photographer', '150.00', 'portfolio', 'In Progress', 25);
+(9, 'photographer', '150.00', 'portfolio', 'Complete', 25);
 
 -- --------------------------------------------------------
 
@@ -394,7 +402,7 @@ ALTER TABLE `Location`
 -- AUTO_INCREMENT for table `LocationRequest`
 --
 ALTER TABLE `LocationRequest`
-  MODIFY `LocationRequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `LocationRequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `LocationSearch`
@@ -412,13 +420,13 @@ ALTER TABLE `Login`
 -- AUTO_INCREMENT for table `TeamMember`
 --
 ALTER TABLE `TeamMember`
-  MODIFY `TeamMemberID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `TeamMemberID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `TeamMemberRequest`
 --
 ALTER TABLE `TeamMemberRequest`
-  MODIFY `TeamMemberRequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `TeamMemberRequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `TeamMemberSearch`

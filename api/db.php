@@ -133,6 +133,25 @@ function displayUserProfile($userID) {
     }
 }
 
+function displayLocationProfile($locationID) {
+
+    try {
+        $conn = dbConnect();
+        $stmt = $conn->prepare('SELECT * FROM Location WHERE LocationID = :lID');
+        $stmt->bindValue(':lID', $locationID);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $retVal = $stmt->fetch(PDO::FETCH_ASSOC); 
+            return $retVal;
+        } else {
+            return false; 
+        }       
+        } catch (PDOException $ex) {
+            throw $ex;
+        }
+
+}
+
 function displayCollab($collaborationID) {
     try {
     $conn = dbConnect();
@@ -192,7 +211,7 @@ function addCollab($title, $description, $datetime, $userID) {
 
 }
 
-function checkLocation ($locationusername) {
+function checkLocation($locationusername) {
     try {
         $conn = dbConnect();
         $stmt = $conn->prepare("SELECT Location.LocationID FROM Location INNER JOIN Login ON Location.LoginID = Login.LoginID WHERE Login.Username =:user");
@@ -210,7 +229,7 @@ function checkLocation ($locationusername) {
 }
 }
 
-function checkUser ($tmusername) {
+function checkUser($tmusername) {
     try {
         $conn = dbConnect();
         $stmt = $conn->prepare("SELECT User.UserID FROM User INNER JOIN Login ON User.LoginID = Login.LoginID WHERE Login.Username =:user");
@@ -388,6 +407,19 @@ function completeTeamMemberSearch($tmsearchID) {
 }
 }
 
+function denyTeamMemberRequest($tmrequestID) {
+    try {
+        $conn = dbConnect();
+    $requeststatus = 'Denied';
+    $stmt = $conn->prepare("UPDATE TeamMemberRequest SET RequestStatus =:rstat WHERE TeamMemberRequestID = :tmrID");
+    $stmt->bindValue(':rstat', $requeststatus);
+    $stmt->bindValue(':tmrID', $tmrequestID);
+    $stmt->execute();
+} catch (PDOException $ex) {
+    throw $ex;
+}
+}
+
 function addLocationRequest($locationID, $locsearchID) {
 
     try {
@@ -438,6 +470,7 @@ function denyLocationRequests($locsearchID, $locrequestID) {
 
 }
 
+
 function completeLocationSearch($locsearchID) {
     try {
         $conn = dbConnect();
@@ -451,11 +484,41 @@ function completeLocationSearch($locsearchID) {
 }
 }
 
-function displayLocationProfile() {
+function denyLocationRequest($locrequestID) {
+    try {
+        $conn = dbConnect();
+    $requeststatus = 'Denied';
+    $stmt = $conn->prepare("UPDATE LocationRequest SET RequestStatus =:rstat WHERE LocationRequestID =:lrID");
+    $stmt->bindValue(':rstat', $requeststatus);
+    $stmt->bindValue(':lrID',  $locrequestID);
+    $stmt->execute();
 
-    // displayUserProfile code 
+} catch (PDOException $ex) {
+    throw $ex;
+}
 
 }
+
+function displayUserCollab($collaborationID) {
+
+    try {
+        $conn = dbConnect();
+        $stmt = $conn->prepare('SELECT Title, Description, Date FROM Collaboration WHERE CollaborationID = :cID');
+        $stmt->bindValue(':cID', $collaborationID);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $retVal = $stmt->fetch(PDO::FETCH_ASSOC); 
+            return $retVal;
+        } else {
+            return false; 
+        }       
+        } catch (PDOException $ex) {
+            throw $ex;
+        }
+
+}
+
+
 
 
 
@@ -481,9 +544,11 @@ function displayTeamMemberRequests($collaborationID) {
 
     try {
         $conn = dbConnect();
+        $requeststatus = 'Pending';
         $stmt = $conn->prepare('SELECT User.UserID, User.FirstName, User.LastName,  TeamMemberRequest.TeamMemberRequestID, TeamMemberRequest.TeamMemberSearchID, 
-        TeamMemberSearch.CollaborationID, TeamMemberSearch.Role FROM ((TeamMemberRequest LEFT JOIN User On TeamMemberRequest.UserID = User.UserID) LEFT JOIN TeamMemberSearch On TeamMemberRequest.TeamMemberSearchID = TeamMemberSearch.TeamMemberSearchID) WHERE TeamMemberSearch.CollaborationID = :cID');
+        TeamMemberSearch.CollaborationID, TeamMemberSearch.Role FROM ((TeamMemberRequest LEFT JOIN User On TeamMemberRequest.UserID = User.UserID) LEFT JOIN TeamMemberSearch On TeamMemberRequest.TeamMemberSearchID = TeamMemberSearch.TeamMemberSearchID) WHERE TeamMemberSearch.CollaborationID = :cID AND TeamMemberRequest.RequestStatus = :rstat');
         $stmt->bindValue(':cID', $collaborationID);
+        $stmt->bindValue(':rstat', $requeststatus);
         $stmt->execute();
         if ($stmt->rowCount() > 0) {
             $retVal = $stmt->fetchAll(PDO::FETCH_ASSOC); 
@@ -520,8 +585,10 @@ function displayLocation($collaborationID) {
 function displayLocationRequests($collaborationID) {
     try {
         $conn = dbConnect();
-        $stmt = $conn->prepare('SELECT Location.LocationID, Location.Name, Location.City, Location.State, LocationRequest.LocationRequestID, LocationRequest.LocationSearchID, LocationSearch.CollaborationID FROM ((LocationRequest LEFT JOIN Location On LocationRequest.LocationID = Location.LocationID) LEFT JOIN LocationSearch On LocationRequest.LocationSearchID = LocationSearch.LocationSearchID) WHERE LocationSearch.CollaborationID = :cID');
+        $requeststatus = 'Pending';
+        $stmt = $conn->prepare('SELECT Location.LocationID, Location.Name, Location.City, Location.State, LocationRequest.LocationRequestID, LocationRequest.LocationSearchID, LocationSearch.CollaborationID FROM ((LocationRequest LEFT JOIN Location On LocationRequest.LocationID = Location.LocationID) LEFT JOIN LocationSearch On LocationRequest.LocationSearchID = LocationSearch.LocationSearchID) WHERE LocationSearch.CollaborationID = :cID AND LocationRequest.RequestStatus = :rstat');
         $stmt->bindValue(':cID', $collaborationID);
+        $stmt->bindValue(':rstat', $requeststatus);
         $stmt->execute();
         if ($stmt->rowCount() > 0) {
             $retVal = $stmt->fetchAll(PDO::FETCH_ASSOC); 
@@ -540,6 +607,24 @@ function displayUserLocationRequests($locationID) {
         $conn = dbConnect();
         $stmt = $conn->prepare('SELECT Collaboration.Title, LocationRequest.LocationRequestID, LocationRequest.LocationSearchID, LocationRequest.LocationID, LocationRequest.RequestStatus, LocationSearch.CollaborationID FROM ((LocationSearch LEFT JOIN Collaboration On LocationSearch.CollaborationID = Collaboration.CollaborationID) LEFT JOIN LocationRequest On LocationSearch.LocationSearchID = LocationRequest.LocationSearchID) WHERE LocationRequest.LocationID = :lID');
         $stmt->bindValue(':lID', $locationID);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $retVal = $stmt->fetchAll(PDO::FETCH_ASSOC); 
+            return $retVal;
+        } else {
+            return false; 
+        }       
+        } catch (PDOException $ex) {
+            throw $ex;
+        }
+
+}
+
+function displayUserRequests($userID) {
+    try {
+        $conn = dbConnect();
+        $stmt = $conn->prepare('SELECT Collaboration.Title, TeamMemberRequest.TeamMemberRequestID, TeamMemberRequest.TeamMemberSearchID, TeamMemberRequest.UserID, TeamMemberRequest.RequestStatus, TeamMemberSearch.CollaborationID FROM ((TeamMemberSearch LEFT JOIN Collaboration On TeamMemberSearch.CollaborationID = Collaboration.CollaborationID) LEFT JOIN TeamMemberRequest On TeamMemberSearch.TeamMemberSearchID = TeamMemberRequest.TeamMemberSearchID) WHERE TeamMemberRequest.UserID = :uID');
+        $stmt->bindValue(':uID', $userID);
         $stmt->execute();
         if ($stmt->rowCount() > 0) {
             $retVal = $stmt->fetchAll(PDO::FETCH_ASSOC); 
