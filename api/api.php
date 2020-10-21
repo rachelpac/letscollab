@@ -1,19 +1,7 @@
 <?php
-
 include 'db.php';
-
 if(isset($_GET['getData'])) {
-    if($_GET['getData'] == 'displayuserprofile') {
-        // from session
-        $sessionID = 1;
-        $userID = $sessionID;
-        $result = displayUserProfile($userID);
-    }
-
-    if($_GET['getData'] == 'displaycollabs') {
-        $result = displayCollabs();
-    }
-
+    
     if($_GET['getData'] == 'adduseracc') {
 
         if((!isset($_POST['uname'])) || (!isset($_POST['pword'])) || (!isset($_POST['email'])) || (!isset($_POST['profilepic'])) || (!isset($_POST['ighandle'])) || (!isset($_POST['workurl'])) || ((!isset($_POST['checkadduseracc'])) && (!isset($_POST['checkaddlocationacc'])))) {
@@ -66,102 +54,6 @@ if(isset($_GET['getData'])) {
         }
         
         }
-
-   
-    
-    if($_GET['getData'] == 'addlocrequest') {
-        $sessionID = 1;
-        $locationID = $sessionID;
-        $locsearchID = isset($_POST['locrequest']) ? $_POST['locrequest'] : '';
-        $locationrequestsent = checkLocRequestUser($locationID, $locsearchID);
-        if ($locationrequestsent == false) {
-           addLocationRequest($locationID, $locsearchID); 
-        } else {
-            $result = Array("message" => 'Request Already Submitted', "colour" => 'red');
-        }
-        
-    }
-
-    if($_GET['getData'] == 'addteamrequest') {
-        $sessionID = 1;
-        $userID = $sessionID;
-        $tmsearchID = isset($_POST['teamrequest']) ? $_POST['teamrequest'] : '';
-        $tmrequestsent = checkTeamRequestUser($userID, $tmsearchID);
-        if ($tmrequestsent == false) {
-        addTeamMemberRequest($tmsearchID, $userID);            
-        } else {
-            $result = Array("message" => 'Request Already Submitted', "colour" => 'red');
-        }
-
-    }
-
-        if($_GET['getData'] == 'displaycollab') {
-            
-            $json = file_get_contents('php://input');
-            $data = json_decode($json);
-            $collaborationID = $data->collabid;
-            $result = displayCollab($collaborationID);
-            
-        } 
-
-    if ($_GET['getData'] == 'displayteam') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $collaborationID = $data->collabid;
-        $result = displayTeam($collaborationID);
-    }
-
-    if ($_GET['getData'] == 'displaylocation') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $collaborationID = $data->collabid;
-        $result = displayLocation($collaborationID);
-    }
-
-    if ($_GET['getData'] == 'displaylocrequests') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $collaborationID = $data->collabid;
-        $result = displayLocationRequests($collaborationID);
-    }
-
-    if ($_GET['getData'] == 'approvelocrequest') {
-        $locationID = 1;
-        $collaborationID = 5;
-        $locrequestID = 4;
-        $locsearchID = 2;
-        addLocation($locationID, $collaborationID);
-        approveLocationRequest($locrequestID);
-        denyLocationRequests($locsearchID, $locrequestID);
-        completeLocationSearch($locsearchID);
-        $result = Array("message" => ' Location Request Approved', "colour" => 'green');
-    }
-
-    if ($_GET['getData'] == 'approveteamrequests') {
-        $role = 'makeupartist';
-        $userID = 1;
-        $collaborationID = 1;
-        $tmrequestID = 1;
-        $tmsearchID = 1;
-        addTeamMember($role, $userID, $collaborationID);
-        approveTeamMemberRequest($tmrequestID);
-        denyTeamMemberRequests($tmsearchID, $tmrequestID);
-        completeTeamMemberSearch($tmsearchID);
-        $result = Array("message" => 'Team Request Approved', "colour" => 'green');
-
-    }
-
-    if ($_GET['getData'] == 'displayuserlocrequests') {
-        $locationID = 1;
-        $result = displayUserLocationRequests($locationID);
-    }
-
-    if ($_GET['getData'] == 'displayteamrequests') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $collaborationID = $data->collabid;
-        $result = displayTeamMemberRequests($collaborationID);
-    }
 
     if($_GET['getData'] == 'addcollab')  {
         // get from session 
@@ -234,7 +126,161 @@ if(isset($_GET['getData'])) {
             }
             http_response_code(200); 
         }    
-    } 
+    }
+        if($_GET['getData'] == 'displaycollabs') {
+        $result = displayCollabs();
+    }
+
+    if($_GET['getData'] == 'displayuserprofile') {
+        // from session
+        $sessionID = 1;
+        $userID = $sessionID;
+        $result = displayUserProfile($userID);
+    }
+
+    if($_GET['getData'] == 'displaylocprofile') {
+        // from session
+        $sessionID = 1;
+        $locationID = $sessionID;
+        $result = displayLocationProfile($locationID);
+    }
+
+    if($_GET['getData'] == 'addlocrequest') {
+        $sessionID = 1;
+        $locationID = $sessionID;
+        if (!isset($_POST['locrequest'])) {
+            http_response_code(400);
+        } else {
+            $locsearchID = $_POST['locrequest'];
+            $locationrequestsent = checkLocRequestUser($locationID, $locsearchID);
+            if ($locationrequestsent == false) {
+                addLocationRequest($locationID, $locsearchID);
+                http_response_code(200); 
+             } else {
+                 http_response_code(406);
+             }
+        }  
+    }
+
+    if($_GET['getData'] == 'addteamrequest') {
+        $sessionID = 1;
+        $userID = $sessionID;
+        if (!isset($_POST['teamrequest'])) {
+            http_response_code(400);
+        } else {
+        $tmsearchID = $_POST['teamrequest'];
+        $tmrequestsent = checkTeamRequestUser($userID, $tmsearchID);
+        if ($tmrequestsent == false) {
+        addTeamMemberRequest($tmsearchID, $userID);
+        http_response_code(200);
+        } else {
+        http_response_code(406);
+        }            
+        }
+
+    }
+
+        if($_GET['getData'] == 'displaycollab') {
+            $json = file_get_contents('php://input');
+            $data = json_decode($json);
+            $collaborationID = $data->collabid;
+            $result = displayCollab($collaborationID);
+        } 
+
+    if ($_GET['getData'] == 'displayteam') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $collaborationID = $data->collabid;
+        $result = displayTeam($collaborationID);
+    }
+
+    if ($_GET['getData'] == 'displaylocation') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $collaborationID = $data->collabid;
+        $result = displayLocation($collaborationID);
+    }    
+
+
+        if($_GET['getData'] == 'displayusercollab') {
+            $json = file_get_contents('php://input');
+            $data = json_decode($json);
+            $collaborationID = $data->collabid;
+            $result = displayUserCollab($collaborationID);
+        }
+
+    if ($_GET['getData'] == 'displaylocrequests') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $collaborationID = $data->collabid;
+        $result = displayLocationRequests($collaborationID);
+    }
+
+    if ($_GET['getData'] == 'displayteamrequests') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $collaborationID = $data->collabid;
+        $result = displayTeamMemberRequests($collaborationID);
+    }
+
+        if ($_GET['getData'] == 'approvelocrequest') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $locationID = $data->lid;
+        $collaborationID = $data->cid;
+        $locrequestID = $data->lrid;
+        $locsearchID = $data->lsid;
+        addLocation($locationID, $collaborationID);
+        approveLocationRequest($locrequestID);
+        denyLocationRequests($locsearchID, $locrequestID);
+        completeLocationSearch($locsearchID);
+        http_response_code(200);
+    }
+
+        if ($_GET['getData'] == 'approveteamrequests') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $role = $data->tmrole;
+        $userID = $data->uid;
+        $collaborationID = $data->cid;
+        $tmrequestID = $data->tmrid;
+        $tmsearchID = $data->tmsid;
+        addTeamMember($role, $userID, $collaborationID);
+        approveTeamMemberRequest($tmrequestID);
+        denyTeamMemberRequests($tmsearchID, $tmrequestID);
+        completeTeamMemberSearch($tmsearchID);
+        http_response_code(200);
+    }
+
+        if ($_GET['getData'] == 'denylocrequests') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $locrequestID = $data->lrid;
+        denyLocationRequest($locrequestID);
+        http_response_code(200);
+    }
+
+        if ($_GET['getData'] == 'denyteamrequests') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $tmrequestID = $data->tmrid;
+        denyTeamMemberRequest($tmrequestID);
+        http_response_code(200);
+    }
+
+    if ($_GET['getData'] == 'displayuserlocrequests') {
+                // get from session 
+                $sessionID = 1;
+                $locationID = $sessionID;
+        $result = displayUserLocationRequests($locationID);
+    }
+
+    if ($_GET['getData'] == 'displayuserrequests') {
+                // get from session 
+                $sessionID = 1;
+                $userID = $sessionID;
+        $result = displayUserRequests($userID);
+    }
 
 }
 

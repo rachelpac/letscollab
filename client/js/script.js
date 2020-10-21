@@ -1,5 +1,7 @@
 M.AutoInit();
 
+// MENU 
+
 sidelinks = document.querySelectorAll("#slide-out li");
 bottomlinks = document.querySelectorAll("#bottom-nav li");
 bottonicons = document.querySelectorAll('#bottom-nav i');
@@ -68,16 +70,143 @@ function unsetIconColour() {
     }
 }
 
+// SETTINGS
+
+function showSettings() {
+    hideSections();
+    unsetIconColour();
+    settings.classList.remove("hide");
+    localStorage.setItem('selectedpage', 'settings');
+}
+
+// LOGIN
+
 loginbtn.addEventListener("click", submitLogin, false);
+
+function submitLogin() {
+    M.toast({ html: 'You are now logged in!', classes: 'green' });
+}
+
+// REQUESTS 
+
 addlocbtn.addEventListener("click", submitLocationRequest, false);
 jointeambtn.addEventListener("click", submitTeamRequest, false);
 
-(function() {
-    var links = document.querySelectorAll('#mycollab .btn-floating.btn-large.waves-effect.waves-light.red')
-    for (var loop = 0; loop < links.length; loop++) {
-        links[loop].addEventListener("click", denyRequest, false)
-    }
-})();
+function submitLocationRequest() {
+    var form = document.querySelector('#locrequestform');
+    var formData = new FormData(form);
+    fetch('../api/api.php?getData=addlocrequest', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log(response);
+            if (response.status === 406) {
+                M.toast({ html: 'Location Request Already Submitted', classes: 'red' });
+            }
+            if (response.status === 400) {
+                M.toast({ html: 'Could not add Location Request', classes: 'red' });
+            }
+            if (response.status === 200) {
+                M.toast({ html: 'Location Request Submitted', classes: 'green' });
+            }
+        });
+}
+
+function submitTeamRequest() {
+    var form = document.querySelector('#teamrequestform');
+    var formData = new FormData(form);
+    fetch('../api/api.php?getData=addteamrequest', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log(response);
+            if (response.status === 406) {
+                M.toast({ html: 'Team Request Already Submitted', classes: 'red' });
+            }
+            if (response.status === 400) {
+                M.toast({ html: 'Could not add Team Request', classes: 'red' });
+            }
+            if (response.status === 200) {
+                M.toast({ html: 'Team Request Submitted', classes: 'green' });
+            }
+        });
+}
+
+function approveLocationRequests() {
+    var locationID = this.getAttribute('loc-id');
+    var collaborationID = this.getAttribute('collab-id');
+    var locrequestID = this.getAttribute('loc-request-id');
+    var locsearchID = this.getAttribute('loc-search-id');
+    const lrdata = { lid: locationID, cid: collaborationID, lrid: locrequestID, lsid: locsearchID };
+    console.log(lrdata);
+    fetch('../api/api.php?getData=approvelocrequest', {
+            method: 'POST',
+            body: JSON.stringify(lrdata)
+        })
+        .then(response => {
+            console.log(response);
+            if (response.status === 200) {
+                M.toast({ html: 'Location Request Approved', classes: 'green' });
+            }
+        });
+}
+
+function approveTeamRequests() {
+    var role = this.getAttribute('tm-role');
+    var userID = this.getAttribute('user-id');
+    var collaborationID = this.getAttribute('collab-id');
+    var tmrequestID = this.getAttribute('tm-request-id');
+    var tmsearchID = this.getAttribute('tm-search-id');
+    const trdata = { tmrole: role, uid: userID, cid: collaborationID, tmrid: tmrequestID, tmsid: tmsearchID };
+    console.log(trdata);
+    fetch('../api/api.php?getData=approveteamrequests', {
+            method: 'POST',
+            body: JSON.stringify(trdata)
+        })
+        .then(response => {
+            console.log(response);
+            if (response.status === 200) {
+                M.toast({ html: 'Team Request Approved', classes: 'green' });
+            }
+        });
+}
+
+function denyLocationRequests() {
+    var locrequestID = this.getAttribute('loc-request-id');
+    const lrdata = { lrid: locrequestID };
+    console.log(lrdata);
+    fetch('../api/api.php?getData=denylocrequests', {
+            method: 'POST',
+            body: JSON.stringify(lrdata)
+        })
+        .then(response => {
+            console.log(response);
+            if (response.status === 200) {
+                M.toast({ html: 'Location Request Denied', classes: 'red' });
+            }
+        });
+
+}
+
+function denyTeamRequests() {
+    var tmrequestID = this.getAttribute('tm-request-id');
+    const trdata = { tmrid: tmrequestID };
+    console.log(trdata);
+    fetch('../api/api.php?getData=denyteamrequests', {
+            method: 'POST',
+            body: JSON.stringify(trdata)
+        })
+        .then(response => {
+            console.log(response);
+            if (response.status === 200) {
+                M.toast({ html: 'Team Request Denied', classes: 'red' });
+            }
+        });
+
+}
+
 
 (function() {
     var links = document.querySelectorAll('#joinedcollab .btn-floating.btn-large.waves-effect.waves-light.red')
@@ -86,30 +215,12 @@ jointeambtn.addEventListener("click", submitTeamRequest, false);
     }
 })();
 
-mycollabloc = document.querySelector('#mycollabloctbl tbody');
-mycollabteam = document.querySelector('#mycollabteamtbl tbody');
-mycollablocreq = document.querySelector('#mycollablocreqtbl tbody');
-mycollabteamreq = document.querySelector('#mycollabteamreqtbl tbody');
-myrequests = document.querySelector('#myreqtbl tbody');
+function withdrawRequest() {
+    M.toast({ html: 'Collab Request Withdrawn!', classes: 'yellow darken-4' });
 
-
-
-function approveLocationRequest() {
-    fetch('../api/api.php?getData=approvelocrequest')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-        });
 }
 
-function approveTeamRequests() {
-    fetch('../api/api.php?getData=approveteamrequests')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-        });
-}
-
+// PROFILE 
 
 profileIMG = document.querySelector("#profile img")
 profileName = document.querySelector("#profile h5")
@@ -136,64 +247,24 @@ function showProfile() {
             profileInfo[2].innerHTML = data.Bio;
         });
 
-}
+    fetch('../api/api.php?getData=displaylocprofile')
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+        });
 
-function showSettings() {
-    hideSections();
-    unsetIconColour();
-    settings.classList.remove("hide");
-    localStorage.setItem('selectedpage', 'settings');
-}
-
-
-// function approveRequest() {
-//     M.toast({ html: 'Collab Request Approved!', classes: 'green' });
-// }
-
-function denyRequest() {
-    M.toast({ html: 'Collab Request Denied!', classes: 'red' });
-}
-
-function withdrawRequest() {
-    M.toast({ html: 'Collab Request Withdrawn!', classes: 'yellow darken-4' });
-
-}
-
-
-function submitLogin() {
-    M.toast({ html: 'You are now logged in!', classes: 'green' });
-}
-
-
-function submitLocationRequest() {
-    var form = document.querySelector('#locrequestform');
-    var formData = new FormData(form);
-    fetch('../api/api.php?getData=addlocrequest', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(result => {
-            console.log(result);
-            // M.toast({ html: result.message, classes: result.colour });
-        })
-}
-
-function submitTeamRequest() {
-    var form = document.querySelector('#teamrequestform');
-    var formData = new FormData(form);
-    fetch('../api/api.php?getData=addteamrequest', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(result => {
-            console.log(result);
-            // M.toast({ html: result.message, classes: result.colour });
-        })
 }
 
 // USER COLLAB 
+
+collabTitle = document.querySelector('#collabinfo h5');
+collabInfo = document.querySelectorAll('#collabinfo p');
+
+mycollabloc = document.querySelector('#mycollabloctbl tbody');
+mycollabteam = document.querySelector('#mycollabteamtbl tbody');
+mycollablocreq = document.querySelector('#mycollablocreqtbl tbody');
+mycollabteamreq = document.querySelector('#mycollabteamreqtbl tbody');
+myrequests = document.querySelector('#myreqtbl tbody');
 
 function showUserCollab() {
     hideSections();
@@ -201,9 +272,22 @@ function showUserCollab() {
     usercollab.classList.remove("hide");
     localStorage.setItem('selectedpage', 'usercollab');
     bottonicons[2].style.color = 'black';
-    var id = 1;
+    var id = 16;
     console.log(id);
     const ucdata = { collabid: id };
+
+    fetch('../api/api.php?getData=displayusercollab', {
+            method: 'POST',
+            body: JSON.stringify(ucdata)
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            collabTitle.innerHTML = data.Title;
+            collabInfo[0].innerHTML = data.Date;
+            collabInfo[1].innerHTML = data.Description;
+        });
+
     fetch('../api/api.php?getData=displaylocation', {
             method: 'POST',
             body: JSON.stringify(ucdata)
@@ -223,21 +307,34 @@ function showUserCollab() {
                     .then((response) => response.json())
                     .then((data) => {
                         console.log(data);
-                        data.forEach(row => {
-                            mycollablocreq.innerHTML +=
+                        if (data == false) {
+                            mycollablocreqtbl.innerHTML =
                                 '<tr>' +
-                                '<td>' + row.Name + ' - ' + row.City + ', ' + row.State + '</td>' +
-                                '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">location_on</i></a></td>' +
-                                '<td><a id="approveloc' + row.LocationID + '" class="btn-floating btn-large waves-effect waves-light green"><i class="material-icons">done</i></a></td>' +
-                                '<td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>' +
+                                '<td> No location requests </td>' +
                                 '</tr>'
+                        } else {
+                            data.forEach(row => {
+                                mycollablocreq.innerHTML +=
+                                    '<tr>' +
+                                    '<td>' + row.Name + ' - ' + row.City + ', ' + row.State + '</td>' +
+                                    '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">location_on</i></a></td>' +
+                                    '<td><a class="btn-floating btn-large waves-effect waves-light green" loc-id="' + row.LocationID + '" collab-id="' + row.CollaborationID + '" loc-request-id="' + row.LocationRequestID + '" loc-search-id="' + row.LocationSearchID + '"><i class="material-icons">done</i></a></td>' +
+                                    '<td><a class="btn-floating btn-large waves-effect waves-light red" loc-request-id="' + row.LocationRequestID + '"><i class="material-icons">clear</i></a></td>' +
+                                    '</tr>'
 
-                        })
+                            })
+                        }
                     })
                     .then(() => {
                         approvelocbtns = document.querySelectorAll('#mycollablocreqtbl a.btn-floating.btn-large.waves-effect.waves-light.green');
                         for (var loop = 0; loop < approvelocbtns.length; loop++) {
-                            approvelocbtns[loop].addEventListener("click", approveLocationRequest, false);
+                            approvelocbtns[loop].addEventListener("click", approveLocationRequests, false);
+                        }
+                    })
+                    .then(() => {
+                        denylocbtns = document.querySelectorAll('#mycollablocreqtbl a.btn-floating.btn-large.waves-effect.waves-light.red');
+                        for (var loop = 0; loop < denylocbtns.length; loop++) {
+                            denylocbtns[loop].addEventListener("click", denyLocationRequests, false);
                         }
                     });
             } else {
@@ -277,20 +374,57 @@ function showUserCollab() {
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
-            data.forEach(row => {
-                mycollabteamreq.innerHTML +=
+            if (data == false) {
+                mycollabteamreqtbl.innerHTML =
                     '<tr>' +
-                    '<td>' + row.FirstName + " " + row.LastName + ' - ' + row.Role + '</td>' +
-                    '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">person</i></a></td>' +
-                    '<td><a class="btn-floating btn-large waves-effect waves-light green"><i class="material-icons">done</i></a></td>' +
-                    '<td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>' +
+                    '<td> No team requests </td>' +
                     '</tr>'
-            })
+            } else {
+                data.forEach(row => {
+                    mycollabteamreq.innerHTML +=
+                        '<tr>' +
+                        '<td>' + row.FirstName + " " + row.LastName + ' - ' + row.Role + '</td>' +
+                        '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">person</i></a></td>' +
+                        '<td><a class="btn-floating btn-large waves-effect waves-light green" tm-role="' + row.Role + '" user-id="' + row.UserID + '" collab-id="' + row.CollaborationID + '" tm-request-id="' + row.TeamMemberRequestID + '" tm-search-id="' + row.TeamMemberSearchID + '"><i class="material-icons">done</i></a></td>' +
+                        '<td><a class="btn-floating btn-large waves-effect waves-light red" tm-request-id="' + row.TeamMemberRequestID + '"><i class="material-icons">clear</i></a></td>' +
+                        '</tr>'
+                })
+            }
         })
         .then(() => {
             approveteambtns = document.querySelectorAll('#mycollabteamreqtbl a.btn-floating.btn-large.waves-effect.waves-light.green');
             for (var loop = 0; loop < approveteambtns.length; loop++) {
                 approveteambtns[loop].addEventListener("click", approveTeamRequests, false);
+            }
+        })
+        .then(() => {
+            denyteambtns = document.querySelectorAll('#mycollabteamreqtbl a.btn-floating.btn-large.waves-effect.waves-light.red');
+            for (var loop = 0; loop < denyteambtns.length; loop++) {
+                denyteambtns[loop].addEventListener("click", denyTeamRequests, false);
+            }
+        });
+
+    fetch('../api/api.php?getData=displayuserrequests')
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            if (data == false) {
+                myreqtbl.innerHTML =
+                    '<tr>' +
+                    '<td> You have not made any requests </td>' +
+                    '</tr>'
+            } else {
+                data.forEach(row => {
+                    myrequests.innerHTML +=
+                        '<tr>' +
+                        '<td>' + row.Title + '</td>' +
+                        '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a></td>' +
+                        '<td>' +
+                        '<p class="yellow-text text-darken-4">' + row.RequestStatus + '</p>' +
+                        '</td>' +
+                        '<td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>' +
+                        '</tr>'
+                })
             }
         });
 
@@ -298,19 +432,7 @@ function showUserCollab() {
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
-            data.forEach(row => {
-                myrequests.innerHTML +=
-                    '<tr>' +
-                    '<td>' + row.Title + '</td>' +
-                    '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a></td>' +
-                    '<td>' +
-                    '<p class="yellow-text text-darken-4">' + row.RequestStatus + '</p>' +
-                    '</td>' +
-                    '<td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>' +
-                    '</tr>'
-            })
         });
-
 
 }
 
@@ -390,7 +512,7 @@ function showJoinCollab() {
     unsetIconColour();
     joincollab.classList.remove("hide");
     localStorage.setItem('selectedpage', 'joincollab');
-    var id = this.getAttribute('id')
+    var id = this.getAttribute('id');
     console.log(id);
     const cdata = { collabid: id };
     fetch('../api/api.php?getData=displaycollab', {
