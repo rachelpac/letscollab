@@ -265,6 +265,7 @@ mycollabteam = document.querySelector('#mycollabteamtbl tbody');
 mycollablocreq = document.querySelector('#mycollablocreqtbl tbody');
 mycollabteamreq = document.querySelector('#mycollabteamreqtbl tbody');
 myrequests = document.querySelector('#myreqtbl tbody');
+mycollablist = document.querySelector('#mycollablisttbl tbody');
 
 function showUserCollab() {
     hideSections();
@@ -272,7 +273,72 @@ function showUserCollab() {
     usercollab.classList.remove("hide");
     localStorage.setItem('selectedpage', 'usercollab');
     bottonicons[2].style.color = 'black';
-    var id = 16;
+
+    fetch('../api/api.php?getData=displayusercollabs')
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            if (data == false) {
+                mycollablisttbl.innerHTML =
+                    '<tr>' +
+                    '<td> You have not started any collaboration </td>' +
+                    '</tr>'
+            } else {
+                mycollablist.innerHTML = ' ';
+                data.forEach(row => {
+                    mycollablist.innerHTML +=
+                        '<tr>' +
+                        '<td>' + row.Title + '</td>' +
+                        '<td><a class="btn-floating btn-large waves-effect waves-light" collab-id="' + row.CollaborationID + '"><i class="material-icons">send</i></a></td>' +
+                        '</tr>'
+                })
+            }
+        })
+        .then(() => {
+            mycollablistbtns = document.querySelectorAll('#mycollablisttbl a.btn-floating.btn-large.waves-effect.waves-light');
+            for (var loop = 0; loop < mycollablistbtns.length; loop++) {
+                mycollablistbtns[loop].addEventListener("click", showMyCollab, false);
+            }
+        });
+
+    fetch('../api/api.php?getData=displayuserrequests')
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            if (data == false) {
+                myreqtbl.innerHTML =
+                    '<tr>' +
+                    '<td> You have not made any requests </td>' +
+                    '</tr>'
+            } else {
+                myrequests.innerHTML = ' ';
+                data.forEach(row => {
+                    myrequests.innerHTML +=
+                        '<tr>' +
+                        '<td>' + row.Title + '</td>' +
+                        '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a></td>' +
+                        '<td>' +
+                        '<p class="yellow-text text-darken-4">' + row.RequestStatus + '</p>' +
+                        '</td>' +
+                        '<td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>' +
+                        '</tr>'
+                })
+            }
+        });
+
+    fetch('../api/api.php?getData=displayuserlocrequests')
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+        });
+
+}
+
+function showMyCollab() {
+    viewmycollab.classList.add("hide");
+    viewmycollab.classList.remove("hide");
+
+    var id = this.getAttribute('collab-id');
     console.log(id);
     const ucdata = { collabid: id };
 
@@ -313,6 +379,7 @@ function showUserCollab() {
                                 '<td> No location requests </td>' +
                                 '</tr>'
                         } else {
+                            mycollablocreq.innerHTML = ' ';
                             data.forEach(row => {
                                 mycollablocreq.innerHTML +=
                                     '<tr>' +
@@ -357,6 +424,7 @@ function showUserCollab() {
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
+            mycollabteam.innerHTML = ' ';
             data.forEach(row => {
                 mycollabteam.innerHTML +=
                     '<tr>' +
@@ -380,6 +448,7 @@ function showUserCollab() {
                     '<td> No team requests </td>' +
                     '</tr>'
             } else {
+                mycollabteamreq.innerHTML = ' ';
                 data.forEach(row => {
                     mycollabteamreq.innerHTML +=
                         '<tr>' +
@@ -402,36 +471,6 @@ function showUserCollab() {
             for (var loop = 0; loop < denyteambtns.length; loop++) {
                 denyteambtns[loop].addEventListener("click", denyTeamRequests, false);
             }
-        });
-
-    fetch('../api/api.php?getData=displayuserrequests')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            if (data == false) {
-                myreqtbl.innerHTML =
-                    '<tr>' +
-                    '<td> You have not made any requests </td>' +
-                    '</tr>'
-            } else {
-                data.forEach(row => {
-                    myrequests.innerHTML +=
-                        '<tr>' +
-                        '<td>' + row.Title + '</td>' +
-                        '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a></td>' +
-                        '<td>' +
-                        '<p class="yellow-text text-darken-4">' + row.RequestStatus + '</p>' +
-                        '</td>' +
-                        '<td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>' +
-                        '</tr>'
-                })
-            }
-        });
-
-    fetch('../api/api.php?getData=displayuserlocrequests')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
         });
 
 }
@@ -561,6 +600,7 @@ function showJoinCollab() {
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
+            collabteam.innerHTML = ' ';
             data.forEach(row => {
                 collabteam.innerHTML +=
                     '<tr>' +

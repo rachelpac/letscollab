@@ -1,25 +1,25 @@
 <?php
 include 'db.php';
-if(isset($_GET['getData'])) {
-    
-    if($_GET['getData'] == 'adduseracc') {
+if (isset($_GET['getData'])) {
 
-        if((!isset($_POST['uname'])) || (!isset($_POST['pword'])) || (!isset($_POST['email'])) || (!isset($_POST['profilepic'])) || (!isset($_POST['ighandle'])) || (!isset($_POST['workurl'])) || ((!isset($_POST['checkadduseracc'])) && (!isset($_POST['checkaddlocationacc'])))) {
+    if ($_GET['getData'] == 'adduseracc') {
+
+        if ((!isset($_POST['uname'])) || (!isset($_POST['pword'])) || (!isset($_POST['email'])) || (!isset($_POST['profilepic'])) || (!isset($_POST['ighandle'])) || (!isset($_POST['workurl'])) || ((!isset($_POST['checkadduseracc'])) && (!isset($_POST['checkaddlocationacc'])))) {
             http_response_code(400);
         } else {
-        $username = $_POST['uname'];
-        $password = $_POST['pword'];
-        $email = $_POST['email'];
-        $profilepic = $_POST['profilepic'];
-        $ighandle = $_POST['ighandle'];
-        $workurl = $_POST['workurl'];            
+            $username = $_POST['uname'];
+            $password = $_POST['pword'];
+            $email = $_POST['email'];
+            $profilepic = $_POST['profilepic'];
+            $ighandle = $_POST['ighandle'];
+            $workurl = $_POST['workurl'];
         }
-        if(isset($_POST['checkadduseracc'])) {
+        if (isset($_POST['checkadduseracc'])) {
             if ((!isset($_POST['fname'])) || (!isset($_POST['lname'])) || (!isset($_POST['bio']))) {
                 http_response_code(400);
             } else {
                 $firstname = $_POST['fname'];
-                $lastname = $_POST['lname']; 
+                $lastname = $_POST['lname'];
                 $bio = $_POST['bio'];
                 $userexists = checkUserReg($username);
                 if ($userexists == false) {
@@ -31,9 +31,9 @@ if(isset($_GET['getData'])) {
                     http_response_code(406);
                 }
             }
-        } 
-        if(isset($_POST['checkaddlocationacc'])) {
-            if((!isset($_POST['locname'])) || (!isset($_POST['locaddress'])) || (!isset($_POST['loccity'])) || (!isset($_POST['locstate'])) || (!isset($_POST['locpostcode'])) || (!isset($_POST['locdescript']))) {
+        }
+        if (isset($_POST['checkaddlocationacc'])) {
+            if ((!isset($_POST['locname'])) || (!isset($_POST['locaddress'])) || (!isset($_POST['loccity'])) || (!isset($_POST['locstate'])) || (!isset($_POST['locpostcode'])) || (!isset($_POST['locdescript']))) {
                 http_response_code(400);
             } else {
                 $name = $_POST['locname'];
@@ -52,15 +52,15 @@ if(isset($_GET['getData'])) {
                 }
             }
         }
-        
-        }
 
-    if($_GET['getData'] == 'addcollab')  {
-        // get from session 
+    }
+
+    if ($_GET['getData'] == 'addcollab') {
+        // get from session
         $sessionID = 1;
         $userID = $sessionID;
 
-        if((!isset($_POST['ctitle'])) || (!isset($_POST['cdescript'])) || (!isset($_POST['cdate'])) || (!isset($_POST['ctime'])) || (!isset($_POST['ownerrole']))) {
+        if ((!isset($_POST['ctitle'])) || (!isset($_POST['cdescript'])) || (!isset($_POST['cdate'])) || (!isset($_POST['ctime'])) || (!isset($_POST['ownerrole']))) {
             http_response_code(400);
         } else if ((isset($_POST['checkaddlocation'])) && (!isset($_POST['locationuname']))) {
             http_response_code(400);
@@ -70,7 +70,7 @@ if(isset($_GET['getData'])) {
             http_response_code(400);
         } else if ((isset($_POST['checksearchmember'])) && ((!isset($_POST['tmsearchrole'])) || (!isset($_POST['tmbookingfee'])) || (!isset($_POST['tmdescript'])))) {
             http_response_code(400);
-        }  else {
+        } else {
             $title = $_POST['ctitle'];
             $description = $_POST['cdescript'];
             $date = $_POST['cdate'];
@@ -79,73 +79,73 @@ if(isset($_GET['getData'])) {
             $datetime = date('Y-m-d H:i:s', strtotime($datetime));
             $ownerrole = $_POST['ownerrole'];
 
-            if(isset($_POST['checkaddlocation'])) {
-            $locationusername = $_POST['locationuname']; 
-            $locationexists = checkLocation($locationusername);   
+            if (isset($_POST['checkaddlocation'])) {
+                $locationusername = $_POST['locationuname'];
+                $locationexists = checkLocation($locationusername);
             }
 
-            if(isset($_POST['checkaddmember'])) {
-            $tmusername = $_POST['tmuname'];
-            $tmrole =  $_POST['tmrole']; 
-            $userexists = checkUser($tmusername);
-            } 
-
-            if(isset($_POST['checksearchlocation'])) {
-            $locationcity = $_POST['lcity'];
-            $locationbookingfee = $_POST['lbookingfee'];
-            $locationdescript = $_POST['ldescript'];                
+            if (isset($_POST['checkaddmember'])) {
+                $tmusername = $_POST['tmuname'];
+                $tmrole = $_POST['tmrole'];
+                $userexists = checkUser($tmusername);
             }
 
-            if(isset($_POST['checksearchmember'])) {
-            $tmsearchrole = $_POST['tmsearchrole'];
-            $tmbookingfee = $_POST['tmbookingfee'];
-            $tmdescription = $_POST['tmdescript'];            
+            if (isset($_POST['checksearchlocation'])) {
+                $locationcity = $_POST['lcity'];
+                $locationbookingfee = $_POST['lbookingfee'];
+                $locationdescript = $_POST['ldescript'];
+            }
+
+            if (isset($_POST['checksearchmember'])) {
+                $tmsearchrole = $_POST['tmsearchrole'];
+                $tmbookingfee = $_POST['tmbookingfee'];
+                $tmdescription = $_POST['tmdescript'];
             }
         }
 
         if (((isset($_POST['checkaddlocation'])) && ($locationexists == false)) || ((isset($_POST['checkaddmember'])) && ($userexists == false))) {
-            http_response_code(404); 
+            http_response_code(404);
         } else {
-            $insertcollab = addCollab($title, $description, $datetime, $userID); 
+            $insertcollab = addCollab($title, $description, $datetime, $userID);
             $collaborationID = $insertcollab;
             addTeamMember($ownerrole, $userID, $collaborationID);
 
-            if(isset($_POST['checkaddlocation'])) {
-            $locationID = $locationexists;
-            addLocation($locationID, $collaborationID); 
-            } 
-            if(isset($_POST['checksearchlocation'])) {
-            addLocationSearch($locationcity, $locationbookingfee, $locationdescript, $collaborationID);  
-            } 
-            if(isset($_POST['checkaddmember'])) {
-                $userID = $userexists; 
-                addTeamMember($tmrole, $userID, $collaborationID);                
-            } 
-            if(isset($_POST['checksearchmember'])) {
+            if (isset($_POST['checkaddlocation'])) {
+                $locationID = $locationexists;
+                addLocation($locationID, $collaborationID);
+            }
+            if (isset($_POST['checksearchlocation'])) {
+                addLocationSearch($locationcity, $locationbookingfee, $locationdescript, $collaborationID);
+            }
+            if (isset($_POST['checkaddmember'])) {
+                $userID = $userexists;
+                addTeamMember($tmrole, $userID, $collaborationID);
+            }
+            if (isset($_POST['checksearchmember'])) {
                 addTeamMemberSearch($tmsearchrole, $tmbookingfee, $tmdescription, $collaborationID);
             }
-            http_response_code(200); 
-        }    
+            http_response_code(200);
+        }
     }
-        if($_GET['getData'] == 'displaycollabs') {
+    if ($_GET['getData'] == 'displaycollabs') {
         $result = displayCollabs();
     }
 
-    if($_GET['getData'] == 'displayuserprofile') {
+    if ($_GET['getData'] == 'displayuserprofile') {
         // from session
         $sessionID = 1;
         $userID = $sessionID;
         $result = displayUserProfile($userID);
     }
 
-    if($_GET['getData'] == 'displaylocprofile') {
+    if ($_GET['getData'] == 'displaylocprofile') {
         // from session
         $sessionID = 1;
         $locationID = $sessionID;
         $result = displayLocationProfile($locationID);
     }
 
-    if($_GET['getData'] == 'addlocrequest') {
+    if ($_GET['getData'] == 'addlocrequest') {
         $sessionID = 1;
         $locationID = $sessionID;
         if (!isset($_POST['locrequest'])) {
@@ -155,37 +155,43 @@ if(isset($_GET['getData'])) {
             $locationrequestsent = checkLocRequestUser($locationID, $locsearchID);
             if ($locationrequestsent == false) {
                 addLocationRequest($locationID, $locsearchID);
-                http_response_code(200); 
-             } else {
-                 http_response_code(406);
-             }
-        }  
+                http_response_code(200);
+            } else {
+                http_response_code(406);
+            }
+        }
     }
 
-    if($_GET['getData'] == 'addteamrequest') {
+    if ($_GET['getData'] == 'addteamrequest') {
         $sessionID = 1;
         $userID = $sessionID;
         if (!isset($_POST['teamrequest'])) {
             http_response_code(400);
         } else {
-        $tmsearchID = $_POST['teamrequest'];
-        $tmrequestsent = checkTeamRequestUser($userID, $tmsearchID);
-        if ($tmrequestsent == false) {
-        addTeamMemberRequest($tmsearchID, $userID);
-        http_response_code(200);
-        } else {
-        http_response_code(406);
-        }            
+            $tmsearchID = $_POST['teamrequest'];
+            $tmrequestsent = checkTeamRequestUser($userID, $tmsearchID);
+            if ($tmrequestsent == false) {
+                addTeamMemberRequest($tmsearchID, $userID);
+                http_response_code(200);
+            } else {
+                http_response_code(406);
+            }
         }
 
     }
 
-        if($_GET['getData'] == 'displaycollab') {
-            $json = file_get_contents('php://input');
-            $data = json_decode($json);
-            $collaborationID = $data->collabid;
-            $result = displayCollab($collaborationID);
-        } 
+    if ($_GET['getData'] == 'displayusercollabs') {
+        $sessionID = 1;
+        $userID = $sessionID;
+        $result = displayUserCollabs($userID);
+    }
+
+    if ($_GET['getData'] == 'displaycollab') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $collaborationID = $data->collabid;
+        $result = displayCollab($collaborationID);
+    }
 
     if ($_GET['getData'] == 'displayteam') {
         $json = file_get_contents('php://input');
@@ -199,15 +205,14 @@ if(isset($_GET['getData'])) {
         $data = json_decode($json);
         $collaborationID = $data->collabid;
         $result = displayLocation($collaborationID);
-    }    
+    }
 
-
-        if($_GET['getData'] == 'displayusercollab') {
-            $json = file_get_contents('php://input');
-            $data = json_decode($json);
-            $collaborationID = $data->collabid;
-            $result = displayUserCollab($collaborationID);
-        }
+    if ($_GET['getData'] == 'displayusercollab') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $collaborationID = $data->collabid;
+        $result = displayUserCollab($collaborationID);
+    }
 
     if ($_GET['getData'] == 'displaylocrequests') {
         $json = file_get_contents('php://input');
@@ -223,7 +228,7 @@ if(isset($_GET['getData'])) {
         $result = displayTeamMemberRequests($collaborationID);
     }
 
-        if ($_GET['getData'] == 'approvelocrequest') {
+    if ($_GET['getData'] == 'approvelocrequest') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $locationID = $data->lid;
@@ -237,7 +242,7 @@ if(isset($_GET['getData'])) {
         http_response_code(200);
     }
 
-        if ($_GET['getData'] == 'approveteamrequests') {
+    if ($_GET['getData'] == 'approveteamrequests') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $role = $data->tmrole;
@@ -252,7 +257,7 @@ if(isset($_GET['getData'])) {
         http_response_code(200);
     }
 
-        if ($_GET['getData'] == 'denylocrequests') {
+    if ($_GET['getData'] == 'denylocrequests') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $locrequestID = $data->lrid;
@@ -260,7 +265,7 @@ if(isset($_GET['getData'])) {
         http_response_code(200);
     }
 
-        if ($_GET['getData'] == 'denyteamrequests') {
+    if ($_GET['getData'] == 'denyteamrequests') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $tmrequestID = $data->tmrid;
@@ -269,25 +274,23 @@ if(isset($_GET['getData'])) {
     }
 
     if ($_GET['getData'] == 'displayuserlocrequests') {
-                // get from session 
-                $sessionID = 1;
-                $locationID = $sessionID;
+        // get from session
+        $sessionID = 1;
+        $locationID = $sessionID;
         $result = displayUserLocationRequests($locationID);
     }
 
     if ($_GET['getData'] == 'displayuserrequests') {
-                // get from session 
-                $sessionID = 1;
-                $userID = $sessionID;
+        // get from session
+        $sessionID = 1;
+        $userID = $sessionID;
         $result = displayUserRequests($userID);
     }
 
 }
 
-if(isset($result)) {
+if (isset($result)) {
     echo json_encode($result);
 } else {
-    echo json_encode(Array('error'=>'true'));
+    echo json_encode(array('error' => 'true'));
 }
-
-?>

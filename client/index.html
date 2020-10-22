@@ -87,7 +87,8 @@
                         <legend> Where is the Collaboration? <i class="small material-icons">place</i></legend>
                         <p>
                             <label for="checkaddlocation">
-                                <input id="checkaddlocation" name="checkaddlocation" type="checkbox" class="filled-in" />
+                                <input id="checkaddlocation" name="checkaddlocation" type="checkbox"
+                                    class="filled-in" />
                                 <span>I have a location</span>
                             </label>
                         </p>
@@ -104,7 +105,8 @@
 
                         <p>
                             <label for="checksearchlocation">
-                                <input id="checksearchlocation" name="checksearchlocation" type="checkbox" class="filled-in" />
+                                <input id="checksearchlocation" name="checksearchlocation" type="checkbox"
+                                    class="filled-in" />
                                 <span>I'm looking for a location</span>
                             </label>
                         </p>
@@ -184,7 +186,8 @@
 
                         <p>
                             <label>
-                                <input id="checksearchmember" name="checksearchmember" type="checkbox" class="filled-in" />
+                                <input id="checksearchmember" name="checksearchmember" type="checkbox"
+                                    class="filled-in" />
                                 <span>Look for people to join the collaboration</span>
                             </label>
                         </p>
@@ -359,7 +362,8 @@
 
                         <p>
                             <label>
-                                <input id="checkaddlocationacc" name="checkaddlocationacc" type="checkbox" class="filled-in" />
+                                <input id="checkaddlocationacc" name="checkaddlocationacc" type="checkbox"
+                                    class="filled-in" />
                                 <span>Location Account</span>
                             </label>
                         </p>
@@ -420,7 +424,7 @@
                     <fieldset>
                         <p>
                             <label for="terms">
-                                <input type="checkbox" checked="checked" id="terms"/>
+                                <input type="checkbox" checked="checked" id="terms" />
                                 <span>Agree to <a class="modal-trigger" href="#termsmodal">Terms</a></span>
                             </label>
                         </p>
@@ -438,7 +442,8 @@
                     </fieldset>
 
                     <fieldset>
-                        <button id="signupbtn" class="btn waves-effect waves-light" type="button" disabled>SIGN UP<i class="material-icons right">send</i></button>
+                        <button id="signupbtn" class="btn waves-effect waves-light" type="button" disabled>SIGN UP<i
+                                class="material-icons right">send</i></button>
                     </fieldset>
 
 
@@ -462,7 +467,8 @@
                                 </div>
                             </div>
 
-                            <button id="loginbtn" class="modal-close btn waves-effect waves-light" type="submit">LOGIN<i class="material-icons right">send</i></button>
+                            <button id="loginbtn" class="modal-close btn waves-effect waves-light" type="submit">LOGIN<i
+                                    class="material-icons right">send</i></button>
                         </form>
                     </div>
                 </div>
@@ -563,67 +569,85 @@
 
             <div id="mycollab" class="col s12">
 
-                <div id="collabinfo">
-                    <h5>Collaboration Title</h5>
-                    <p>Date and Time</p>
-                    <p>Collaboration Description. I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.</p>
+                <div id="mycollablist" class="col s12">
+                    <h5>My Collaborations</h5>
+                    <table id="mycollablisttbl" class="highlight">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </div>
 
-                <h5>Location</h5>
-                <table id="mycollabloctbl" class="highlight">
-                    <thead>
-                        <tr>
-                            <th>Location</th>
-                            <th>Profile</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div id="viewmycollab" class="hide">
 
-                    </tbody>
-                </table>
+                    <div id="collabinfo">
+                        <h5>Collaboration Title</h5>
+                        <p>Date and Time</p>
+                        <p>Collaboration Description. I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.</p>
+                    </div>
 
-                <h5>Location Requests</h5>
-                <table id="mycollablocreqtbl" class="highlight">
-                    <thead>
-                        <tr>
-                            <th>Location</th>
-                            <th>Profile</th>
-                            <th>Approve</th>
-                            <th>Deny</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <h5>Location</h5>
+                    <table id="mycollabloctbl" class="highlight">
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>Profile</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
 
-                <h5>Team</h5>
-                <table id="mycollabteamtbl" class="highlight">
-                    <thead>
-                        <tr>
-                            <th>Member</th>
-                            <th>Profile</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <h5>Location Requests</h5>
+                    <table id="mycollablocreqtbl" class="highlight">
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>Profile</th>
+                                <th>Approve</th>
+                                <th>Deny</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
 
-                <h5>Team Requests</h5>
-                <table id="mycollabteamreqtbl" class="highlight">
-                    <thead>
-                        <tr>
-                            <th>Member</th>
-                            <th>Profile</th>
-                            <th>Approve</th>
-                            <th>Deny</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <h5>Team</h5>
+                    <table id="mycollabteamtbl" class="highlight">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Profile</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+
+                    <h5>Team Requests</h5>
+                    <table id="mycollabteamreqtbl" class="highlight">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Profile</th>
+                                <th>Approve</th>
+                                <th>Deny</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="joinedcollab" class="col s12">
@@ -678,7 +702,8 @@
                         <p>$xxxxxx</p>
                         <p>Loction Description</p>
                         <input id="locrequest" name="locrequest" type="hidden">
-                        <button id="addlocbtn" class="btn waves-effect waves-light" type="button">ADD LOCATION<i class="material-icons right">send</i></button>
+                        <button id="addlocbtn" class="btn waves-effect waves-light" type="button">ADD LOCATION<i
+                                class="material-icons right">send</i></button>
                     </form>
                 </div>
 
@@ -689,7 +714,8 @@
                         <p>$xxxxxx</p>
                         <p>Role Description</p>
                         <input id="teamrequest" name="teamrequest" type="hidden">
-                        <button id="jointeambtn" class="btn waves-effect waves-light" type="button">JOIN COLLAB<i class="material-icons right">send</i></button>
+                        <button id="jointeambtn" class="btn waves-effect waves-light" type="button">JOIN COLLAB<i
+                                class="material-icons right">send</i></button>
                     </form>
                 </div>
             </div>
