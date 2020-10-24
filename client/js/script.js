@@ -81,10 +81,71 @@ function showSettings() {
 
 // LOGIN
 
+luname.addEventListener("blur", showErrorLoginUsername, false);
+lpword.addEventListener("blur", showErrorLoginPassword, false);
+
+function showErrorLoginUsername() {
+    if (luname.validity.valueMissing) {
+        lunameerror.setAttribute("data-error", "You must enter a Username");
+    } else {
+        lunameerror.setAttribute("data-success", "Username entered");
+    }
+}
+
+function showErrorLoginPassword() {
+    if (lpword.validity.valueMissing) {
+        lpworderror.setAttribute("data-error", "You must enter a Password");
+    } else {
+        lpworderror.setAttribute("data-success", "Password entered");
+    }
+}
+
+function validateUserLogin() {
+    if ((!luname.validity.valid) || (!lpword.validity.valid)) {
+        showErrorLoginUsername();
+        showErrorLoginPassword();
+    } else {
+        return true;
+    }
+}
+
 loginbtn.addEventListener("click", submitLogin, false);
 
 function submitLogin() {
-    M.toast({ html: 'You are now logged in!', classes: 'green' });
+    var isdatavalid = validateUserLogin();
+    if (isdatavalid == true) {
+        var form = document.querySelector('#loginform');
+        var formData = new FormData(form);
+        fetch('../api/ses.php?getSession=login', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log(response);
+                if (response.status === 400) {
+                    M.toast({ html: 'Login Failed', classes: 'red' });
+                }
+                if (response.status === 401) {
+                    M.toast({ html: 'User does not exist', classes: 'red' });
+                }
+                if (response.status === 403) {
+                    M.toast({ html: 'Passord is incorrect', classes: 'red' });
+                }
+                if (response.status === 200) {
+                    response.json()
+                        .then((data) => {
+                            console.log(data);
+                            localStorage.setItem('loggedinuser', data.username);
+                            localStorage.setItem('loggedinuserid', data.userid);
+                            localStorage.setItem('loggedinlocid', data.locid);
+                        })
+                    M.toast({ html: 'You are now logged in', classes: 'green' });
+                }
+            });
+    } else {
+        M.toast({ html: 'Please enter a Username and Password', classes: 'red' });
+    }
+
 }
 
 // REQUESTS 
@@ -102,12 +163,12 @@ function submitLocationRequest() {
         .then(response => {
             console.log(response);
             if (response.status === 406) {
-                M.toast({ html: 'Location Request Already Submitted', classes: 'red' });
+                M.toast({ html: 'Location Request Already Submitted OR Requesting from a User Account', classes: 'red' });
             }
             if (response.status === 400) {
                 M.toast({ html: 'Could not add Location Request', classes: 'red' });
             }
-            if (response.status === 200) {
+            if (response.status === 201) {
                 M.toast({ html: 'Location Request Submitted', classes: 'green' });
             }
         });
@@ -123,12 +184,12 @@ function submitTeamRequest() {
         .then(response => {
             console.log(response);
             if (response.status === 406) {
-                M.toast({ html: 'Team Request Already Submitted', classes: 'red' });
+                M.toast({ html: 'Team Request Already Submitted OR Requesting from a Location Account', classes: 'red' });
             }
             if (response.status === 400) {
                 M.toast({ html: 'Could not add Team Request', classes: 'red' });
             }
-            if (response.status === 200) {
+            if (response.status === 201) {
                 M.toast({ html: 'Team Request Submitted', classes: 'green' });
             }
         });
@@ -147,7 +208,7 @@ function approveLocationRequests() {
         })
         .then(response => {
             console.log(response);
-            if (response.status === 200) {
+            if (response.status === 201) {
                 M.toast({ html: 'Location Request Approved', classes: 'green' });
             }
         });
@@ -167,7 +228,7 @@ function approveTeamRequests() {
         })
         .then(response => {
             console.log(response);
-            if (response.status === 200) {
+            if (response.status === 201) {
                 M.toast({ html: 'Team Request Approved', classes: 'green' });
             }
         });
@@ -183,7 +244,7 @@ function denyLocationRequests() {
         })
         .then(response => {
             console.log(response);
-            if (response.status === 200) {
+            if (response.status === 201) {
                 M.toast({ html: 'Location Request Denied', classes: 'red' });
             }
         });
@@ -200,7 +261,7 @@ function denyTeamRequests() {
         })
         .then(response => {
             console.log(response);
-            if (response.status === 200) {
+            if (response.status === 201) {
                 M.toast({ html: 'Team Request Denied', classes: 'red' });
             }
         });
@@ -234,24 +295,48 @@ function showProfile() {
     localStorage.setItem('selectedpage', 'profile');
     bottonicons[3].style.color = 'black';
 
-    fetch('../api/api.php?getData=displayuserprofile')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            profileIMG.src = data.ProfilePicture;
-            profileName.innerHTML = data.FirstName + " " + data.LastName;
-            profileLinks[0].href = data.InstagramHandle;
-            profileLinks[1].href = data.PortfolioURL;
-            profileInfo[0].innerHTML = data.Email;
-            profileInfo[1].innerHTML = "About" + " " + data.FirstName;
-            profileInfo[2].innerHTML = data.Bio;
-        });
+    if (localStorage.getItem('loggedinuserid') != 'null') {
+        var uid = localStorage.getItem('loggedinuserid');
+        console.log(uid);
+        const updata = { userid: uid };
 
-    fetch('../api/api.php?getData=displaylocprofile')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-        });
+        fetch('../api/api.php?getData=displayuserprofile', {
+                method: 'POST',
+                body: JSON.stringify(updata)
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                profileIMG.src = data.ProfilePicture;
+                profileName.innerHTML = data.FirstName + " " + data.LastName;
+                profileLinks[0].href = data.InstagramHandle;
+                profileLinks[1].href = data.PortfolioURL;
+                profileInfo[0].innerHTML = data.Email;
+                profileInfo[1].innerHTML = "About" + " " + data.FirstName;
+                profileInfo[2].innerHTML = data.Bio;
+            });
+    } else if (localStorage.getItem('loggedinlocid') != 'null') {
+        var lid = localStorage.getItem('loggedinlocid');
+        console.log(lid);
+        const lpdata = { locid: lid };
+
+        fetch('../api/api.php?getData=displaylocprofile', {
+                method: 'POST',
+                body: JSON.stringify(lpdata)
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                profileName.innerHTML = data.Name;
+                profileLinks[0].href = data.InstagramHandle;
+                profileLinks[1].href = data.WebsiteURL;
+                profileInfo[0].innerHTML = data.Email;
+                profileInfo[1].innerHTML = "About" + " " + data.Name;
+                profileInfo[2].innerHTML = data.Description;
+            });
+    } else {
+        console.log('not logged in');
+    }
 
 }
 
@@ -274,63 +359,107 @@ function showUserCollab() {
     localStorage.setItem('selectedpage', 'usercollab');
     bottonicons[2].style.color = 'black';
 
-    fetch('../api/api.php?getData=displayusercollabs')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            if (data == false) {
-                mycollablisttbl.innerHTML =
-                    '<tr>' +
-                    '<td> You have not started any collaboration </td>' +
-                    '</tr>'
-            } else {
-                mycollablist.innerHTML = ' ';
-                data.forEach(row => {
-                    mycollablist.innerHTML +=
-                        '<tr>' +
-                        '<td>' + row.Title + '</td>' +
-                        '<td><a class="btn-floating btn-large waves-effect waves-light" collab-id="' + row.CollaborationID + '"><i class="material-icons">send</i></a></td>' +
-                        '</tr>'
-                })
-            }
-        })
-        .then(() => {
-            mycollablistbtns = document.querySelectorAll('#mycollablisttbl a.btn-floating.btn-large.waves-effect.waves-light');
-            for (var loop = 0; loop < mycollablistbtns.length; loop++) {
-                mycollablistbtns[loop].addEventListener("click", showMyCollab, false);
-            }
-        });
+    if (localStorage.getItem('loggedinuserid') != 'null') {
 
-    fetch('../api/api.php?getData=displayuserrequests')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            if (data == false) {
-                myreqtbl.innerHTML =
-                    '<tr>' +
-                    '<td> You have not made any requests </td>' +
-                    '</tr>'
-            } else {
-                myrequests.innerHTML = ' ';
-                data.forEach(row => {
-                    myrequests.innerHTML +=
-                        '<tr>' +
-                        '<td>' + row.Title + '</td>' +
-                        '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a></td>' +
-                        '<td>' +
-                        '<p class="yellow-text text-darken-4">' + row.RequestStatus + '</p>' +
-                        '</td>' +
-                        '<td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>' +
-                        '</tr>'
-                })
-            }
-        });
+        var uid = localStorage.getItem('loggedinuserid');
+        console.log(uid);
+        const mucdata = { userid: uid };
 
-    fetch('../api/api.php?getData=displayuserlocrequests')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-        });
+        fetch('../api/api.php?getData=displayusercollabs', {
+                method: 'POST',
+                body: JSON.stringify(mucdata)
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                if (data == false) {
+                    mycollablisttbl.innerHTML =
+                        '<tr>' +
+                        '<td> You have not started any collaboration </td>' +
+                        '</tr>'
+                } else {
+                    mycollablist.innerHTML = ' ';
+                    data.forEach(row => {
+                        mycollablist.innerHTML +=
+                            '<tr>' +
+                            '<td>' + row.Title + '</td>' +
+                            '<td><a class="btn-floating btn-large waves-effect waves-light" collab-id="' + row.CollaborationID + '"><i class="material-icons">send</i></a></td>' +
+                            '</tr>'
+                    })
+                }
+            })
+            .then(() => {
+                mycollablistbtns = document.querySelectorAll('#mycollablisttbl a.btn-floating.btn-large.waves-effect.waves-light');
+                for (var loop = 0; loop < mycollablistbtns.length; loop++) {
+                    mycollablistbtns[loop].addEventListener("click", showMyCollab, false);
+                }
+            });
+
+        fetch('../api/api.php?getData=displayuserrequests', {
+                method: 'POST',
+                body: JSON.stringify(mucdata)
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                if (data == false) {
+                    myreqtbl.innerHTML =
+                        '<tr>' +
+                        '<td> You have not made any requests </td>' +
+                        '</tr>'
+                } else {
+                    myrequests.innerHTML = ' ';
+                    data.forEach(row => {
+                        myrequests.innerHTML +=
+                            '<tr>' +
+                            '<td>' + row.Title + '</td>' +
+                            '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a></td>' +
+                            '<td>' +
+                            '<p class="yellow-text text-darken-4">' + row.RequestStatus + '</p>' +
+                            '</td>' +
+                            '<td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>' +
+                            '</tr>'
+                    })
+                }
+            });
+    } else if (localStorage.getItem('loggedinlocid') != 'null') {
+
+        mycollab.innerHTML = '<p class="red-text">Location Account: Please see Joined Collabs Tab</p>'
+
+        var lid = localStorage.getItem('loggedinlocid');
+        console.log(lid);
+        const mlcdata = { locid: lid };
+
+        fetch('../api/api.php?getData=displayuserlocrequests', {
+                method: 'POST',
+                body: JSON.stringify(mlcdata)
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                if (data == false) {
+                    myreqtbl.innerHTML =
+                        '<tr>' +
+                        '<td> You have not made any requests </td>' +
+                        '</tr>'
+                } else {
+                    myrequests.innerHTML = ' ';
+                    data.forEach(row => {
+                        myrequests.innerHTML +=
+                            '<tr>' +
+                            '<td>' + row.Title + '</td>' +
+                            '<td><a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a></td>' +
+                            '<td>' +
+                            '<p class="yellow-text text-darken-4">' + row.RequestStatus + '</p>' +
+                            '</td>' +
+                            '<td><a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a></td>' +
+                            '</tr>'
+                    })
+                }
+            });
+    } else {
+        console.log('not logged in');
+    }
 
 }
 
@@ -568,10 +697,12 @@ function showJoinCollab() {
             locationSearchInfo[1].innerHTML = data.LocationBookingFee;
             locationSearchInfo[2].innerHTML = data.LocationDescription;
             locrequest.value = data.LocationSearchID;
+            locreqid.value = localStorage.getItem('loggedinlocid');
             teamSearchInfo[0].innerHTML = data.Role;
             teamSearchInfo[1].innerHTML = data.TeamMemberBookingFee;
             teamSearchInfo[2].innerHTML = data.TeamMemberDescription
             teamrequest.value = data.TeamMemberSearchID;
+            userreqid.value = localStorage.getItem('loggedinuserid');
 
             if ((data.LocationSearchID == null) && (data.TeamMemberSearchID != null)) {
                 locationSearchSection.classList.remove("hide");
@@ -722,6 +853,7 @@ function showSearchMember() {
 submitcollabbtn.addEventListener("click", submitCollab, false);
 
 function submitCollab() {
+    ownerid.value = localStorage.getItem('loggedinuserid');
     isdatavalid = validateCollab();
     if (isdatavalid == true) {
         var form = document.querySelector('#submitcollabform');
@@ -738,7 +870,7 @@ function submitCollab() {
                 if (response.status === 404) {
                     M.toast({ html: 'User not found and could not be added', classes: 'red' });
                 }
-                if (response.status === 200) {
+                if (response.status === 201) {
                     M.toast({ html: 'Collaboration submitted', classes: 'green' });
                 }
             });
@@ -1010,7 +1142,7 @@ function registerUser() {
                 if (response.status === 406) {
                     M.toast({ html: 'User Already Exists', classes: 'red' });
                 }
-                if (response.status === 200) {
+                if (response.status === 201) {
                     M.toast({ html: 'Thank you for signing up', classes: 'green' });
                 }
             });
@@ -1212,8 +1344,6 @@ function showErrorAddress() {
         locaddresserror.setAttribute("data-error", "Address must be at least " + locaddress.minLength + " characters");
     } else if (locaddress.validity.tooLong) {
         locaddresserror.setAttribute("data-error", "Address can only be " + locaddress.maxLength + " characters");
-    } else if (locaddress.validity.patternMismatch) {
-        locaddresserror.setAttribute("data-error", "Address entered can only contain letters, spaces and - or ' ");
     } else {
         locaddresserror.setAttribute("data-success", "Address entered");
     }

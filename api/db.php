@@ -15,16 +15,15 @@ function dbConnect()
     }
 }
 
-function checkLogin($username, $password)
+function checkLogin($username)
 {
     try {
         $conn = dbConnect();
-        $stmt = $conn->prepare("SELECT Username FROM Login WHERE Username =:user AND Password =:upass");
+        $stmt = $conn->prepare("SELECT Login.Username, Login.Password, Login.LoginID, User.UserID, Location.LocationID FROM ((Login LEFT JOIN User ON Login.LoginID = User.LoginID) LEFT JOIN Location ON Login.LoginID = Location.LoginID) WHERE Username =:user");
         $stmt->bindValue(":user", $username);
-        $stmt->bindValue(":upass", $password);
         $stmt->execute();
         if ($stmt->rowCount() > 0) {
-            $retVal = $stmt->fetchAll();
+            $retVal = $stmt->fetch();
             return $retVal;
         } else {
             return false;
@@ -680,6 +679,7 @@ function displayUserCollabs($userID)
     }
 
 }
+
 
 function editProfile()
 {

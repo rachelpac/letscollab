@@ -223,6 +223,7 @@
                             </div>
                         </fieldset>
                     </fieldset>
+                    <input id="ownerid" name="ownerid" type="hidden">
 
                     <fieldset>
                         <button id="submitcollabbtn" class="btn waves-effect waves-light" type="button" disabled>Submit<i class="material-icons right">send</i></button>
@@ -279,7 +280,7 @@
 
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="pword" name="pword" class="validate" type="password" minlength="8" maxlength="50" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
+                                <input id="pword" name="pword" class="validate" type="password" minlength="8" maxlength="255" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
                                 <label for="pword">Password</label>
                                 <span id="pworderror" class="helper-text"></span>
                             </div>
@@ -287,7 +288,7 @@
 
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="cnfpword" name="cnfpword" class="validate" type="password" minlength="8" maxlength="50" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
+                                <input id="cnfpword" name="cnfpword" class="validate" type="password" minlength="8" maxlength="255" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
                                 <label for="cnfpword">Confirm Password</label>
                                 <span id="cnfpworderror" class="helper-text"></span>
                             </div>
@@ -380,7 +381,7 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="locaddress" name="locaddress" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <input id="locaddress" name="locaddress" class="validate" type="text" minlength="2" maxlength="255" required>
                                     <label for="locaddress">Address</label>
                                     <span id="locaddresserror" class="helper-text"></span>
                                 </div>
@@ -396,7 +397,7 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="locstate" name="locstate" class="validate" type="text" minlength="2" maxlength="3" pattern="\D" required>
+                                    <input id="locstate" name="locstate" class="validate" type="text" minlength="2" maxlength="3" pattern="^[A-Z]*$" required>
                                     <label for="locstate">State</label>
                                     <span id="locstateerror" class="helper-text"></span>
                                 </div>
@@ -452,23 +453,28 @@
                 <p>Already have an account? <a class="modal-trigger" href="#login">Login</a></p>
                 <div id="login" class="modal">
                     <div class="modal-content">
-                        <form class="col s12">
+                        <form id="loginform" METHOD="POST" action="../api/ses.php?getSession=login" class="col s12">
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="lemail" type="email">
-                                    <label for="lemail">Email</label>
+                                    <input id="luname" name="luname" class="validate" type="text" required>
+                                    <label for="luname">Username</label>
+                                    <span id="lunameerror" class="helper-text"></span>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="lpword" type="password">
+                                    <input id="lpword" name="lpword" class="validate" type="password" required>
                                     <label for="lpword">Password</label>
+                                    <span id="lpworderror" class="helper-text"></span>
                                 </div>
                             </div>
 
-                            <button id="loginbtn" class="modal-close btn waves-effect waves-light" type="submit">LOGIN<i
-                                    class="material-icons right">send</i></button>
+                            <div class="row">
+                                <button id="loginbtn" class="modal-close btn waves-effect waves-light" type="button">LOGIN<i class="material-icons right">send</i></button>
+                            </div>
+
+
                         </form>
                     </div>
                 </div>
@@ -702,6 +708,7 @@
                         <p>$xxxxxx</p>
                         <p>Loction Description</p>
                         <input id="locrequest" name="locrequest" type="hidden">
+                        <input id="locreqid" name="locreqid" type="hidden">
                         <button id="addlocbtn" class="btn waves-effect waves-light" type="button">ADD LOCATION<i
                                 class="material-icons right">send</i></button>
                     </form>
@@ -714,6 +721,7 @@
                         <p>$xxxxxx</p>
                         <p>Role Description</p>
                         <input id="teamrequest" name="teamrequest" type="hidden">
+                        <input id="userreqid" name="userreqid" type="hidden">
                         <button id="jointeambtn" class="btn waves-effect waves-light" type="button">JOIN COLLAB<i
                                 class="material-icons right">send</i></button>
                     </form>
