@@ -21,13 +21,18 @@ if ($_GET['getSession'] == 'login') {
             echo json_encode(Array('userid'=>$userexists['UserID'], 'locid'=>$userexists['LocationID'],
             'username'=>$userexists['Username']));   
         } else {
+            http_response_code(403);
             unset($_SESSION["loginID"]);
             unset($_SESSION["username"]);
-            unset($_SESSION["usertype"]);
-            http_response_code(403);
+            unset($_SESSION["userID"]);
+            unset($_SESSION["locationID"]);
         }
         } else {
-        http_response_code(401);           
+        http_response_code(401);
+        unset($_SESSION["loginID"]);
+        unset($_SESSION["username"]);
+        unset($_SESSION["userID"]);
+        unset($_SESSION["locationID"]);           
         }
     }
 }

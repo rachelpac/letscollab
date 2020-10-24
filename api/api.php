@@ -127,6 +127,8 @@ if (isset($_GET['getData'])) {
     }
     if ($_GET['getData'] == 'displaycollabs') {
         $result = displayCollabs();
+        $useraction = 'Browse Collaborations';
+        LogUserRequest($useraction);
     }
 
     if ($_GET['getData'] == 'displayuserprofile') {

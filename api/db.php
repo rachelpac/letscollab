@@ -680,24 +680,21 @@ function displayUserCollabs($userID)
 
 }
 
-
-function editProfile()
-{
-
-    // update User table
-
+function LogUserRequest($useraction) {
+    try {
+        $conn = dbConnect();
+    $useraddress = $_SERVER['REMOTE_ADDR']; 
+    $userbrowser = $_SERVER['HTTP_USER_AGENT'];
+    $requesttime = date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
+    $stmt = $conn->prepare("INSERT INTO UserRequests(UserAction, UserAddress, UserBrowser, RequestTime)
+    VALUES (:uact, :uadd, :ubrs, :urt)");
+            $stmt->bindValue(':uact', $useraction);
+            $stmt->bindValue(':uadd', $useraddress);
+            $stmt->bindValue(':ubrs', $userbrowser);
+            $stmt->bindValue(':urt', $requesttime);
+            $stmt->execute();
+        } catch (PDOException $ex) {
+            throw $ex;
+        }
 }
 
-function editCollab()
-{
-
-    // update Collab table
-
-}
-
-function withdrawRequest()
-{
-
-    // update team member request table
-
-}

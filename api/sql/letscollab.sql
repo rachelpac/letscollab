@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 20, 2020 at 04:24 AM
+-- Generation Time: Oct 24, 2020 at 11:26 AM
 -- Server version: 5.7.26
 -- PHP Version: 7.3.9
 
@@ -65,7 +65,8 @@ INSERT INTO `Collaboration` (`CollaborationID`, `Title`, `Description`, `Date`, 
 (22, 'portfolio shoot', 'book images', '2020-10-21 17:45:00', 'Open', NULL, 1),
 (23, 'portfolio shoot', 'book images', '2020-10-21 17:45:00', 'Open', 2, 1),
 (24, 'portfolio shoot', 'book images', '2020-10-21 17:45:00', 'Open', 2, 1),
-(25, 'portfolio shoot', 'book images', '2020-10-21 17:45:00', 'Open', 2, 1);
+(25, 'portfolio shoot', 'book images', '2020-10-21 17:45:00', 'Open', 2, 1),
+(28, 'test owner id', 'test', '2020-10-26 04:44:00', 'Open', NULL, 5);
 
 -- --------------------------------------------------------
 
@@ -93,8 +94,9 @@ CREATE TABLE `Location` (
 --
 
 INSERT INTO `Location` (`LocationID`, `Name`, `Address`, `City`, `State`, `PostCode`, `Email`, `Description`, `ProfilePicture`, `InstagramHandle`, `WebsiteURL`, `LoginID`) VALUES
-(1, 'lname', 'l street', 'l city', 'QLD', 4000, 'l@l', 'l descript', 0x6c20706963, 'l ig', 'l url', 2),
-(2, 'locname', 'locadd', 'loccty', 'QLD', 4170, 'testlocacc@test.com', 'loc descript', 0x6c6f63706963, 'locig', 'locsite', 4);
+(1, 'lname', 'l street', 'l city', 'QLD', 4000, 'l@l', 'l descript', 0x696d616765732f70726f66696c652e706e67, 'https://www.instagram.com/', 'https://linktr.ee/vacayco', 2),
+(2, 'locname', 'locadd', 'loccty', 'QLD', 4170, 'testlocacc@test.com', 'loc descript', 0x696d616765732f70726f66696c652e706e67, 'https://www.instagram.com/', 'https://linktr.ee/vacayco', 4),
+(3, 'test log name', '52 Test Lane', 'Brisbane', 'QLD', 4000, 'testuser@test.com', 'shoot space', 0x696d616765732f70726f66696c652e706e67, 'https://www.instagram.com/', 'https://linktr.ee/vacayco', 8);
 
 -- --------------------------------------------------------
 
@@ -146,7 +148,8 @@ INSERT INTO `LocationSearch` (`LocationSearchID`, `City`, `LocationBookingFee`, 
 (3, 'Brisbane', '400.00', 'Studio', 'Complete', 12),
 (4, 'Brisbane', '400.00', 'Studio', 'In Progress', 13),
 (5, 'test all loc', '700.00', 'test all loc', 'In Progress', 16),
-(6, 'test all loc', '700.00', 'test all loc', 'In Progress', 17);
+(6, 'test all loc', '700.00', 'test all loc', 'In Progress', 17),
+(7, 'brisbane', '600.00', 'mansion', 'In Progress', 28);
 
 -- --------------------------------------------------------
 
@@ -157,7 +160,7 @@ INSERT INTO `LocationSearch` (`LocationSearchID`, `City`, `LocationBookingFee`, 
 CREATE TABLE `Login` (
   `LoginID` int(11) NOT NULL,
   `Username` varchar(30) NOT NULL,
-  `Password` varchar(50) NOT NULL
+  `Password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -170,7 +173,9 @@ INSERT INTO `Login` (`LoginID`, `Username`, `Password`) VALUES
 (3, 'testuseracc', 'testpass1'),
 (4, 'testlocacc', 'testpass1'),
 (5, 'rachelpac', 'Rachelpac1!'),
-(6, 'rachelpac', 'Password2020!');
+(6, 'rachelpac', 'Password2020!'),
+(7, 'testusertypeloc', '$2y$10$OctBMojzn2lfekTNuVQ7Wu31N511ySQ3wiN3n03mTwGiRU9qW3Hea'),
+(8, 'testlocloguser', '$2y$10$tpYyRF7cuv6DYboSNCaax.4GWV7ElMYaFA4Wq.K3phq.zV6SXAHs6');
 
 -- --------------------------------------------------------
 
@@ -228,7 +233,8 @@ INSERT INTO `TeamMember` (`TeamMemberID`, `Role`, `UserID`, `CollaborationID`) V
 (36, 'model', 1, 25),
 (37, 'makeupartist', 1, 1),
 (38, 'makeupartist', 1, 1),
-(39, 'photographer', 1, 25);
+(39, 'photographer', 1, 25),
+(40, 'photographer', 5, 28);
 
 -- --------------------------------------------------------
 
@@ -252,7 +258,8 @@ INSERT INTO `TeamMemberRequest` (`TeamMemberRequestID`, `RequestStatus`, `TeamMe
 (2, 'Pending', 2, 2),
 (3, 'Pending', 2, 1),
 (4, 'Approved', 9, 1),
-(5, 'Denied', 6, 1);
+(5, 'Denied', 6, 1),
+(6, 'Pending', 1, 5);
 
 -- --------------------------------------------------------
 
@@ -282,7 +289,8 @@ INSERT INTO `TeamMemberSearch` (`TeamMemberSearchID`, `Role`, `TeamMemberBooking
 (6, 'model', '300.00', 'testlocmodel', 'In Progress', 19),
 (7, 'photographer', '150.00', 'portfolio', 'In Progress', 23),
 (8, 'photographer', '150.00', 'portfolio', 'In Progress', 24),
-(9, 'photographer', '150.00', 'portfolio', 'Complete', 25);
+(9, 'photographer', '150.00', 'portfolio', 'Complete', 25),
+(10, 'model', '300.00', 'curve', 'In Progress', 28);
 
 -- --------------------------------------------------------
 
@@ -307,10 +315,36 @@ CREATE TABLE `User` (
 --
 
 INSERT INTO `User` (`UserID`, `FirstName`, `LastName`, `Email`, `Bio`, `ProfilePicture`, `InstagramHandle`, `PortfolioURL`, `LoginID`) VALUES
-(1, 'joe', 'blogs', 'joe@blogs', 'bio', 0x696d616765732f70726f66696c652e706e67, 'ig', 'purl', 1),
-(2, 'Jane', 'User', 'testuseracc@test.com', 'Jane Bio', 0x75736572706963, 'userig', 'userurl', 3),
-(3, 'Rachel', 'Pac', 'rachel@hotmail.com', 'bio', 0x7070, 'ig', 'url', 5),
-(4, 'rachel', 'pac', 'rachel@hotmail.com', 'bio', 0x7070, 'ig', 'URL', 6);
+(1, 'joe', 'blogs', 'joe@blogs', 'bio', 0x696d616765732f70726f66696c652e706e67, 'https://www.instagram.com/', 'https://www.imgmodels.com/', 1),
+(2, 'Jane', 'User', 'testuseracc@test.com', 'Jane Bio', 0x696d616765732f70726f66696c652e706e67, 'https://www.instagram.com/', 'https://www.imgmodels.com/', 3),
+(3, 'Rachel', 'Pac', 'rachel@hotmail.com', 'bio', 0x696d616765732f70726f66696c652e706e67, 'https://www.instagram.com/', 'https://www.imgmodels.com/', 5),
+(4, 'rachel', 'pac', 'rachel@hotmail.com', 'bio', 0x696d616765732f70726f66696c652e706e67, 'https://www.instagram.com/', 'https://www.imgmodels.com/', 6),
+(5, 'Test', 'Type', 'testuser@test.com', 'bio', 0x696d616765732f70726f66696c652e706e67, 'https://www.instagram.com/', 'https://www.imgmodels.com/', 7);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `UserRequests`
+--
+
+CREATE TABLE `UserRequests` (
+  `UserRequestID` int(11) NOT NULL,
+  `UserAction` varchar(255) NOT NULL,
+  `UserAddress` varchar(255) NOT NULL,
+  `UserBrowser` varchar(255) NOT NULL,
+  `RequestTime` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `UserRequests`
+--
+
+INSERT INTO `UserRequests` (`UserRequestID`, `UserAction`, `UserAddress`, `UserBrowser`, `RequestTime`) VALUES
+(1, 'TEST', '::1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36', '2020-10-24 11:05:56'),
+(2, 'Browse Collaborations', '::1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36', '2020-10-24 11:12:34'),
+(3, 'Browse Collaborations', '::1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36', '2020-10-24 11:22:45'),
+(4, 'Browse Collaborations', '::1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36', '2020-10-24 11:23:12'),
+(5, 'Browse Collaborations', '::1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.80 Safari/537.36', '2020-10-24 11:23:35');
 
 --
 -- Indexes for dumped tables
@@ -383,6 +417,12 @@ ALTER TABLE `User`
   ADD KEY `FK_UserLogin` (`LoginID`) USING BTREE;
 
 --
+-- Indexes for table `UserRequests`
+--
+ALTER TABLE `UserRequests`
+  ADD PRIMARY KEY (`UserRequestID`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -390,13 +430,13 @@ ALTER TABLE `User`
 -- AUTO_INCREMENT for table `Collaboration`
 --
 ALTER TABLE `Collaboration`
-  MODIFY `CollaborationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `CollaborationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `Location`
 --
 ALTER TABLE `Location`
-  MODIFY `LocationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `LocationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `LocationRequest`
@@ -408,37 +448,43 @@ ALTER TABLE `LocationRequest`
 -- AUTO_INCREMENT for table `LocationSearch`
 --
 ALTER TABLE `LocationSearch`
-  MODIFY `LocationSearchID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `LocationSearchID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `Login`
 --
 ALTER TABLE `Login`
-  MODIFY `LoginID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `LoginID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `TeamMember`
 --
 ALTER TABLE `TeamMember`
-  MODIFY `TeamMemberID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `TeamMemberID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `TeamMemberRequest`
 --
 ALTER TABLE `TeamMemberRequest`
-  MODIFY `TeamMemberRequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `TeamMemberRequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `TeamMemberSearch`
 --
 ALTER TABLE `TeamMemberSearch`
-  MODIFY `TeamMemberSearchID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `TeamMemberSearchID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `User`
 --
 ALTER TABLE `User`
-  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `UserRequests`
+--
+ALTER TABLE `UserRequests`
+  MODIFY `UserRequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables

@@ -1,5 +1,9 @@
 M.AutoInit();
 
+// LOADER 
+
+var loader = '<div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div>';
+
 // MENU 
 
 sidelinks = document.querySelectorAll("#slide-out li");
@@ -127,9 +131,16 @@ function submitLogin() {
                 }
                 if (response.status === 401) {
                     M.toast({ html: 'User does not exist', classes: 'red' });
+                    localStorage.setItem('loggedinuser', null);
+                    localStorage.setItem('loggedinuserid', null);
+                    localStorage.setItem('loggedinlocid', null);
+
                 }
                 if (response.status === 403) {
                     M.toast({ html: 'Passord is incorrect', classes: 'red' });
+                    localStorage.setItem('loggedinuser', null);
+                    localStorage.setItem('loggedinuserid', null);
+                    localStorage.setItem('loggedinlocid', null);
                 }
                 if (response.status === 200) {
                     response.json()
@@ -288,6 +299,11 @@ profileName = document.querySelector("#profile h5")
 profileLinks = document.querySelectorAll('#profile .section p a')
 profileInfo = document.querySelectorAll('#profile p')
 
+profileName.innerHTML = loader;
+profileInfo[0].innerHTML = loader;
+profileInfo[1].innerHTML = loader;
+profileInfo[2].innerHTML = loader;
+
 function showProfile() {
     hideSections();
     unsetIconColour();
@@ -327,6 +343,7 @@ function showProfile() {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data);
+                profileIMG.src = data.ProfilePicture;
                 profileName.innerHTML = data.Name;
                 profileLinks[0].href = data.InstagramHandle;
                 profileLinks[1].href = data.WebsiteURL;
@@ -351,6 +368,17 @@ mycollablocreq = document.querySelector('#mycollablocreqtbl tbody');
 mycollabteamreq = document.querySelector('#mycollabteamreqtbl tbody');
 myrequests = document.querySelector('#myreqtbl tbody');
 mycollablist = document.querySelector('#mycollablisttbl tbody');
+
+
+collabTitle.innerHTML = loader;
+collabInfo.innerHTML = loader;
+
+mycollabloc.innerHTML = loader;
+mycollabteam.innerHTML = loader;
+mycollablocreq.innerHTML = loader;
+mycollabteamreq.innerHTML = loader;
+myrequests.innerHTML = loader;
+mycollablist.innerHTML = loader;
 
 function showUserCollab() {
     hideSections();
@@ -612,14 +640,17 @@ function showBrowseCollab() {
     browsecollab.classList.remove("hide");
     localStorage.setItem('selectedpage', 'browsecollab');
     bottonicons[0].style.color = 'black';
+    var collabpost = document.querySelector('#browsecollab');
+    collabpost.innerHTML = loader;
     fetch('../api/api.php?getData=displaycollabs')
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
-            var collabpost = document.querySelector('#browsecollab');
             if (data == false) {
+                collabpost.innerHTML = ' ';
                 collabpost.innerHTML = '<p> No Collabs Found </p>';
             } else {
+                collabpost.innerHTML = ' ';
                 data.forEach(row => {
                     collabpost.innerHTML +=
                         '<div class="collabpost">' +
@@ -630,11 +661,11 @@ function showBrowseCollab() {
                         '</div>' +
                         '<div class="card-content teal lighten-4">' +
                         '<div class="row">' +
-                        '<div class="section ' + row.LocationSearchID + ' col s6">' +
+                        '<div class="section col s6" loc-search-id="' + row.LocationSearchID + '">' +
                         '<h6> I NEED A LOCATION </h6>' +
                         '<p>' + row.City + ' - ' + row.LocationBookingFee + '</p>' +
                         '</div>' +
-                        '<div class="section ' + row.TeamMemberSearchID + ' col s6">' +
+                        '<div class="section col s6" tm-search-id="' + row.TeamMemberSearchID + '">' +
                         '<h6> I NEED PEOPLE </h6>' +
                         '<p>' + row.Role + ' - ' + row.TeamMemberBookingFee + '</p>' +
                         '</div>' +
@@ -647,11 +678,18 @@ function showBrowseCollab() {
             }
         })
         .then(() => {
-            hidenullsearch = document.querySelectorAll('div .collabpost .section.null');
-            for (var loop = 0; loop < hidenullsearch.length; loop++) {
-                hidenullsearch[loop].classList.add("hide");
+            hidelocsearch = document.querySelectorAll('[loc-search-id="null"]');
+            for (var loop = 0; loop < hidelocsearch.length; loop++) {
+                hidelocsearch[loop].classList.add("hide");
             }
         })
+
+    .then(() => {
+        hidetmsearch = document.querySelectorAll('[tm-search-id="null"]');
+        for (var loop = 0; loop < hidetmsearch.length; loop++) {
+            hidetmsearch[loop].classList.add("hide");
+        }
+    })
 
     .then(() => {
         collabbtns = document.querySelectorAll('.collabpost button');
@@ -674,6 +712,18 @@ teamSearchSection = document.querySelector('div #teamsearchinfo');
 
 collabloc = document.querySelector('#collabloctbl tbody');
 collabteam = document.querySelector('#collabteamtbl tbody');
+
+collabSearchTitle.innerHTML = loader;
+collabSearchInfo.innerHTML = loader;
+locationSearchInfo[0].innerHTML = loader;
+locationSearchInfo[1].innerHTML = loader;
+locationSearchInfo[2].innerHTML = loader;
+teamSearchInfo[0].innerHTML = loader;
+teamSearchInfo[1].innerHTML = loader;
+teamSearchInfo[2].innerHTML = loader;
+
+collabloc.innerHTML = loader;
+collabteam.innerHTML = loader;
 
 function showJoinCollab() {
     hideSections();
