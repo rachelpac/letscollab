@@ -85,6 +85,19 @@ function showSettings() {
 
 // LOGIN
 
+
+if (localStorage.getItem('loggedinuser') == 'null') {
+    userlogin.classList.add("hide");
+    userlogout.classList.add("hide");
+    userlogin.classList.remove("hide");
+}
+
+if (localStorage.getItem('loggedinuser') != 'null') {
+    userlogin.classList.add("hide");
+    userlogout.classList.add("hide");
+    userlogout.classList.remove("hide");
+}
+
 luname.addEventListener("blur", showErrorLoginUsername, false);
 lpword.addEventListener("blur", showErrorLoginPassword, false);
 
@@ -126,21 +139,20 @@ function submitLogin() {
             })
             .then(response => {
                 console.log(response);
+                if (response.status === 409) {
+                    M.toast({ html: 'You are already logged in', classes: 'red' });
+                }
                 if (response.status === 400) {
                     M.toast({ html: 'Login Failed', classes: 'red' });
+                    unsetUserSession();
                 }
                 if (response.status === 401) {
                     M.toast({ html: 'User does not exist', classes: 'red' });
-                    localStorage.setItem('loggedinuser', null);
-                    localStorage.setItem('loggedinuserid', null);
-                    localStorage.setItem('loggedinlocid', null);
-
+                    unsetUserSession();
                 }
                 if (response.status === 403) {
                     M.toast({ html: 'Passord is incorrect', classes: 'red' });
-                    localStorage.setItem('loggedinuser', null);
-                    localStorage.setItem('loggedinuserid', null);
-                    localStorage.setItem('loggedinlocid', null);
+                    unsetUserSession();
                 }
                 if (response.status === 200) {
                     response.json()
@@ -150,6 +162,9 @@ function submitLogin() {
                             localStorage.setItem('loggedinuserid', data.userid);
                             localStorage.setItem('loggedinlocid', data.locid);
                         })
+                    userlogin.classList.add("hide");
+                    userlogout.classList.add("hide");
+                    userlogout.classList.remove("hide");
                     M.toast({ html: 'You are now logged in', classes: 'green' });
                 }
             });
@@ -158,6 +173,32 @@ function submitLogin() {
     }
 
 }
+
+// LOGOUT 
+
+logoutbtn.addEventListener("click", submitLogout, false);
+
+function submitLogout() {
+
+    fetch('../api/ses.php?getSession=logout')
+        .then(response => {
+            console.log(response);
+            if (response.status === 409) {
+                M.toast({ html: 'You were not logged in', classes: 'red' });
+                unsetUserSession();
+            }
+            if (response.status === 200) {
+                unsetUserSession();
+                userlogin.classList.add("hide");
+                userlogout.classList.add("hide");
+                userlogin.classList.remove("hide");
+                M.toast({ html: 'You are now logged out', classes: 'green' });
+
+            }
+        });
+
+}
+
 
 // REQUESTS 
 
@@ -914,6 +955,9 @@ function submitCollab() {
             })
             .then(response => {
                 console.log(response);
+                if (response.status === 401) {
+                    M.toast({ html: 'You must be logged in to submit a collaboration', classes: 'red' });
+                }
                 if (response.status === 400) {
                     M.toast({ html: 'Collaboration could not be added', classes: 'red' });
                 }
@@ -1445,4 +1489,10 @@ function showErrorLocationDescription() {
     } else {
         locdescripterror.setAttribute("data-success", "Location Description entered");
     }
+}
+
+function unsetUserSession() {
+    localStorage.setItem('loggedinuser', null);
+    localStorage.setItem('loggedinuserid', null);
+    localStorage.setItem('loggedinlocid', null);
 }

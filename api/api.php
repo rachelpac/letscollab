@@ -1,5 +1,5 @@
 <?php
-include 'db.php';
+include 'ses.php';
 if (isset($_GET['getData'])) {
 
     if ($_GET['getData'] == 'adduseracc') {
@@ -54,9 +54,10 @@ if (isset($_GET['getData'])) {
             }
         }
 
-    }
+    } // end adduseracc
 
     if ($_GET['getData'] == 'addcollab') {
+        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true)) {
         if ((!isset($_POST['ctitle'])) || (!isset($_POST['cdescript'])) || (!isset($_POST['cdate'])) || (!isset($_POST['ctime'])) || (!isset($_POST['ownerrole'])) || (!isset($_POST['ownerid']))) {
             http_response_code(400);
         } else if ((isset($_POST['checkaddlocation'])) && (!isset($_POST['locationuname']))) {
@@ -124,12 +125,17 @@ if (isset($_GET['getData'])) {
             }
             http_response_code(201);
         }
+    } else {
+         http_response_code(401); 
     }
+    } // end addcolab
+
+
     if ($_GET['getData'] == 'displaycollabs') {
         $result = displayCollabs();
         $useraction = 'Browse Collaborations';
         LogUserRequest($useraction);
-    }
+    } 
 
     if ($_GET['getData'] == 'displayuserprofile') {
         $json = file_get_contents('php://input');
