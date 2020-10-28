@@ -57,8 +57,8 @@ if (isset($_GET['getData'])) {
     } // end adduseracc
 
     if ($_GET['getData'] == 'addcollab') {
-        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true)) {
-        if ((!isset($_POST['ctitle'])) || (!isset($_POST['cdescript'])) || (!isset($_POST['cdate'])) || (!isset($_POST['ctime'])) || (!isset($_POST['ownerrole'])) || (!isset($_POST['ownerid']))) {
+        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["userID"]))) {
+        if ((!isset($_POST['ctitle'])) || (!isset($_POST['cdescript'])) || (!isset($_POST['cdate'])) || (!isset($_POST['ctime'])) || (!isset($_POST['ownerrole']))) {
             http_response_code(400);
         } else if ((isset($_POST['checkaddlocation'])) && (!isset($_POST['locationuname']))) {
             http_response_code(400);
@@ -76,7 +76,7 @@ if (isset($_GET['getData'])) {
             $datetime = $date . " " . $time;
             $datetime = date('Y-m-d H:i:s', strtotime($datetime));
             $ownerrole = $_POST['ownerrole'];
-            $userID = $_POST['ownerid'];
+            $userID = $_SESSION["userID"];
 
             if (isset($_POST['checkaddlocation'])) {
                 $locationusername = $_POST['locationuname'];
@@ -138,17 +138,23 @@ if (isset($_GET['getData'])) {
     } 
 
     if ($_GET['getData'] == 'displayuserprofile') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $userID = $data->userid;
+        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["userID"]))) {
+        $userID = $_SESSION["userID"];
         $result = displayUserProfile($userID);
+        http_response_code(200);
+        } else {
+            http_response_code(401);
+        }
     }
 
     if ($_GET['getData'] == 'displaylocprofile') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $locationID = $data->locid;
+        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["locationID"]))) {
+         $locationID = $_SESSION["locationID"];  
         $result = displayLocationProfile($locationID);
+        http_response_code(200);
+    } else {
+        http_response_code(401);
+    }
     }
 
     if ($_GET['getData'] == 'addlocrequest') {
@@ -157,13 +163,17 @@ if (isset($_GET['getData'])) {
         } else {
             $locsearchID = $_POST['locrequest'];
             $locationID = $_POST['locreqid'];
+            if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && ($_SESSION["locationID"] == $locationID)) {
             $locationrequestsent = checkLocRequestUser($locationID, $locsearchID);
-            if (($locationrequestsent == false) && ($locationID != 'null')) {
+            if ($locationrequestsent == false) {
                 addLocationRequest($locationID, $locsearchID);
                 http_response_code(201);
             } else {
                 http_response_code(406);
             }
+        } else {
+            http_response_code(401);
+        }
         }
     }
 
@@ -173,22 +183,28 @@ if (isset($_GET['getData'])) {
         } else {
             $tmsearchID = $_POST['teamrequest'];
             $userID = $_POST['userreqid'];
+            if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && ($_SESSION["userID"] == $userID)) {
             $tmrequestsent = checkTeamRequestUser($userID, $tmsearchID);
-            if (($tmrequestsent == false) && ($userID != 'null')) {
+            if ($tmrequestsent == false) {
                 addTeamMemberRequest($tmsearchID, $userID);
                 http_response_code(201);
             } else {
                 http_response_code(406);
             }
+        } else {
+            http_response_code(401);
+        }
         }
 
     }
 
     if ($_GET['getData'] == 'displayusercollabs') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $userID = $data->userid;
+        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["userID"]))) {
+            $userID = $_SESSION["userID"];
         $result = displayUserCollabs($userID);
+        } else {
+        http_response_code(401);
+        }
     }
 
     if ($_GET['getData'] == 'displaycollab') {
@@ -279,17 +295,21 @@ if (isset($_GET['getData'])) {
     }
 
     if ($_GET['getData'] == 'displayuserlocrequests') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $locationID = $data->locid;
+        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["locationID"]))) {
+            $locationID = $_SESSION["locationID"]; 
         $result = displayUserLocationRequests($locationID);
+        } else {
+            http_response_code(401);
+        }
     }
 
     if ($_GET['getData'] == 'displayuserrequests') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $userID = $data->userid;
+        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["userID"]))) {
+            $userID = $_SESSION["userID"];
         $result = displayUserRequests($userID);
+        } else {
+            http_response_code(401);
+        }
     }
 
 }
