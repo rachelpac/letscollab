@@ -1,6 +1,6 @@
 M.AutoInit();
 
-// LOADER CHANGED
+// LOADER 
 
 var loader = '<div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div>';
 
@@ -351,6 +351,19 @@ function showProfile() {
                 console.log(response);
                 if (response.status === 401) {
                     profile.innerHTML = '<p> Please log in to view your profile </p>';
+                }
+                if (response.status === 412) {
+                    profileName.innerHTML = loader;
+                    profileInfo[0].innerHTML = loader;
+                    profileInfo[1].innerHTML = loader;
+                    profileInfo[2].innerHTML = loader;
+                    profileLinks[0].href = ' ';
+                    profileLinks[1].href = ' ';
+                    profileIMG.src = ' ';
+                    profileIMG.hidden = true;
+                    profileLinks[0].hidden = true;
+                    profileLinks[1].hidden = true;
+                    M.toast({ html: 'Too Many Requests', classes: 'red' });
                 }
                 if (response.status === 200) {
                     response.json()
@@ -720,61 +733,69 @@ function showBrowseCollab() {
     var collabpost = document.querySelector('#browsecollab');
     collabpost.innerHTML = loader;
     fetch('../api/api.php?getData=displaycollabs')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            if (data == false) {
-                collabpost.innerHTML = ' ';
-                collabpost.innerHTML = '<p> No Collabs Found </p>';
-            } else {
-                collabpost.innerHTML = ' ';
-                data.forEach(row => {
-                    collabpost.innerHTML +=
-                        '<div class="collabpost">' +
-                        '<div class="card teal darken-3">' +
-                        '<div class="card-content white-text">' +
-                        '<span class="card-title">' + row.Title + '</span>' +
-                        '<p>' + row.Description + '</p>' +
-                        '</div>' +
-                        '<div class="card-content teal lighten-4">' +
-                        '<div class="row">' +
-                        '<div class="section col s6" loc-search-id="' + row.LocationSearchID + '">' +
-                        '<h6> I NEED A LOCATION </h6>' +
-                        '<p>' + row.City + ' - ' + row.LocationBookingFee + '</p>' +
-                        '</div>' +
-                        '<div class="section col s6" tm-search-id="' + row.TeamMemberSearchID + '">' +
-                        '<h6> I NEED PEOPLE </h6>' +
-                        '<p>' + row.Role + ' - ' + row.TeamMemberBookingFee + '</p>' +
-                        '</div>' +
-                        '</div>' +
-                        '<button id="' + row.CollaborationID + '"class="btn waves-effect waves-light" type="button">JOIN<i class="material-icons right">send</i></button>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>';
+        .then(response => {
+            console.log(response);
+            if (response.status === 412) {
+                M.toast({ html: 'Too Many Requests', classes: 'red' });
+            }
+            if (response.status === 200) {
+                response.json()
+                    .then((data) => {
+                        console.log(data);
+                        if (data == false) {
+                            collabpost.innerHTML = ' ';
+                            collabpost.innerHTML = '<p> No Collabs Found </p>';
+                        } else {
+                            collabpost.innerHTML = ' ';
+                            data.forEach(row => {
+                                collabpost.innerHTML +=
+                                    '<div class="collabpost">' +
+                                    '<div class="card teal darken-3">' +
+                                    '<div class="card-content white-text">' +
+                                    '<span class="card-title">' + row.Title + '</span>' +
+                                    '<p>' + row.Description + '</p>' +
+                                    '</div>' +
+                                    '<div class="card-content teal lighten-4">' +
+                                    '<div class="row">' +
+                                    '<div class="section col s6" loc-search-id="' + row.LocationSearchID + '">' +
+                                    '<h6> I NEED A LOCATION </h6>' +
+                                    '<p>' + row.City + ' - ' + row.LocationBookingFee + '</p>' +
+                                    '</div>' +
+                                    '<div class="section col s6" tm-search-id="' + row.TeamMemberSearchID + '">' +
+                                    '<h6> I NEED PEOPLE </h6>' +
+                                    '<p>' + row.Role + ' - ' + row.TeamMemberBookingFee + '</p>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '<button id="' + row.CollaborationID + '"class="btn waves-effect waves-light" type="button">JOIN<i class="material-icons right">send</i></button>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>';
+                            })
+                        }
+                    })
+
+                .then(() => {
+                    hidelocsearch = document.querySelectorAll('[loc-search-id="null"]');
+                    for (var loop = 0; loop < hidelocsearch.length; loop++) {
+                        hidelocsearch[loop].classList.add("hide");
+                    }
                 })
+
+                .then(() => {
+                    hidetmsearch = document.querySelectorAll('[tm-search-id="null"]');
+                    for (var loop = 0; loop < hidetmsearch.length; loop++) {
+                        hidetmsearch[loop].classList.add("hide");
+                    }
+                })
+
+                .then(() => {
+                    collabbtns = document.querySelectorAll('.collabpost button');
+                    for (var loop = 0; loop < collabbtns.length; loop++) {
+                        collabbtns[loop].addEventListener("click", showJoinCollab, false);
+                    }
+                });
             }
-        })
-        .then(() => {
-            hidelocsearch = document.querySelectorAll('[loc-search-id="null"]');
-            for (var loop = 0; loop < hidelocsearch.length; loop++) {
-                hidelocsearch[loop].classList.add("hide");
-            }
-        })
-
-    .then(() => {
-        hidetmsearch = document.querySelectorAll('[tm-search-id="null"]');
-        for (var loop = 0; loop < hidetmsearch.length; loop++) {
-            hidetmsearch[loop].classList.add("hide");
-        }
-    })
-
-    .then(() => {
-        collabbtns = document.querySelectorAll('.collabpost button');
-        for (var loop = 0; loop < collabbtns.length; loop++) {
-            collabbtns[loop].addEventListener("click", showJoinCollab, false);
-        }
-    });
-
+        });
 }
 
 // JOIN COLLABORATION 
@@ -978,6 +999,9 @@ function submitCollab() {
             })
             .then(response => {
                 console.log(response);
+                if (response.status === 412) {
+                    M.toast({ html: 'Too Many Requests', classes: 'red' });
+                }
                 if (response.status === 401) {
                     M.toast({ html: 'You must be logged in to a User Account to submit a collaboration', classes: 'red' });
                 }
@@ -1265,6 +1289,12 @@ function registerUser() {
             })
             .then(response => {
                 console.log(response);
+                if (response.status === 412) {
+                    M.toast({ html: 'Too Many Requests', classes: 'red' });
+                }
+                if (response.status === 409) {
+                    M.toast({ html: 'You are already Registered and Logged in', classes: 'red' });
+                }
                 if (response.status === 400) {
                     M.toast({ html: 'Could not complete registration', classes: 'red' });
                 }
@@ -1531,3 +1561,15 @@ function unsetUserSession() {
     localStorage.setItem('loggedinuserid', null);
     localStorage.setItem('loggedinlocid', null);
 }
+
+// showdata.addEventListener("click", showData, false);
+
+// function showData() {
+//     fetch('../api/api.php?getData=showdata')
+//         .then((response) => response.json())
+//         .then((data) => {
+//             console.log(data);
+//         })
+
+
+// }

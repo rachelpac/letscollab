@@ -680,22 +680,185 @@ function displayUserCollabs($userID)
 
 }
 
-function LogUserRequest($useraction) {
+function LogUserRequest($useraction)
+{
     try {
         $conn = dbConnect();
-    $useraddress = $_SERVER['REMOTE_ADDR']; 
-    $userbrowser = $_SERVER['HTTP_USER_AGENT'];
-    $requesttime = date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
-    $stmt = $conn->prepare("INSERT INTO UserRequests(UserAction, UserAddress, UserBrowser, RequestTime)
-    VALUES (:uact, :uadd, :ubrs, :urt)");
-            $stmt->bindValue(':uact', $useraction);
-            $stmt->bindValue(':uadd', $useraddress);
-            $stmt->bindValue(':ubrs', $userbrowser);
-            $stmt->bindValue(':urt', $requesttime);
-            $stmt->execute();
-        } catch (PDOException $ex) {
-            throw $ex;
+        $useraddress = $_SERVER['REMOTE_ADDR'];
+        $userbrowser = get_browser(null, true);
+        $userbrowser = $userbrowser['browser'];
+        $requesttime = date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
+        if (isset($_SESSION["loginID"])) {
+            $sessionID = $_SESSION["loginID"];
+            $_SESSION["requestcounter"]++;
+        } else {
+            $sessionID = null;
         }
+        $stmt = $conn->prepare("INSERT INTO UserRequests(UserAction, UserAddress, UserBrowser, RequestTime, UserSessionID)
+    VALUES (:uact, :uadd, :ubrs, :urt, :usid)");
+        $stmt->bindValue(':uact', $useraction);
+        $stmt->bindValue(':uadd', $useraddress);
+        $stmt->bindValue(':ubrs', $userbrowser);
+        $stmt->bindValue(':urt', $requesttime);
+        $stmt->bindValue(':usid', $sessionID);
+        $stmt->execute();
+    } catch (PDOException $ex) {
+        throw $ex;
+    }
 }
 
+function GetLastIPRequest()
+{
+    try {
+        $conn = dbConnect();
+        $useraddress = $_SERVER['REMOTE_ADDR'];
+        $stmt = $conn->prepare('SELECT RequestTime From UserRequests WHERE UserAddress = :uadd ORDER BY RequestTime DESC LIMIT 1');
+        $stmt->bindValue(':uadd', $useraddress);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $retVal = $stmt->fetch(PDO::FETCH_ASSOC);
+            $requesttime = $retVal["RequestTime"];
+            return $requesttime;
+        } else {
+            return false;
+        }
+    } catch (PDOException $ex) {
+        throw $ex;
+    }
 
+}
+
+function GetLastUserRequest($sessionID)
+{
+    try {
+        $conn = dbConnect();
+        $stmt = $conn->prepare('SELECT RequestTime From UserRequests WHERE UserSessionID = :usid ORDER BY RequestTime DESC LIMIT 1');
+        $stmt->bindValue(':usid', $sessionID);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $retVal = $stmt->fetch(PDO::FETCH_ASSOC);
+            $requesttime = $retVal["RequestTime"];
+            return $requesttime;
+        } else {
+            return false;
+        }
+    } catch (PDOException $ex) {
+        throw $ex;
+    }
+
+}
+
+function checkCurrentRequest($lastrequest, $currentrequest)
+{
+
+    $currentrequest = new DateTime($currentrequest);
+    $lastrequest = new DateTime($lastrequest);
+    $timesincelastrequest = $currentrequest->diff($lastrequest);
+
+    $yeardiff = $timesincelastrequest->y;
+    $monthdiff = $timesincelastrequest->m;
+    $daydiff = $timesincelastrequest->d;
+    $hourdiff = $timesincelastrequest->h;
+    $mindiff = $timesincelastrequest->i;
+    $secdiff = $timesincelastrequest->s;
+
+    if (($yeardiff == 0) && ($monthdiff == 0) && ($daydiff == 0) && ($hourdiff == 0) && ($mindiff == 0) && ($secdiff < 3)) {
+        return false;
+    } else {
+        return true;
+    }
+
+}
+
+function GetUserRequestCount($sessionID)
+{
+    try {
+        $conn = dbConnect();
+        $stmt = $conn->prepare('SELECT COUNT(*) AS RequestCount FROM UserRequests WHERE RequestTime >= NOW() - INTERVAL 1 DAY AND UserSessionID = :usid');
+        $stmt->bindValue(':usid', $sessionID);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $retVal = $stmt->fetch(PDO::FETCH_ASSOC);
+            $requestcount = $retVal["RequestCount"];
+            return $requestcount;
+        } else {
+            return 0;
+        }
+    } catch (PDOException $ex) {
+        throw $ex;
+    }
+
+}
+
+function GetIPRequestCount()
+{
+    try {
+        $conn = dbConnect();
+        $useraddress = $_SERVER['REMOTE_ADDR'];
+        $stmt = $conn->prepare('SELECT COUNT(*) AS RequestCount FROM UserRequests WHERE RequestTime >= NOW() - INTERVAL 1 DAY AND UserAddress = :uadd');
+        $stmt->bindValue(':uadd', $useraddress);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $retVal = $stmt->fetch(PDO::FETCH_ASSOC);
+            $requestcount = $retVal["RequestCount"];
+            return $requestcount;
+        } else {
+            return 0;
+        }
+    } catch (PDOException $ex) {
+        throw $ex;
+    }
+
+}
+
+function CheckIPRequestCount($requestsmade)
+{
+    $maxrequests = 200;
+    $requestsleft = $maxrequests - $requestsmade;
+    if ($requestsleft > 0) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+function CheckUserRequestCount()
+{
+    $maxrequests = 200;
+    $starttime = $_SESSION["starttime"];
+    $endtime = $_SESSION["endtime"];
+    $currentime = new DateTime();
+
+    if ($currentime < $endtime) {
+        $requestsmade = $_SESSION["requestcounter"];
+    } else {
+        $_SESSION["requestcounter"] = 0;
+        $requestsmade = $_SESSION["requestcounter"];
+    }
+
+    $requestsleft = $maxrequests - $requestsmade;
+
+    if ($requestsleft > 0) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+function CheckRefer() {
+$valideferdomain = 'localhost';
+if(isset($_SESSION["domainallowed"]) && ($_SESSION['domainallowed'] == true)) {
+    return true;
+} else {
+    $domain =  $_SERVER['HTTP_REFERER'];
+    $domainref = parse_url($domain, PHP_URL_HOST);
+    if ($domainref == $valideferdomain) {
+        $_SESSION['domainallowed'] == true;
+        return true;
+    } else {
+        return false;
+    }
+}
+}
