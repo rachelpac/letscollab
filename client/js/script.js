@@ -766,7 +766,7 @@ function showBrowseCollab() {
                                     '<p>' + row.Role + ' - ' + row.TeamMemberBookingFee + '</p>' +
                                     '</div>' +
                                     '</div>' +
-                                    '<button id="' + row.CollaborationID + '"class="btn waves-effect waves-light" type="button">JOIN<i class="material-icons right">send</i></button>' +
+                                    '<button id="' + row.CollaborationID + '"class="btn waves-effect waves-light teal darken-3" type="button">JOIN<i class="material-icons right">send</i></button>' +
                                     '</div>' +
                                     '</div>' +
                                     '</div>';
