@@ -1562,6 +1562,22 @@ function unsetUserSession() {
     localStorage.setItem('loggedinlocid', null);
 }
 
+// SERVICE WORKER 
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+        .then((result) => {
+            console.log('Service Worker Registered');
+            console.log('Scope: ' + result.scope);
+        })
+        .catch((error) => {
+            console.log('Service Worker Registration Failed');
+            console.log(error);
+        });
+} else {
+    console.log('Service Workers Not Supported');
+}
+
 // showdata.addEventListener("click", showData, false);
 
 // function showData() {
