@@ -11,6 +11,9 @@ bottomlinks = document.querySelectorAll("#bottom-nav li");
 bottonicons = document.querySelectorAll('#bottom-nav i');
 
 window.addEventListener("load", setMenu, false);
+window.addEventListener("load", setTheme, false);
+
+themetoggle.addEventListener("change", toggleTheme, false);
 
 sidelinks[1].addEventListener("click", showBrowseCollab, false);
 bottomlinks[0].addEventListener("click", showBrowseCollab, false);
@@ -28,6 +31,31 @@ sidelinks[5].addEventListener("click", showSignup, false);
 bottomlinks[4].addEventListener("click", showSignup, false);
 
 sidelinks[6].addEventListener("click", showSettings, false);
+
+function setTheme() {
+    if (!localStorage.getItem('theme')) {
+        localStorage.setItem('theme', 'theme-light');
+    }
+    if (localStorage.getItem('theme') === 'theme-dark') {
+        document.body.style.backgroundColor = 'lightgrey';
+    }
+    if (localStorage.getItem('theme') === 'theme-light') {
+        document.body.style.backgroundColor = 'white';
+    }
+
+}
+
+function toggleTheme() {
+    if (themetoggle.checked == true) {
+        localStorage.setItem('theme', 'theme-dark');
+        document.body.style.backgroundColor = 'lightgrey';
+    }
+    if (themetoggle.checked == false) {
+        localStorage.setItem('theme', 'theme-light');
+        document.body.style.backgroundColor = 'white';
+    }
+
+}
 
 function setMenu() {
     document.body.style.visibility = 'visible';

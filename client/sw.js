@@ -1,4 +1,4 @@
-var cacheName = 'CSv4';
+var cacheName = 'CSv5';
 var cachedFiles = [
     'index.html',
     'manifest.json',
