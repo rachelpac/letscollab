@@ -1,18 +1,77 @@
 <?php
-include 'ses.php';
-if (isset($_GET['getData'])) {
+session_start();
+require 'db.php';
+$db = new dbObj;
+require 'ses.php';
+$_SESSION['se'] = new sessObj;
 
-    if ($_GET['getData'] == 'adduseracc') {
-        if (!isset($_SESSION['loggedin'])) {
-            $lastrequest = GetLastIPRequest();
-            $currentrequest = date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
-            $isrequestok = checkCurrentRequest($lastrequest, $currentrequest);
-            if ($isrequestok == false) {
-                http_response_code(412);
+if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
+    if ($_GET['getData'] == 'login') {
+        if ($_SESSION['se']->IsLoggedIn()) {
+            $useraction = 'Failed Login';
+            $db->LogUserRequest($useraction);
+            http_response_code(409);
+        } else {
+            if ((!isset($_POST['luname'])) || (!isset($_POST['lpword']))) {
+                $useraction = 'Failed Login';
+                $db->LogUserRequest($useraction);
+                http_response_code(400);
+                session_unset();
             } else {
+                $username = $_POST['luname'];
+                $password = $_POST['lpword'];
+                $userexists = $db->checkLogin($username);
+                if ($userexists != false) {
+                    if (password_verify($password, $userexists['Password'])) {
+                        $useraction = 'User Login';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(200);
+                        $_SESSION['loggedin'] = true;
+                        $_SESSION["loginID"] = $userexists['LoginID'];
+                        $_SESSION["username"] = $userexists['Username'];
+                        $_SESSION["userID"] = $userexists['UserID'];
+                        $_SESSION["locationID"] = $userexists['LocationID'];
+                        $result = Array('userid' => $userexists['UserID'], 'locid' => $userexists['LocationID'],
+                            'username' => $userexists['Username']);
+                    } else {
+                        $useraction = 'Failed Login';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(403);
+                        session_unset();
+                    }
+                } else {
+                    $useraction = 'Failed Login';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(401);
+                    session_unset();
+                }
+            }
+        }
+    } // end login
+
+    if ($_GET['getData'] == 'logout') {
+        if ($_SESSION['se']->IsLoggedIn()) {
+            $useraction = 'User Logout';
+            $db->LogUserRequest($useraction);
+            http_response_code(200);
+            session_unset();
+        } else {
+            $useraction = 'Failed Logout';
+            $db->LogUserRequest($useraction);
+            http_response_code(409);
+        }
+    } // end logout
+
+     if ($_GET['getData'] == 'adduseracc') {
+        if ($_SESSION['se']->IsLoggedIn()) { 
+            $useraction = 'Failed Register Account';
+            $db->LogUserRequest($useraction);
+            http_response_code(409);
+        } else {
+            if ($_SESSION['se']->IsRequestOkIP()) {
                 if ((!isset($_POST['uname'])) || (!isset($_POST['pword'])) || (!isset($_POST['email'])) || (!isset($_POST['profilepic'])) || (!isset($_POST['ighandle'])) || (!isset($_POST['workurl'])) || ((!isset($_POST['checkadduseracc'])) && (!isset($_POST['checkaddlocationacc'])))) {
                     $useraction = 'Failed Register Account';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(400);
                 } else {
                     $username = $_POST['uname'];
@@ -26,23 +85,23 @@ if (isset($_GET['getData'])) {
                 if (isset($_POST['checkadduseracc'])) {
                     if ((!isset($_POST['fname'])) || (!isset($_POST['lname'])) || (!isset($_POST['bio']))) {
                         $useraction = 'Failed Register Account';
-                        LogUserRequest($useraction);
+                        $db->LogUserRequest($useraction);
                         http_response_code(400);
                     } else {
                         $firstname = $_POST['fname'];
                         $lastname = $_POST['lname'];
                         $bio = $_POST['bio'];
-                        $userexists = checkUserReg($username);
+                        $userexists = $db->checkUserReg($username);
                         if ($userexists == false) {
-                            $insertlogin = addLogin($username, $hpassword);
+                            $insertlogin = $db->addLogin($username, $hpassword);
                             $loginID = $insertlogin;
-                            addUserAccount($firstname, $lastname, $email, $bio, $profilepic, $ighandle, $workurl, $loginID);
+                            $db->addUserAccount($firstname, $lastname, $email, $bio, $profilepic, $ighandle, $workurl, $loginID);
                             $useraction = 'Register Account';
-                            LogUserRequest($useraction);
+                            $db->LogUserRequest($useraction);
                             http_response_code(201);
                         } else {
                             $useraction = 'Failed Register Account';
-                            LogUserRequest($useraction);
+                            $db->LogUserRequest($useraction);
                             http_response_code(406);
                         }
                     }
@@ -50,7 +109,7 @@ if (isset($_GET['getData'])) {
                 if (isset($_POST['checkaddlocationacc'])) {
                     if ((!isset($_POST['locname'])) || (!isset($_POST['locaddress'])) || (!isset($_POST['loccity'])) || (!isset($_POST['locstate'])) || (!isset($_POST['locpostcode'])) || (!isset($_POST['locdescript']))) {
                         $useraction = 'Failed Register Account';
-                        LogUserRequest($useraction);
+                        $db->LogUserRequest($useraction);
                         http_response_code(400);
                     } else {
                         $name = $_POST['locname'];
@@ -59,54 +118,50 @@ if (isset($_GET['getData'])) {
                         $state = $_POST['locstate'];
                         $postcode = $_POST['locpostcode'];
                         $description = $_POST['locdescript'];
+                        $userexists = $db->checkUserReg($username);
                         if ($userexists == false) {
-                            $insertlogin = addLogin($username, $hpassword);
+                            $insertlogin = $db->addLogin($username, $hpassword);
                             $loginID = $insertlogin;
-                            addLocationAccount($name, $address, $city, $state, $postcode, $email, $description, $profilepic, $ighandle, $workurl, $loginID);
+                            $db->addLocationAccount($name, $address, $city, $state, $postcode, $email, $description, $profilepic, $ighandle, $workurl, $loginID);
                             $useraction = 'Register Account';
-                            LogUserRequest($useraction);
+                            $db->LogUserRequest($useraction);
                             http_response_code(201);
                         } else {
                             $useraction = 'Failed Register Account';
-                            LogUserRequest($useraction);
+                            $db->LogUserRequest($useraction);
                             http_response_code(406);
                         }
                     }
-                }
+                }                
+            } else {
+                http_response_code(412);
             }
-        } else {
-            http_response_code(409);
-        }
+        } 
 
     } // end adduseracc
 
     if ($_GET['getData'] == 'addcollab') {
-        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["userID"]))) {
-            $lastrequest = GetLastUserRequest($_SESSION["loginID"]);
-            $currentrequest = date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
-            $isrequestok = checkCurrentRequest($lastrequest, $currentrequest);
-            if ($isrequestok == false) {
-                http_response_code(412);
-            } else {
+        if ($_SESSION['se']->IsUserLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
                 if ((!isset($_POST['ctitle'])) || (!isset($_POST['cdescript'])) || (!isset($_POST['cdate'])) || (!isset($_POST['ctime'])) || (!isset($_POST['ownerrole']))) {
                     $useraction = 'Failed Submit Collaboration';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(400);
                 } else if ((isset($_POST['checkaddlocation'])) && (!isset($_POST['locationuname']))) {
                     $useraction = 'Failed Submit Collaboration';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(400);
                 } else if ((isset($_POST['checksearchlocation'])) && ((!isset($_POST['lcity'])) || (!isset($_POST['lbookingfee'])) || (!isset($_POST['ldescript'])))) {
                     $useraction = 'Failed Submit Collaboration';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(400);
                 } else if ((isset($_POST['checkaddmember'])) && ((!isset($_POST['tmuname'])) || (!isset($_POST['tmrole'])))) {
                     $useraction = 'Failed Submit Collaboration';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(400);
                 } else if ((isset($_POST['checksearchmember'])) && ((!isset($_POST['tmsearchrole'])) || (!isset($_POST['tmbookingfee'])) || (!isset($_POST['tmdescript'])))) {
                     $useraction = 'Failed Submit Collaboration';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(400);
                 } else {
                     $title = $_POST['ctitle'];
@@ -120,13 +175,13 @@ if (isset($_GET['getData'])) {
 
                     if (isset($_POST['checkaddlocation'])) {
                         $locationusername = $_POST['locationuname'];
-                        $locationexists = checkLocation($locationusername);
+                        $locationexists = $db->checkLocation($locationusername);
                     }
 
                     if (isset($_POST['checkaddmember'])) {
                         $tmusername = $_POST['tmuname'];
                         $tmrole = $_POST['tmrole'];
-                        $userexists = checkUser($tmusername);
+                        $userexists = $db->checkUser($tmusername);
                     }
 
                     if (isset($_POST['checksearchlocation'])) {
@@ -144,162 +199,177 @@ if (isset($_GET['getData'])) {
 
                 if (((isset($_POST['checkaddlocation'])) && ($locationexists == false)) || ((isset($_POST['checkaddmember'])) && ($userexists == false))) {
                     $useraction = 'Failed Submit Collaboration';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(404);
                 } else {
-                    $insertcollab = addCollab($title, $description, $datetime, $userID);
+                    $insertcollab = $db->addCollab($title, $description, $datetime, $userID);
                     $collaborationID = $insertcollab;
-                    addTeamMember($ownerrole, $userID, $collaborationID);
+                    $db->addTeamMember($ownerrole, $userID, $collaborationID);
 
                     if (isset($_POST['checkaddlocation'])) {
                         $locationID = $locationexists;
-                        addLocation($locationID, $collaborationID);
+                        $db->addLocation($locationID, $collaborationID);
                     }
                     if (isset($_POST['checksearchlocation'])) {
-                        addLocationSearch($locationcity, $locationbookingfee, $locationdescript, $collaborationID);
+                        $db->addLocationSearch($locationcity, $locationbookingfee, $locationdescript, $collaborationID);
                     }
                     if (isset($_POST['checkaddmember'])) {
                         $userID = $userexists;
-                        addTeamMember($tmrole, $userID, $collaborationID);
+                        $db->addTeamMember($tmrole, $userID, $collaborationID);
                     }
                     if (isset($_POST['checksearchmember'])) {
-                        addTeamMemberSearch($tmsearchrole, $tmbookingfee, $tmdescription, $collaborationID);
+                        $db->addTeamMemberSearch($tmsearchrole, $tmbookingfee, $tmdescription, $collaborationID);
                     }
                     $useraction = 'Submit Collaboration';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(201);
                 }
+            } else {
+                http_response_code(412);
             }
 
         } else {
             $useraction = 'Failed Submit Collaboration';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
             http_response_code(401);
         }
     } // end addcolab
 
     if ($_GET['getData'] == 'displaycollabs') {
-        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true)) {
-            $lastrequest = GetLastUserRequest($_SESSION["loginID"]);
-            $isrequestleft = CheckUserRequestCount();
+        if ($_SESSION['se']->IsLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
+                $useraction = 'Browse Collaborations';
+                $db->LogUserRequest($useraction);
+                $result = $db->displayCollabs();
+            } else {
+                http_response_code(412);
+            }
         } else {
-            $lastrequest = GetLastIPRequest();
-            $requestsmade = GetIPRequestCount();
-            $isrequestleft = CheckIPRequestCount($requestsmade);
+            if ($_SESSION['se']->IsRequestOkIP()) {
+                $useraction = 'Browse Collaborations';
+                $db->LogUserRequest($useraction);
+                $result = $db->displayCollabs();
+            } else {
+                http_response_code(412);
+            }
         }
-        $currentrequest = date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
-        $isrequestok = checkCurrentRequest($lastrequest, $currentrequest);
-        if (($isrequestok == false) || ($isrequestleft == false)) {
-            http_response_code(412);
-        } else {
-            http_response_code(200);
-            $result = displayCollabs();
-            $useraction = 'Browse Collaborations';
-            LogUserRequest($useraction);
-        }
-
     }
 
     if ($_GET['getData'] == 'displayuserprofile') {
-        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["userID"]))) {
-            $lastrequest = GetLastUserRequest($_SESSION["loginID"]);
-            $currentrequest = date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
-            $isrequestok = checkCurrentRequest($lastrequest, $currentrequest);
-            if ($isrequestok == false) {
-                http_response_code(412);
-            } else {
+        if ($_SESSION['se']->IsUserLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
                 $userID = $_SESSION["userID"];
-                $result = displayUserProfile($userID);
+                $result = $db->displayUserProfile($userID);
                 $useraction = 'Load Profile';
-                LogUserRequest($useraction);
+                $db->LogUserRequest($useraction);
                 http_response_code(200);
+            } else {
+                http_response_code(412);
             }
-
         } else {
             $useraction = 'Failed Load Profile';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
             http_response_code(401);
         }
     }
 
     if ($_GET['getData'] == 'displaylocprofile') {
-        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["locationID"]))) {
+        if ($_SESSION['se']->IsLocationLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
             $locationID = $_SESSION["locationID"];
-            $result = displayLocationProfile($locationID);
+            $result = $db->displayLocationProfile($locationID);
             $useraction = 'Load Profile';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
             http_response_code(200);
         } else {
-            $useraction = 'Failed Load Profile';
-            LogUserRequest($useraction);
+            http_response_code(412);
+        }
+    } else {
+        $useraction = 'Failed Load Profile';
+        $db->LogUserRequest($useraction);
+        http_response_code(401);
+    }
+    
+    }
+
+    if ($_GET['getData'] == 'addlocrequest') {
+        if ($_SESSION['se']->IsLocationLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
+                if (!isset($_POST['locreqsearchid'])) {
+                    $useraction = 'Failed Submit Location Request';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(400);
+                } else {
+                    $locsearchID = $_POST['locreqsearchid'];
+                    $locationID = $_SESSION["locationID"];
+                    $locationrequestsent = $db->checkLocRequestUser($locationID, $locsearchID);
+                    if ($locationrequestsent == false) {
+                        $db->addLocationRequest($locationID, $locsearchID);
+                        $useraction = 'Submit Location Request';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(201);
+                    } else {
+                        $useraction = 'Failed Submit Location Request';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(406);
+                    }
+                }
+            } else {
+                http_response_code(412);
+            }
+        } else {
+            $useraction = 'Failed Submit Location Request';
+            $db->LogUserRequest($useraction);
             http_response_code(401);
         }
     }
 
-    if ($_GET['getData'] == 'addlocrequest') {
-        if ((!isset($_POST['locrequest'])) || (!isset($_POST['locreqid']))) {
-            http_response_code(400);
-        } else {
-            $locsearchID = $_POST['locrequest'];
-            $locationID = $_POST['locreqid'];
-            if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && ($_SESSION["locationID"] == $locationID)) {
-                $locationrequestsent = checkLocRequestUser($locationID, $locsearchID);
-                if ($locationrequestsent == false) {
-                    addLocationRequest($locationID, $locsearchID);
-                    $useraction = 'Submit Location Request';
-                    LogUserRequest($useraction);
-                    http_response_code(201);
-                } else {
-                    $useraction = 'Failed Submit Location Request';
-                    LogUserRequest($useraction);
-                    http_response_code(406);
-                }
-            } else {
-                $useraction = 'Failed Submit Location Request';
-                LogUserRequest($useraction);
-                http_response_code(401);
-            }
-        }
-    }
-
     if ($_GET['getData'] == 'addteamrequest') {
-        if ((!isset($_POST['teamrequest'])) || (!isset($_POST['userreqid']))) {
+        if ($_SESSION['se']->IsUserLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
+        if (!isset($_POST['teamreqsearchid'])) {
             $useraction = 'Failed Submit Team Member Request';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
             http_response_code(400);
         } else {
-            $tmsearchID = $_POST['teamrequest'];
-            $userID = $_POST['userreqid'];
-            if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && ($_SESSION["userID"] == $userID)) {
-                $tmrequestsent = checkTeamRequestUser($userID, $tmsearchID);
+            $tmsearchID = $_POST['teamreqsearchid']; 
+            $userID = $_SESSION["userID"]; 
+            $tmrequestsent = $db->checkTeamRequestUser($userID, $tmsearchID);
                 if ($tmrequestsent == false) {
-                    addTeamMemberRequest($tmsearchID, $userID);
+                    $db->addTeamMemberRequest($tmsearchID, $userID);
                     $useraction = 'Submit Team Member Request';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(201);
                 } else {
                     $useraction = 'Failed Submit Team Member Request';
-                    LogUserRequest($useraction);
+                    $db->LogUserRequest($useraction);
                     http_response_code(406);
-                }
-            } else {
+                }                  
+        }         
+            }  else {
+                http_response_code(412);
+            }
+        } else {
                 $useraction = 'Failed Submit Team Member Request';
-                LogUserRequest($useraction);
+                $db->LogUserRequest($useraction);
                 http_response_code(401);
             }
-        }
-
     }
 
     if ($_GET['getData'] == 'displayusercollabs') {
-        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["userID"]))) {
+        if ($_SESSION['se']->IsUserLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
             $userID = $_SESSION["userID"];
-            $result = displayUserCollabs($userID);
+            http_response_code(200);
+            $result = $db->displayUserCollabs($userID);
             $useraction = 'Load User Collaborations';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
+            } else {
+                http_response_code(412);
+            }
         } else {
             $useraction = 'Failed Load User Collaborations';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
             http_response_code(401);
         }
     }
@@ -308,54 +378,54 @@ if (isset($_GET['getData'])) {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $collaborationID = $data->collabid;
-        $result = displayCollab($collaborationID);
+        $result = $db->displayCollab($collaborationID);
         $useraction = 'Load User Collaboration Details';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
     }
 
     if ($_GET['getData'] == 'displayteam') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $collaborationID = $data->collabid;
-        $result = displayTeam($collaborationID);
+        $result = $db->displayTeam($collaborationID);
         $useraction = 'Load Collaboration Team';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
     }
 
     if ($_GET['getData'] == 'displaylocation') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $collaborationID = $data->collabid;
-        $result = displayLocation($collaborationID);
+        $result = $db->displayLocation($collaborationID);
         $useraction = 'Load Collaboration Location';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
     }
 
     if ($_GET['getData'] == 'displayusercollab') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $collaborationID = $data->collabid;
-        $result = displayUserCollab($collaborationID);
+        $result = $db->displayUserCollab($collaborationID);
         $useraction = 'Load User Collaboration Details';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
     }
 
     if ($_GET['getData'] == 'displaylocrequests') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $collaborationID = $data->collabid;
-        $result = displayLocationRequests($collaborationID);
+        $result = $db->displayLocationRequests($collaborationID);
         $useraction = 'Load Collaboration Location Requests';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
     }
 
     if ($_GET['getData'] == 'displayteamrequests') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $collaborationID = $data->collabid;
-        $result = displayTeamMemberRequests($collaborationID);
+        $result = $db->displayTeamMemberRequests($collaborationID);
         $useraction = 'Load Collaboration Team Requests';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
     }
 
     if ($_GET['getData'] == 'approvelocrequest') {
@@ -365,12 +435,12 @@ if (isset($_GET['getData'])) {
         $collaborationID = $data->cid;
         $locrequestID = $data->lrid;
         $locsearchID = $data->lsid;
-        addLocation($locationID, $collaborationID);
-        approveLocationRequest($locrequestID);
-        denyLocationRequests($locsearchID, $locrequestID);
-        completeLocationSearch($locsearchID);
+        $db->addLocation($locationID, $collaborationID);
+        $db->approveLocationRequest($locrequestID);
+        $db->denyLocationRequests($locsearchID, $locrequestID);
+        $db->completeLocationSearch($locsearchID);
         $useraction = 'Approve Collaboration Location Requests';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
         http_response_code(201);
     }
 
@@ -382,12 +452,12 @@ if (isset($_GET['getData'])) {
         $collaborationID = $data->cid;
         $tmrequestID = $data->tmrid;
         $tmsearchID = $data->tmsid;
-        addTeamMember($role, $userID, $collaborationID);
-        approveTeamMemberRequest($tmrequestID);
-        denyTeamMemberRequests($tmsearchID, $tmrequestID);
-        completeTeamMemberSearch($tmsearchID);
+        $db->addTeamMember($role, $userID, $collaborationID);
+        $db->approveTeamMemberRequest($tmrequestID);
+        $db->denyTeamMemberRequests($tmsearchID, $tmrequestID);
+        $db->completeTeamMemberSearch($tmsearchID);
         $useraction = 'Approve Collaboration Team Requests';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
         http_response_code(201);
     }
 
@@ -395,9 +465,9 @@ if (isset($_GET['getData'])) {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $locrequestID = $data->lrid;
-        denyLocationRequest($locrequestID);
+        $db->denyLocationRequest($locrequestID);
         $useraction = 'Deny Collaboration Location Requests';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
         http_response_code(201);
     }
 
@@ -405,45 +475,43 @@ if (isset($_GET['getData'])) {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
         $tmrequestID = $data->tmrid;
-        denyTeamMemberRequest($tmrequestID);
+        $db->denyTeamMemberRequest($tmrequestID);
         $useraction = 'Deny Collaboration Team Requests';
-        LogUserRequest($useraction);
+        $db->LogUserRequest($useraction);
         http_response_code(201);
     }
 
     if ($_GET['getData'] == 'displayuserlocrequests') {
-        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["locationID"]))) {
+        if ($_SESSION['se']->IsLocationLoggedIn()) {
             $locationID = $_SESSION["locationID"];
-            $result = displayUserLocationRequests($locationID);
+            http_response_code(200);
+            $result = $db->displayUserLocationRequests($locationID);
             $useraction = 'Load User Location Requests';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
         } else {
             $useraction = 'Failed Load User Location Requests';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
             http_response_code(401);
         }
     }
 
     if ($_GET['getData'] == 'displayuserrequests') {
-        if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true) && (isset($_SESSION["userID"]))) {
+        if ($_SESSION['se']->IsUserLoggedIn()) {
             $userID = $_SESSION["userID"];
-            $result = displayUserRequests($userID);
+            http_response_code(200);
+            $result = $db->displayUserRequests($userID);
             $useraction = 'Load User Team Requests';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
         } else {
             $useraction = 'Failed Load User Team Requests';
-            LogUserRequest($useraction);
+            $db->LogUserRequest($useraction);
             http_response_code(401);
         }
-    }
+    } 
 
-    // if ($_GET['getData'] == 'showdata') {
-    //     $valideferdomain = 'localhost';
-    //     $domain =  $_SERVER['HTTP_REFERER'];
-    //     $domainref = parse_url($domain, PHP_URL_HOST);
-    //     $result = Array('vd'=>$valideferdomain, 'd'=>$domain, 'dr'=>$domainref);
-    // }
-
+} else {
+    http_response_code(501);
+    die;
 }
 
 if (isset($result)) {

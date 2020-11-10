@@ -151,7 +151,7 @@ function submitLogin() {
     if (isdatavalid == true) {
         var form = document.querySelector('#loginform');
         var formData = new FormData(form);
-        fetch('../api/ses.php?getSession=login', {
+        fetch('../api/api.php?getData=login', {
                 method: 'POST',
                 body: formData
             })
@@ -198,7 +198,7 @@ logoutbtn.addEventListener("click", submitLogout, false);
 
 function submitLogout() {
 
-    fetch('../api/ses.php?getSession=logout')
+    fetch('../api/api.php?getData=logout')
         .then(response => {
             console.log(response);
             if (response.status === 409) {
@@ -232,6 +232,9 @@ function submitLocationRequest() {
         })
         .then(response => {
             console.log(response);
+            if (response.status === 412) {
+                M.toast({ html: 'Too Many Requests', classes: 'red' });
+            }
             if (response.status === 406) {
                 M.toast({ html: 'Location Request Already Submitted', classes: 'red' });
             }
@@ -256,6 +259,9 @@ function submitTeamRequest() {
         })
         .then(response => {
             console.log(response);
+            if (response.status === 412) {
+                M.toast({ html: 'Too Many Requests', classes: 'red' });
+            }
             if (response.status === 406) {
                 M.toast({ html: 'Team Request Already Submitted', classes: 'red' });
             }
@@ -418,6 +424,19 @@ function showProfile() {
                 if (response.status === 401) {
                     profile.innerHTML = '<p> Please log in to view your profile </p>';
                 }
+                if (response.status === 412) {
+                    profileName.innerHTML = loader;
+                    profileInfo[0].innerHTML = loader;
+                    profileInfo[1].innerHTML = loader;
+                    profileInfo[2].innerHTML = loader;
+                    profileLinks[0].href = ' ';
+                    profileLinks[1].href = ' ';
+                    profileIMG.src = ' ';
+                    profileIMG.hidden = true;
+                    profileLinks[0].hidden = true;
+                    profileLinks[1].hidden = true;
+                    M.toast({ html: 'Too Many Requests', classes: 'red' });
+                }
                 if (response.status === 200) {
                     response.json()
                         .then((data) => {
@@ -482,16 +501,21 @@ function showUserCollab() {
         fetch('../api/api.php?getData=displayusercollabs')
             .then(response => {
                 console.log(response);
+                if (response.status === 412) {
+                    mycollablisttbl.innerHTML = loader;
+                    M.toast({ html: 'Too Many Requests', classes: 'red' });
+                }
                 if (response.status === 401) {
                     mycollablisttbl.innerHTML =
                         '<tr>' +
                         '<td> Please log in to view your collaborations </td>' +
                         '</tr>'
-                } else {
+                } if (response.status === 200) {
                     response.json()
                         .then((data) => {
                             console.log(data);
                             if (data == false) {
+                                mycollablisttbl.innerHTML =
                                 '<tr>' +
                                 '<td> You have not started any collaboration </td>' +
                                 '</tr>'
@@ -524,7 +548,7 @@ function showUserCollab() {
                         '<tr>' +
                         '<td> Please log in to view your collaborations requests </td>' +
                         '</tr>'
-                } else {
+                } if (response.status === 200) {
                     response.json()
                         .then((data) => {
                             console.log(data);
@@ -568,7 +592,7 @@ function showUserCollab() {
                         '<tr>' +
                         '<td> Please log in to view your collaborations requests </td>' +
                         '</tr>'
-                } else {
+                } if (response.status === 200) {
                     response.json()
                         .then((data) => {
                             console.log(data);
@@ -860,13 +884,11 @@ function showJoinCollab() {
             locationSearchInfo[0].innerHTML = data.City;
             locationSearchInfo[1].innerHTML = data.LocationBookingFee;
             locationSearchInfo[2].innerHTML = data.LocationDescription;
-            locrequest.value = data.LocationSearchID;
-            locreqid.value = localStorage.getItem('loggedinlocid');
+            locreqsearchid.value = data.LocationSearchID;
             teamSearchInfo[0].innerHTML = data.Role;
             teamSearchInfo[1].innerHTML = data.TeamMemberBookingFee;
             teamSearchInfo[2].innerHTML = data.TeamMemberDescription
-            teamrequest.value = data.TeamMemberSearchID;
-            userreqid.value = localStorage.getItem('loggedinuserid');
+            teamreqsearchid.value = data.TeamMemberSearchID;
 
             if ((data.LocationSearchID == null) && (data.TeamMemberSearchID != null)) {
                 locationSearchSection.classList.remove("hide");
@@ -1605,15 +1627,3 @@ if ('serviceWorker' in navigator) {
 } else {
     console.log('Service Workers Not Supported');
 }
-
-// showdata.addEventListener("click", showData, false);
-
-// function showData() {
-//     fetch('../api/api.php?getData=showdata')
-//         .then((response) => response.json())
-//         .then((data) => {
-//             console.log(data);
-//         })
-
-
-// }
