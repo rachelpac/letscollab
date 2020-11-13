@@ -45,7 +45,7 @@ h3 {
     color: #009688;
 }
 
-#side-nav li>a {
+#sidenav li>a {
   color: rgba(0,0,0,0.87);
   display: block;
   font-size: 14px;
@@ -55,11 +55,26 @@ h3 {
   padding: 0 32px;
 }
 
-#side-nav li>a>i.material-icons {
+#sidenav li>a>i.material-icons {
   float: left;
   height: 48px;
   line-height: 48px;
   margin: 0 32px 0 0;
   width: 24px;
   color: rgba(0,0,0,0.54);
+}
+
+#usercollab .tabs,
+#joincollab .tabs {
+    border-top: solid white 3px;
+}
+
+#startcollab,
+#browsecollab,
+#signup,
+#profile,
+#joincollab,
+#usercollab,
+#settings {
+    min-height: 100vh;
 }
