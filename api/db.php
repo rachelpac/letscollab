@@ -661,8 +661,9 @@ function LogUserRequest($useraction)
 {
     try {
         $useraddress = $_SERVER['REMOTE_ADDR'];
-        $userbrowser = get_browser(null, true);
-        $userbrowser = $userbrowser['browser'];
+        $userbrowser = $_SERVER['HTTP_USER_AGENT'];
+        // $userbrowser = get_browser(null, true);
+        // $userbrowser = $userbrowser['browser'];
         $requesttime = date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
         if (isset($_SESSION["loginID"])) {
             $sessionID = $_SESSION["loginID"];

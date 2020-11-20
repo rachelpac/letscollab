@@ -1,110 +1,8 @@
-import React, { useState, useReducer, Component } from "react";
+import React, { useState, useReducer, Component, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import "materialize-css/dist/css/materialize.min.css";
 import M from "materialize-css";
-
-const collablist = [
-  {
-    CollaborationID: 1,
-    Title: "collab title",
-    Description: "collab descript",
-    LocationSearchID: 1,
-    LocationBookingFee: "300.00",
-    City: "test",
-    TeamMemberSearchID: 1,
-    Role: "makeupartist",
-    TeamMemberBookingFee: "100.00",
-  },
-  {
-    CollaborationID: 7,
-    Title: "test7",
-    Description: "test7",
-    LocationSearchID: null,
-    LocationBookingFee: null,
-    City: null,
-    TeamMemberSearchID: 2,
-    Role: "makeupartist",
-    TeamMemberBookingFee: "100.00",
-  },
-  {
-    CollaborationID: 13,
-    Title: "Celebrate Our Creatives",
-    Description: "50 local creatives celebrated by the inspired co",
-    LocationSearchID: 4,
-    LocationBookingFee: "400.00",
-    City: "Brisbane",
-    TeamMemberSearchID: 3,
-    Role: "model",
-    TeamMemberBookingFee: "100.00",
-  },
-  {
-    CollaborationID: 15,
-    Title: "editorial",
-    Description: "graphic makeup",
-    LocationSearchID: null,
-    LocationBookingFee: null,
-    City: null,
-    TeamMemberSearchID: 4,
-    Role: "model",
-    TeamMemberBookingFee: "100.00",
-  },
-  {
-    CollaborationID: 16,
-    Title: "test all",
-    Description: "test all",
-    LocationSearchID: 5,
-    LocationBookingFee: "700.00",
-    City: "test all loc",
-    TeamMemberSearchID: null,
-    Role: null,
-    TeamMemberBookingFee: null,
-  },
-  {
-    CollaborationID: 17,
-    Title: "test all",
-    Description: "test all",
-    LocationSearchID: 6,
-    LocationBookingFee: "700.00",
-    City: "test all loc",
-    TeamMemberSearchID: 5,
-    Role: "model",
-    TeamMemberBookingFee: "300.00",
-  },
-  {
-    CollaborationID: 19,
-    Title: "test all",
-    Description: "test all",
-    LocationSearchID: null,
-    LocationBookingFee: null,
-    City: null,
-    TeamMemberSearchID: 6,
-    Role: "model",
-    TeamMemberBookingFee: "300.00",
-  },
-  {
-    CollaborationID: 23,
-    Title: "portfolio shoot",
-    Description: "book images",
-    LocationSearchID: null,
-    LocationBookingFee: null,
-    City: null,
-    TeamMemberSearchID: 7,
-    Role: "photographer",
-    TeamMemberBookingFee: "150.00",
-  },
-  {
-    CollaborationID: 24,
-    Title: "portfolio shoot",
-    Description: "book images",
-    LocationSearchID: null,
-    LocationBookingFee: null,
-    City: null,
-    TeamMemberSearchID: 8,
-    Role: "photographer",
-    TeamMemberBookingFee: "150.00",
-  },
-];
 
 const profileinfo = {
   UserID: 5,
@@ -224,7 +122,7 @@ function Navigation() {
       </ul>
 
       {viewMenuItem === "browsecollab" ? (
-        <BrowseCollabs collabs={collablist} />
+        <BrowseCollabs />
       ) : viewMenuItem === "startcollab" ? (
         <StartCollab />
       ) : viewMenuItem === "usercollab" ? (
@@ -252,11 +150,21 @@ function Navigation() {
   );
 }
 
-function BrowseCollabs({ collabs }) {
-  return (
+function BrowseCollabs() {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch('http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollabs')
+    .then (result => result.json())
+    .then(setData)
+    .catch(console.error);
+  },  []);
+  if(data) {
+    console.log(data);
+    return (
     <>
+    
       <div id="browsecollab" className="container">
-        {collabs.map((collab) => (
+        {data.map((collab) => (
           <div key={collab.CollaborationID} className="collabpost">
             <div className="card teal darken-3">
               <div className="card-content white-text">
@@ -294,10 +202,12 @@ function BrowseCollabs({ collabs }) {
               </div>
             </div>
           </div>
-        ))}
+          ))}
       </div>
     </>
-  );
+  )  
+  }
+  return null;
 }
 
 class OwnerSelect extends Component {
@@ -378,19 +288,22 @@ class TeamMemberAddSelect extends Component {
 }
 
 function StartCollab() {
-  const [hiddenaddloc, toggleaddloc] = useReducer((hidden) => !hidden, true);
-  const [hiddensearchloc, togglesearchloc] = useReducer(
-    (hidden) => !hidden,
-    true
-  );
-  const [hiddenaddmember, toggleaddmember] = useReducer(
-    (hidden) => !hidden,
-    true
-  );
-  const [hiddensearchmember, togglesearchmember] = useReducer(
-    (hidden) => !hidden,
-    true
-  );
+ const [hiddenaddloc, toggleaddloc] = useReducer((hidden) => !hidden, true);
+ const [disablesearchloc, toggledisablesearchloc] = useReducer((disabled) => !disabled, false);
+ const [hiddensearchloc, togglesearchloc] = useReducer((hidden) => !hidden, true);
+ const [disableaddloc, toggledisableaddloc] = useReducer((disabled) => !disabled, false);
+ const [hiddenaddmember, toggleaddmember] = useReducer((hidden) => !hidden, true);
+ const [hiddensearchmember, togglesearchmember] = useReducer((hidden) => !hidden, true);
+
+  function AddLocEvents() {
+     toggleaddloc();
+     toggledisablesearchloc();
+  }
+
+  function SearchLocEvents() {
+    togglesearchloc();
+    toggledisableaddloc();
+  }
 
   return (
     <>
@@ -475,18 +388,20 @@ function StartCollab() {
               </legend>
               <p>
                 <label htmlFor="checkaddlocation">
+                {disableaddloc ? true : false}
                   <input
                     id="checkaddlocation"
                     name="checkaddlocation"
                     type="checkbox"
                     className="filled-in"
-                    onChange={toggleaddloc}
+                    onChange={AddLocEvents}
+                    disabled={disableaddloc}
                   />
                   <span>I have a location</span>
                 </label>
               </p>
-              <fieldset id="addlocation" hidden={hiddenaddloc}>
-                {hiddenaddloc ? true : false}
+              <fieldset id="addlocation" hidden={hiddenaddloc}> 
+              {hiddenaddloc ? true : false}
                 <div className="row">
                   <div className="input-field col s12">
                     <input
@@ -509,12 +424,15 @@ function StartCollab() {
 
               <p>
                 <label htmlFor="checksearchlocation">
+                  {disablesearchloc ? true : false}
                   <input
                     id="checksearchlocation"
                     name="checksearchlocation"
                     type="checkbox"
                     className="filled-in"
-                    onChange={togglesearchloc}
+                    onChange={SearchLocEvents}
+                    disabled={disablesearchloc}
+                    
                   />
                   <span>I'm looking for a location</span>
                 </label>
@@ -661,7 +579,6 @@ function StartCollab() {
                 id="submitcollabbtn"
                 className="btn waves-effect waves-light"
                 type="button"
-                disabled
               >
                 Submit<i className="material-icons right">send</i>
               </button>
@@ -752,6 +669,7 @@ class LoginModal extends Component {
                 id="loginbtn"
                 className="modal-close btn waves-effect waves-light"
                 type="button"
+                onClick={submitLogin}
               >
                 LOGIN<i className="material-icons right">send</i>
               </button>
@@ -761,6 +679,10 @@ class LoginModal extends Component {
       </div>
     );
   }
+}
+
+function submitLogin() {
+  console.log('pressed submit');
 }
 
 function SignUp() {

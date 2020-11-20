@@ -5,6 +5,8 @@ $db = new dbObj;
 require 'ses.php';
 $_SESSION['se'] = new sessObj;
 
+$_SESSION['se']->setRequestHeader();
+
 if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
     if ($_GET['getData'] == 'login') {
         if ($_SESSION['se']->IsLoggedIn()) {
