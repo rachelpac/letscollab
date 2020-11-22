@@ -483,6 +483,8 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
         http_response_code(201);
     }
 
+
+
     if ($_GET['getData'] == 'displayuserlocrequests') {
         if ($_SESSION['se']->IsLocationLoggedIn()) {
             $locationID = $_SESSION["locationID"];
@@ -510,6 +512,54 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
             http_response_code(401);
         }
     } 
+
+    /// REACT CHANGES 
+    if ($_GET['getData'] == 'reactlogin') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        if ($_SESSION['se']->IsLoggedIn()) {
+            $useraction = 'Failed Login';
+            $db->LogUserRequest($useraction);
+            http_response_code(409);
+        } else {
+            if (($data->luname == '') || ($data->lpword == '')) {
+                $useraction = 'Failed Login';
+                $db->LogUserRequest($useraction);
+                http_response_code(400);
+                session_unset();
+            } else {
+                $username = $data->luname;
+                $password = $data->lpword;
+                $userexists = $db->checkLogin($username);
+                if ($userexists != false) {
+                    if (password_verify($password, $userexists['Password'])) {
+                        $useraction = 'User Login';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(200);
+                        $_SESSION['loggedin'] = true;
+                        $_SESSION["loginID"] = $userexists['LoginID'];
+                        $_SESSION["username"] = $userexists['Username'];
+                        $_SESSION["userID"] = $userexists['UserID'];
+                        $_SESSION["locationID"] = $userexists['LocationID'];
+                        $result = Array('userid' => $userexists['UserID'], 'locid' => $userexists['LocationID'],
+                            'username' => $userexists['Username']);
+                    } else {
+                        $useraction = 'Failed Login';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(403);
+                        session_unset();
+                    }
+                } else {
+                    $useraction = 'Failed Login';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(401);
+                    session_unset();
+                }
+            }
+        }
+
+    }
+
 
 } else {
     http_response_code(501);
