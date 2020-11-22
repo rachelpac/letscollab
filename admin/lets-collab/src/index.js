@@ -4,18 +4,6 @@ import "./index.css";
 import "materialize-css/dist/css/materialize.min.css";
 import M from "materialize-css";
 
-const profileinfo = {
-  UserID: 5,
-  FirstName: "Test",
-  LastName: "Type",
-  Email: "testuser@test.com",
-  Bio: "bio",
-  ProfilePicture: "../client/images/profile.png",
-  InstagramHandle: "https://www.instagram.com/",
-  PortfolioURL: "https://www.imgmodels.com/",
-  LoginID: 7,
-};
-
 const mycollablist = [
   {
     CollaborationID: 28,
@@ -128,7 +116,7 @@ function Navigation() {
       ) : viewMenuItem === "usercollab" ? (
         <UserCollab />
       ) : viewMenuItem === "profile" ? (
-        <Profile userinfo={profileinfo} />
+        <Profile />
       ) : viewMenuItem === "signup" ? (
         <SignUp />
       ) : (
@@ -622,18 +610,72 @@ class TermsModal extends Component {
   }
 }
 
-class LoginModal extends Component {
+class UserLogin extends Component {
   componentDidMount() {
     M.AutoInit();
   }
+
+  state = {
+    luname: '',
+    lpword: ''
+  }
+
+  onChange = e => {
+    this.setState({[e.target.name]: e.target.value});
+  }
+
+  onSubmit = e => {
+    e.preventDefault()
+    const {luname, lpword} = this.state;
+    fetch('http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactlogin', {
+      method: 'POST',
+      body: JSON.stringify(this.state)
+  })
+
+  .then(response => {
+    console.log(response);
+    if (response.status === 409) {
+        M.toast({ html: 'You are already logged in', classes: 'red' });
+    }
+    if (response.status === 400) {
+        M.toast({ html: 'Login Failed', classes: 'red' });
+    }
+    if (response.status === 401) {
+        M.toast({ html: 'User does not exist', classes: 'red' });
+    }
+    if (response.status === 403) {
+        M.toast({ html: 'Passord is incorrect', classes: 'red' });
+    }
+    if (response.status === 200) {
+      response.json()
+      .then((data) => {
+        console.log(data)
+        localStorage.setItem('loggedinuser', data.username);
+        localStorage.setItem('loggedinuserid', data.userid);
+        localStorage.setItem('loggedinlocid', data.locid);
+      })
+        M.toast({ html: 'You are now logged in', classes: 'green' });
+    }
+});
+  
+}
+
   render() {
+    const {luname, lpword} = this.state;
     return (
+      <>
+      <p>
+      Already have an account?
+      <a className="modal-trigger" href="#login">
+        Login
+      </a>
+    </p>
       <div id="login" className="modal">
         <div className="modal-content">
           <form
             id="loginform"
             method="POST"
-            action="../api/ses.php?getSession=login"
+            onSubmit={this.onSubmit}
             className="col s12"
           >
             <div className="row">
@@ -641,8 +683,10 @@ class LoginModal extends Component {
                 <input
                   id="luname"
                   name="luname"
+                  value={luname}
                   className="validate"
                   type="text"
+                  onChange={this.onChange}
                   required
                 />
                 <label htmlFor="luname">Username</label>
@@ -655,8 +699,10 @@ class LoginModal extends Component {
                 <input
                   id="lpword"
                   name="lpword"
+                  value={lpword}
                   className="validate"
                   type="password"
+                  onChange={this.onChange}
                   required
                 />
                 <label htmlFor="lpword">Password</label>
@@ -668,8 +714,6 @@ class LoginModal extends Component {
               <button
                 id="loginbtn"
                 className="modal-close btn waves-effect waves-light"
-                type="button"
-                onClick={submitLogin}
               >
                 LOGIN<i className="material-icons right">send</i>
               </button>
@@ -677,13 +721,11 @@ class LoginModal extends Component {
           </form>
         </div>
       </div>
+      </>
     );
   }
 }
 
-function submitLogin() {
-  console.log('pressed submit');
-}
 
 function SignUp() {
   const [hiddenaddlocacc, toggleaddlocacc] = useReducer(
@@ -1018,14 +1060,7 @@ function SignUp() {
               </button>
             </fieldset>
           </form>
-
-          <p>
-            Already have an account?
-            <a className="modal-trigger" href="#login">
-              Login
-            </a>
-          </p>
-          <LoginModal />
+          <UserLogin />
         </div>
 
         <div id="userlogout" className="row" hidden>
@@ -1044,43 +1079,103 @@ function SignUp() {
   );
 }
 
-function Profile() {
+class Profile extends Component {
+  state = {profiledata: [],
+  loading: false,
+response401: false,
+response412: false,
+response200: false}
+
+  componentDidMount() {
+    this.setState({loading: true})
+    fetch('http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayuserprofile')
+    .then(response => {
+      console.log(response);
+      if (response.status === 401) {
+        M.toast({ html: 'Please log in to view your profile', classes: 'red' });
+        this.setState({loading: false, response401: true})
+      }
+      if (response.status === 412) {
+        M.toast({ html: 'Too Many Requests', classes: 'red' });
+        this.setState({loading: false, response412: true})
+      }
+      if (response.status === 200) {
+        response.json()
+        .then((data) => {
+          console.log(data)
+          this.setState({profiledata: data, loading: false, response200: true})
+        })
+      }
+  });
+  }
+
+  render() {
+    const {profiledata, responsestatus} = this.state;
   return (
     <>
-      <div id="profile" className="container">
-        <div className="error"></div>
-        <div className="row">
-          <div className="col s6">
-            <img
-              className="profileimg circle"
-              src={profileinfo.ProfilePicture}
-            />
-          </div>
+    {this.state.response200 ?
+    <div>
+      <p>okay</p>
+    </div>
+    : ''}
+        {this.state.response412 ?
+    <div>
+      <p>Too Many Requests</p>
+    </div>
+    : ''}
+            {this.state.response401 ?
+    <div>
+      <p>Please log in to view your profile</p>
+    </div>
+    : ''}
 
-          <div className="col s6">
-            <h5>
-              {profileinfo.FirstName} {profileinfo.LastName}
-            </h5>
-            <p>{profileinfo.Email}</p>
-          </div>
-        </div>
-
-        <div className="section">
-          <p>About {profileinfo.FirstName}</p>
-          <p>{profileinfo.Bio}</p>
-        </div>
-
-        <div className="section">
-          <p>
-            <a href={profileinfo.InstagramHandle}>INSTAGRAM</a>
-          </p>
-          <p>
-            <a href={profileinfo.PortfolioURL}>VIEW PORTFOLIO</a>
-          </p>
-        </div>
-      </div>
     </>
+
+//  <>
+//     {this.state.loading 
+//     ?
+//     <div className="preloader-wrapper small active"><div className="spinner-layer spinner-blue-only"><div className="circle-clipper left"><div className="circle"></div></div><div className="gap-patch"><div className="circle"></div></div><div className="circle-clipper right"><div className="circle"></div></div></div></div> 
+//     :
+//     <div id="profile" className="container">
+//     {this.state.data.map(user => {
+//       <>
+//         <div className="row">
+//           <div className="col s6">
+//             <img
+//               className="profileimg circle"
+//               src={user.ProfilePicture}
+//             />
+//           </div>
+
+//           <div className="col s6">
+//             <h5>
+//               {user.FirstName} {user.LastName}
+//             </h5>
+//             <p>{user.Email}</p>
+//           </div>
+//         </div>
+
+//         <div className="section">
+//           <p>About {user.FirstName}</p>
+//           <p>{user.Bio}</p>
+//         </div>
+
+//         <div className="section">
+//           <p>
+//             <a href={user.InstagramHandle}>INSTAGRAM</a>
+//           </p>
+//           <p>
+//             <a href={user.PortfolioURL}>VIEW PORTFOLIO</a>
+//           </p>
+//         </div> 
+//         </>     
+//     })}
+//     </div>
+//   }
+//     </> 
+
   );
+  }
 }
 
 function MyCollabs({ mycollabs }) {
