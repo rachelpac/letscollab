@@ -28,10 +28,12 @@ if($_SERVER["REQUEST_METHOD"] == "OPTIONS")
 
 function CheckCurrentRequest($lastrequest, $currentrequest)
 {
+    // creates a new date time object from the database time stamps 
     $currentrequest = new DateTime($currentrequest);
     $lastrequest = new DateTime($lastrequest);
     $timesincelastrequest = $currentrequest->diff($lastrequest);
 
+    // data diff object calculates the difference in years, months, days, hours, minutes aand seconds of the two date objects 
     $yeardiff = $timesincelastrequest->y;
     $monthdiff = $timesincelastrequest->m;
     $daydiff = $timesincelastrequest->d;
@@ -39,7 +41,8 @@ function CheckCurrentRequest($lastrequest, $currentrequest)
     $mindiff = $timesincelastrequest->i;
     $secdiff = $timesincelastrequest->s;
 
-    if (($yeardiff == 0) && ($monthdiff == 0) && ($daydiff == 0) && ($hourdiff == 0) && ($mindiff == 0) && ($secdiff < 3)) {
+    // checks that that the two date objects are only one second apart 
+    if (($yeardiff == 0) && ($monthdiff == 0) && ($daydiff == 0) && ($hourdiff == 0) && ($mindiff == 0) && ($secdiff < 1)) {
         return false;
     } else {
         return true;
@@ -49,7 +52,7 @@ function CheckCurrentRequest($lastrequest, $currentrequest)
 
 function CheckRequestCount($requestsmade)
 {
-    $maxrequests = 200;
+    $maxrequests = 1000;
     $requestsleft = $maxrequests - $requestsmade;
     if ($requestsleft > 0) {
         return true;

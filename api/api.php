@@ -1,5 +1,7 @@
 <?php
 session_start();
+
+// instantiate session and database object to access within api
 require 'db.php';
 $db = new dbObj;
 require 'ses.php';
@@ -7,8 +9,15 @@ $_SESSION['se'] = new sessObj;
 
 $_SESSION['se']->setRequestHeader();
 
+// The API only allows certain requests to be made
+// It will check if the request is allowed by checking the request in the if statements
+// If the request is not allowed it results in a 501 error and dies 
+
 if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
     if ($_GET['getData'] == 'login') {
+        // function checks to see if the user is logged in before each request and returns true or false 
+        // if authentication is required for the request it will result in a 401 
+        // if a session already exists it will result in a 409
         if ($_SESSION['se']->IsLoggedIn()) {
             $useraction = 'Failed Login';
             $db->LogUserRequest($useraction);
@@ -20,8 +29,8 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
                 http_response_code(400);
                 session_unset();
             } else {
-                $username = $_POST['luname'];
-                $password = $_POST['lpword'];
+                $username = $db->inputFilter($_POST['luname']);
+                $password = $db->inputFilter($_POST['lpword']);
                 $userexists = $db->checkLogin($username);
                 if ($userexists != false) {
                     if (password_verify($password, $userexists['Password'])) {
@@ -76,12 +85,12 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
                     $db->LogUserRequest($useraction);
                     http_response_code(400);
                 } else {
-                    $username = $_POST['uname'];
-                    $password = $_POST['pword'];
-                    $email = $_POST['email'];
-                    $profilepic = $_POST['profilepic'];
-                    $ighandle = $_POST['ighandle'];
-                    $workurl = $_POST['workurl'];
+                    $username = $db->inputFilter($_POST['uname']);
+                    $password = $db->inputFilter($_POST['pword']);
+                    $email = $db->inputFilter($_POST['email']);
+                    $profilepic = $db->inputFilter($_POST['profilepic']);
+                    $ighandle = $db->inputFilter($_POST['ighandle']);
+                    $workurl = $db->inputFilter($_POST['workurl']);
                     $hpassword = password_hash($password, PASSWORD_DEFAULT);
                 }
                 if (isset($_POST['checkadduseracc'])) {
@@ -90,9 +99,9 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
                         $db->LogUserRequest($useraction);
                         http_response_code(400);
                     } else {
-                        $firstname = $_POST['fname'];
-                        $lastname = $_POST['lname'];
-                        $bio = $_POST['bio'];
+                        $firstname = $db->inputFilter($_POST['fname']);
+                        $lastname = $db->inputFilter($_POST['lname']);
+                        $bio = $db->inputFilter($_POST['bio']);
                         $userexists = $db->checkUserReg($username);
                         if ($userexists == false) {
                             $insertlogin = $db->addLogin($username, $hpassword);
@@ -114,12 +123,12 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
                         $db->LogUserRequest($useraction);
                         http_response_code(400);
                     } else {
-                        $name = $_POST['locname'];
-                        $address = $_POST['locaddress'];
-                        $city = $_POST['loccity'];
-                        $state = $_POST['locstate'];
-                        $postcode = $_POST['locpostcode'];
-                        $description = $_POST['locdescript'];
+                        $name = $db->inputFilter($_POST['locname']);
+                        $address = $db->inputFilter($_POST['locaddress']);
+                        $city = $db->inputFilter($_POST['loccity']);
+                        $state = $db->inputFilter($_POST['locstate']);
+                        $postcode = $db->inputFilter($_POST['locpostcode']);
+                        $description = $db->inputFilter($_POST['locdescript']);
                         $userexists = $db->checkUserReg($username);
                         if ($userexists == false) {
                             $insertlogin = $db->addLogin($username, $hpassword);
@@ -166,36 +175,36 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
                     $db->LogUserRequest($useraction);
                     http_response_code(400);
                 } else {
-                    $title = $_POST['ctitle'];
-                    $description = $_POST['cdescript'];
-                    $date = $_POST['cdate'];
-                    $time = $_POST['ctime'];
+                    $title = $db->inputFilter($_POST['ctitle']);
+                    $description = $db->inputFilter($_POST['cdescript']);
+                    $date = $db->inputFilter($_POST['cdate']);
+                    $time = $db->inputFilter($_POST['ctime']);
                     $datetime = $date . " " . $time;
                     $datetime = date('Y-m-d H:i:s', strtotime($datetime));
-                    $ownerrole = $_POST['ownerrole'];
+                    $ownerrole = $db->inputFilter($_POST['ownerrole']);
                     $userID = $_SESSION["userID"];
 
                     if (isset($_POST['checkaddlocation'])) {
-                        $locationusername = $_POST['locationuname'];
+                        $locationusername = $db->inputFilter($_POST['locationuname']);
                         $locationexists = $db->checkLocation($locationusername);
                     }
 
                     if (isset($_POST['checkaddmember'])) {
-                        $tmusername = $_POST['tmuname'];
-                        $tmrole = $_POST['tmrole'];
+                        $tmusername = $db->inputFilter($_POST['tmuname']);
+                        $tmrole = $db->inputFilter($_POST['tmrole']);
                         $userexists = $db->checkUser($tmusername);
                     }
 
                     if (isset($_POST['checksearchlocation'])) {
-                        $locationcity = $_POST['lcity'];
-                        $locationbookingfee = $_POST['lbookingfee'];
-                        $locationdescript = $_POST['ldescript'];
+                        $locationcity = $db->inputFilter($_POST['lcity']);
+                        $locationbookingfee = $db->inputFilter($_POST['lbookingfee']);
+                        $locationdescript = $db->inputFilter($_POST['ldescript']);
                     }
 
                     if (isset($_POST['checksearchmember'])) {
-                        $tmsearchrole = $_POST['tmsearchrole'];
-                        $tmbookingfee = $_POST['tmbookingfee'];
-                        $tmdescription = $_POST['tmdescript'];
+                        $tmsearchrole = $db->inputFilter($_POST['tmsearchrole']);
+                        $tmbookingfee = $db->inputFilter($_POST['tmbookingfee']);
+                        $tmdescription = $db->inputFilter($_POST['tmdescript']);
                     }
                 }
 

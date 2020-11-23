@@ -781,7 +781,19 @@ function GetLastUserRequest($sessionID)
         throw $ex;
     }
 }
+
+function inputFilter($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    $data = htmlentities($data);
+    return $data;
 }
+
+}
+
+
 
 
 
