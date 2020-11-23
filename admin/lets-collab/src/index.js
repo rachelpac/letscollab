@@ -141,59 +141,60 @@ function Navigation() {
 function BrowseCollabs() {
   const [data, setData] = useState(null);
   useEffect(() => {
-    fetch('http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollabs')
-    .then (result => result.json())
-    .then(setData)
-    .catch(console.error);
-  },  []);
-  if(data) {
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollabs"
+    )
+      .then((result) => result.json())
+      .then(setData)
+      .catch(console.error);
+  }, []);
+  if (data) {
     console.log(data);
     return (
-    <>
-    
-      <div id="browsecollab" className="container">
-        {data.map((collab) => (
-          <div key={collab.CollaborationID} className="collabpost">
-            <div className="card teal darken-3">
-              <div className="card-content white-text">
-                <span className="card-title">{collab.Title}</span>
-                <p>{collab.Description}</p>
-              </div>
-              <div className="card-content teal lighten-4">
-                <div className="row">
-                  <div
-                    className="section col s6"
-                    loc-search-id={collab.LocationSearchID}
-                  >
-                    <h6> I NEED A LOCATION </h6>
-                    <p>
-                      {collab.City} - {collab.LocationBookingFee}
-                    </p>
-                  </div>
-                  <div
-                    className="section col s6"
-                    tm-search-id={collab.TeamMemberSearchID}
-                  >
-                    <h6> I NEED PEOPLE </h6>
-                    <p>
-                      {collab.Role} - {collab.TeamMemberBookingFee}
-                    </p>
-                  </div>
+      <>
+        <div id="browsecollab" className="container">
+          {data.map((collab) => (
+            <div key={collab.CollaborationID} className="collabpost">
+              <div className="card teal darken-3">
+                <div className="card-content white-text">
+                  <span className="card-title">{collab.Title}</span>
+                  <p>{collab.Description}</p>
                 </div>
-                <button
-                  id={collab.CollaborationID}
-                  className="btn waves-effect waves-light teal darken-3"
-                  type="button"
-                >
-                  JOIN<i className="material-icons right">send</i>
-                </button>
+                <div className="card-content teal lighten-4">
+                  <div className="row">
+                    <div
+                      className="section col s6"
+                      loc-search-id={collab.LocationSearchID}
+                    >
+                      <h6> I NEED A LOCATION </h6>
+                      <p>
+                        {collab.City} - {collab.LocationBookingFee}
+                      </p>
+                    </div>
+                    <div
+                      className="section col s6"
+                      tm-search-id={collab.TeamMemberSearchID}
+                    >
+                      <h6> I NEED PEOPLE </h6>
+                      <p>
+                        {collab.Role} - {collab.TeamMemberBookingFee}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    id={collab.CollaborationID}
+                    className="btn waves-effect waves-light teal darken-3"
+                    type="button"
+                  >
+                    JOIN<i className="material-icons right">send</i>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
           ))}
-      </div>
-    </>
-  )  
+        </div>
+      </>
+    );
   }
   return null;
 }
@@ -276,16 +277,31 @@ class TeamMemberAddSelect extends Component {
 }
 
 function StartCollab() {
- const [hiddenaddloc, toggleaddloc] = useReducer((hidden) => !hidden, true);
- const [disablesearchloc, toggledisablesearchloc] = useReducer((disabled) => !disabled, false);
- const [hiddensearchloc, togglesearchloc] = useReducer((hidden) => !hidden, true);
- const [disableaddloc, toggledisableaddloc] = useReducer((disabled) => !disabled, false);
- const [hiddenaddmember, toggleaddmember] = useReducer((hidden) => !hidden, true);
- const [hiddensearchmember, togglesearchmember] = useReducer((hidden) => !hidden, true);
+  const [hiddenaddloc, toggleaddloc] = useReducer((hidden) => !hidden, true);
+  const [disablesearchloc, toggledisablesearchloc] = useReducer(
+    (disabled) => !disabled,
+    false
+  );
+  const [hiddensearchloc, togglesearchloc] = useReducer(
+    (hidden) => !hidden,
+    true
+  );
+  const [disableaddloc, toggledisableaddloc] = useReducer(
+    (disabled) => !disabled,
+    false
+  );
+  const [hiddenaddmember, toggleaddmember] = useReducer(
+    (hidden) => !hidden,
+    true
+  );
+  const [hiddensearchmember, togglesearchmember] = useReducer(
+    (hidden) => !hidden,
+    true
+  );
 
   function AddLocEvents() {
-     toggleaddloc();
-     toggledisablesearchloc();
+    toggleaddloc();
+    toggledisablesearchloc();
   }
 
   function SearchLocEvents() {
@@ -376,7 +392,7 @@ function StartCollab() {
               </legend>
               <p>
                 <label htmlFor="checkaddlocation">
-                {disableaddloc ? true : false}
+                  {disableaddloc ? true : false}
                   <input
                     id="checkaddlocation"
                     name="checkaddlocation"
@@ -388,8 +404,8 @@ function StartCollab() {
                   <span>I have a location</span>
                 </label>
               </p>
-              <fieldset id="addlocation" hidden={hiddenaddloc}> 
-              {hiddenaddloc ? true : false}
+              <fieldset id="addlocation" hidden={hiddenaddloc}>
+                {hiddenaddloc ? true : false}
                 <div className="row">
                   <div className="input-field col s12">
                     <input
@@ -420,7 +436,6 @@ function StartCollab() {
                     className="filled-in"
                     onChange={SearchLocEvents}
                     disabled={disablesearchloc}
-                    
                   />
                   <span>I'm looking for a location</span>
                 </label>
@@ -578,603 +593,641 @@ function StartCollab() {
   );
 }
 
-class TermsModal extends Component {
-  componentDidMount() {
-    M.AutoInit();
-  }
-  render() {
-    return (
-      <div id="termsmodal" className="modal modal-fixed-footer">
-        <div className="modal-content">
-          <h4>Modal Header</h4>
-          <p>A bunch of text</p>
-        </div>
-        <div className="modal-footer">
-          <a
-            href="#!"
-            className="modal-close waves-effect waves-green btn-flat"
-            id="agree"
-          >
-            Agree
-          </a>
-          <a
-            href="#!"
-            className="modal-close waves-effect waves-red btn-flat"
-            id="disagree"
-          >
-            Disagree
-          </a>
-        </div>
-      </div>
-    );
-  }
-}
-
 class UserLogin extends Component {
   componentDidMount() {
     M.AutoInit();
   }
 
   state = {
-    luname: '',
-    lpword: ''
-  }
+    luname: "",
+    lpword: "",
+  };
 
-  onChange = e => {
-    this.setState({[e.target.name]: e.target.value});
-  }
+  onChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
 
-  onSubmit = e => {
-    e.preventDefault()
-    const {luname, lpword} = this.state;
-    fetch('http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactlogin', {
-      method: 'POST',
-      body: JSON.stringify(this.state)
-  })
-
-  .then(response => {
-    console.log(response);
-    if (response.status === 409) {
-        M.toast({ html: 'You are already logged in', classes: 'red' });
-    }
-    if (response.status === 400) {
-        M.toast({ html: 'Login Failed', classes: 'red' });
-    }
-    if (response.status === 401) {
-        M.toast({ html: 'User does not exist', classes: 'red' });
-    }
-    if (response.status === 403) {
-        M.toast({ html: 'Passord is incorrect', classes: 'red' });
-    }
-    if (response.status === 200) {
-      response.json()
-      .then((data) => {
-        console.log(data)
-        localStorage.setItem('loggedinuser', data.username);
-        localStorage.setItem('loggedinuserid', data.userid);
-        localStorage.setItem('loggedinlocid', data.locid);
-      })
-        M.toast({ html: 'You are now logged in', classes: 'green' });
-    }
-});
-  
-}
+  onSubmit = (e) => {
+    e.preventDefault();
+    const { luname, lpword } = this.state;
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactlogin",
+      {
+        method: "POST",
+        body: JSON.stringify(this.state),
+      }
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 409) {
+        M.toast({ html: "You are already logged in", classes: "red" });
+      }
+      if (response.status === 400) {
+        M.toast({ html: "Login Failed", classes: "red" });
+      }
+      if (response.status === 401) {
+        M.toast({ html: "User does not exist", classes: "red" });
+      }
+      if (response.status === 403) {
+        M.toast({ html: "Passord is incorrect", classes: "red" });
+      }
+      if (response.status === 200) {
+        response.json().then((data) => {
+          console.log(data);
+          localStorage.setItem("loggedinuser", data.username);
+          localStorage.setItem("loggedinuserid", data.userid);
+          localStorage.setItem("loggedinlocid", data.locid);
+        });
+        M.toast({ html: "You are now logged in", classes: "green" });
+      }
+    });
+  };
 
   render() {
-    const {luname, lpword} = this.state;
+    const { luname, lpword } = this.state;
     return (
       <>
-      <p>
-      Already have an account?
-      <a className="modal-trigger" href="#login">
-        Login
-      </a>
-    </p>
-      <div id="login" className="modal">
-        <div className="modal-content">
-          <form
-            id="loginform"
-            method="POST"
-            onSubmit={this.onSubmit}
-            className="col s12"
-          >
-            <div className="row">
-              <div className="input-field col s12">
-                <input
-                  id="luname"
-                  name="luname"
-                  value={luname}
-                  className="validate"
-                  type="text"
-                  onChange={this.onChange}
-                  required
-                />
-                <label htmlFor="luname">Username</label>
-                <span id="lunameerror" className="helper-text"></span>
+        <p>
+          Already have an account?
+          <a className="modal-trigger" href="#login">
+            Login
+          </a>
+        </p>
+        <div id="login" className="modal">
+          <div className="modal-content">
+            <form
+              id="loginform"
+              method="POST"
+              onSubmit={this.onSubmit}
+              className="col s12"
+            >
+              <div className="row">
+                <div className="input-field col s12">
+                  <input
+                    id="luname"
+                    name="luname"
+                    value={luname}
+                    className="validate"
+                    type="text"
+                    onChange={this.onChange}
+                    required
+                  />
+                  <label htmlFor="luname">Username</label>
+                  <span id="lunameerror" className="helper-text"></span>
+                </div>
               </div>
-            </div>
 
-            <div className="row">
-              <div className="input-field col s12">
-                <input
-                  id="lpword"
-                  name="lpword"
-                  value={lpword}
-                  className="validate"
-                  type="password"
-                  onChange={this.onChange}
-                  required
-                />
-                <label htmlFor="lpword">Password</label>
-                <span id="lpworderror" className="helper-text"></span>
+              <div className="row">
+                <div className="input-field col s12">
+                  <input
+                    id="lpword"
+                    name="lpword"
+                    value={lpword}
+                    className="validate"
+                    type="password"
+                    onChange={this.onChange}
+                    required
+                  />
+                  <label htmlFor="lpword">Password</label>
+                  <span id="lpworderror" className="helper-text"></span>
+                </div>
               </div>
-            </div>
 
-            <div className="row">
-              <button
-                id="loginbtn"
-                className="modal-close btn waves-effect waves-light"
-              >
-                LOGIN<i className="material-icons right">send</i>
-              </button>
-            </div>
-          </form>
+              <div className="row">
+                <button
+                  id="loginbtn"
+                  className="modal-close btn waves-effect waves-light"
+                >
+                  LOGIN<i className="material-icons right">send</i>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
       </>
     );
   }
 }
 
+class UserSignup extends Component {
+  state = {
+    hiddenaddlocacc: true,
+    hiddenadduseracc: true,
+  };
+  componentDidMount() {
+    M.AutoInit();
+  }
+
+  toggleaddlocacc = () => {
+    this.setState((prevState) => ({
+      hiddenaddlocacc: !prevState.hiddenaddlocacc,
+    }));
+  };
+
+  toggleadduseracc = () => {
+    this.setState((prevState) => ({
+      hiddenadduseracc: !prevState.hiddenadduseracc,
+    }));
+  };
+
+  render() {
+    const { hiddenaddlocacc, hiddenadduseracc } = this.state;
+    return (
+      <form
+        id="signupform"
+        method="POST"
+        action="../api/api.php?getData=adduseracc"
+        className="col s12"
+      >
+        <fieldset>
+          <div className="row">
+            <div className="input-field col s12">
+              <input
+                id="uname"
+                name="uname"
+                className="validate"
+                type="text"
+                minLength="5"
+                maxLength="30"
+                required
+              />
+              <label htmlFor="uname">Username</label>
+              <span id="unameerror" className="helper-text"></span>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="input-field col s12">
+              <input
+                id="pword"
+                name="pword"
+                className="validate"
+                type="password"
+                minLength="8"
+                maxLength="255"
+                pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
+                required
+              />
+              <label htmlFor="pword">Password</label>
+              <span id="pworderror" className="helper-text"></span>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="input-field col s12">
+              <input
+                id="cnfpword"
+                name="cnfpword"
+                className="validate"
+                type="password"
+                minLength="8"
+                maxLength="255"
+                pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
+                required
+              />
+              <label htmlFor="cnfpword">Confirm Password</label>
+              <span id="cnfpworderror" className="helper-text"></span>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="input-field col s12">
+              <input
+                id="email"
+                name="email"
+                className="validate"
+                type="email"
+                minLength="5"
+                maxLength="50"
+                pattern="^.+@.+\..+$"
+                required
+              />
+              <label htmlFor="email">Email</label>
+              <span id="emailerror" className="helper-text"></span>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="input-field col s12">
+              <input
+                id="profilepic"
+                name="profilepic"
+                className="validate"
+                type="text"
+                required
+              />
+              <label htmlFor="profilepic">Profile Pic</label>
+              <span id="profilepicerror" className="helper-text"></span>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="input-field col s12">
+              <input
+                id="ighandle"
+                name="ighandle"
+                className="validate"
+                type="text"
+                maxLength="30"
+                required
+              />
+              <label htmlFor="ighandle">Instagram Handle</label>
+              <span id="ighandleerror" className="helper-text"></span>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="input-field col s12">
+              <input
+                id="workurl"
+                name="workurl"
+                className="validate"
+                type="text"
+                maxLength="255"
+                required
+              />
+              <label htmlFor="workurl">Portfolio OR Website URL</label>
+              <span id="workurlerror" className="helper-text"></span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <p>
+            <label>
+              <input
+                id="checkadduseracc"
+                name="checkadduseracc"
+                type="checkbox"
+                className="filled-in"
+                onChange={this.toggleadduseracc}
+              />
+              <span>User Account</span>
+            </label>
+          </p>
+          <fieldset id="adduseracc" hidden={hiddenadduseracc}>
+            <div className="row">
+              <div className="input-field col s12">
+                <input
+                  id="fname"
+                  name="fname"
+                  className="validate"
+                  type="text"
+                  minLength="2"
+                  maxLength="255"
+                  pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
+                  required
+                />
+                <label htmlFor="fname">First Name</label>
+                <span id="fnameerror" className="helper-text"></span>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="input-field col s12">
+                <input
+                  id="lname"
+                  name="lname"
+                  className="validate"
+                  type="text"
+                  minLength="2"
+                  maxLength="255"
+                  pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
+                  required
+                />
+                <label htmlFor="lname">Last Name</label>
+                <span id="lnameerror" className="helper-text"></span>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="input-field col s12">
+                <input
+                  id="bio"
+                  name="bio"
+                  className="validate"
+                  type="text"
+                  required
+                />
+                <label htmlFor="bio">Bio</label>
+                <span id="bioerror" className="helper-text"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <p>
+            <label>
+              <input
+                id="checkaddlocationacc"
+                name="checkaddlocationacc"
+                type="checkbox"
+                className="filled-in"
+                onChange={this.toggleaddlocacc}
+              />
+              <span>Location Account</span>
+            </label>
+          </p>
+
+          <fieldset id="addlocationacc" hidden={hiddenaddlocacc}>
+            <div className="row">
+              <div className="input-field col s12">
+                <input
+                  id="locname"
+                  name="locname"
+                  className="validate"
+                  type="text"
+                  minLength="2"
+                  maxLength="255"
+                  pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
+                  required
+                />
+                <label htmlFor="locname">Location Name</label>
+                <span id="locnameerror" className="helper-text"></span>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="input-field col s12">
+                <input
+                  id="locaddress"
+                  name="locaddress"
+                  className="validate"
+                  type="text"
+                  minLength="2"
+                  maxLength="255"
+                  required
+                />
+                <label htmlFor="locaddress">Address</label>
+                <span id="locaddresserror" className="helper-text"></span>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="input-field col s12">
+                <input
+                  id="loccity"
+                  name="loccity"
+                  className="validate"
+                  type="text"
+                  minLength="2"
+                  maxLength="255"
+                  pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
+                  required
+                />
+                <label htmlFor="loccity">City</label>
+                <span id="loccityerror" className="helper-text"></span>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="input-field col s12">
+                <input
+                  id="locstate"
+                  name="locstate"
+                  className="validate"
+                  type="text"
+                  minLength="2"
+                  maxLength="3"
+                  pattern="^[A-Z]*$"
+                  required
+                />
+                <label htmlFor="locstate">State</label>
+                <span id="locstateerror" className="helper-text"></span>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="input-field col s12">
+                <input
+                  id="locpostcode"
+                  name="locpostcode"
+                  className="validate"
+                  type="number"
+                  max="9999"
+                  required
+                />
+                <label htmlFor="locpostcode">Post Code</label>
+                <span id="locpostcodeerror" className="helper-text"></span>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="input-field col s12">
+                <input
+                  id="locdescript"
+                  name="locdescript"
+                  className="validate"
+                  type="text"
+                  required
+                />
+                <label htmlFor="locdescript">Description</label>
+                <span id="locdescripterror" className="helper-text"></span>
+              </div>
+            </div>
+          </fieldset>
+        </fieldset>
+
+        <fieldset>
+          <p>
+            <label htmlFor="terms">
+              <input type="checkbox" id="terms" />
+              <span>
+                Agree to
+                <a className="modal-trigger" href="#termsmodal">
+                  Terms
+                </a>
+              </span>
+            </label>
+          </p>
+          <div id="termsmodal" className="modal modal-fixed-footer">
+            <div className="modal-content">
+              <h4>Modal Header</h4>
+              <p>A bunch of text</p>
+            </div>
+            <div className="modal-footer">
+              <a
+                href="#!"
+                className="modal-close waves-effect waves-green btn-flat"
+                id="agree"
+              >
+                Agree
+              </a>
+              <a
+                href="#!"
+                className="modal-close waves-effect waves-red btn-flat"
+                id="disagree"
+              >
+                Disagree
+              </a>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <button
+            id="signupbtn"
+            className="btn waves-effect waves-light"
+            type="button"
+            disabled
+          >
+            SIGN UP<i className="material-icons right">send</i>
+          </button>
+        </fieldset>
+      </form>
+    );
+  }
+}
+
+class UserLogout extends Component {
+  logout() {
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=logout"
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 409) {
+        M.toast({ html: "You were not logged in", classes: "red" });
+      }
+      if (response.status === 200) {
+        M.toast({ html: "You are now logged out", classes: "green" });
+      }
+    });
+  }
+
+  render() {
+    return (
+      <div id="userlogout" className="row">
+        <div className="row">
+          <button
+            id="logoutbtn"
+            className="btn waves-effect waves-light"
+            type="button"
+            onClick={this.logout}
+          >
+            LOGOUT<i className="material-icons right">send</i>
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
 
 function SignUp() {
-  const [hiddenaddlocacc, toggleaddlocacc] = useReducer(
-    (hidden) => !hidden,
-    true
-  );
-  const [hiddenadduseracc, toggleadduseracc] = useReducer(
-    (hidden) => !hidden,
-    true
-  );
   return (
     <>
       <div id="signup" className="container">
         <div id="userlogin" className="row">
-          <form
-            id="signupform"
-            method="POST"
-            action="../api/api.php?getData=adduseracc"
-            className="col s12"
-          >
-            <fieldset>
-              <div className="row">
-                <div className="input-field col s12">
-                  <input
-                    id="uname"
-                    name="uname"
-                    className="validate"
-                    type="text"
-                    minLength="5"
-                    maxLength="30"
-                    required
-                  />
-                  <label htmlFor="uname">Username</label>
-                  <span id="unameerror" className="helper-text"></span>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="input-field col s12">
-                  <input
-                    id="pword"
-                    name="pword"
-                    className="validate"
-                    type="password"
-                    minLength="8"
-                    maxLength="255"
-                    pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
-                    required
-                  />
-                  <label htmlFor="pword">Password</label>
-                  <span id="pworderror" className="helper-text"></span>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="input-field col s12">
-                  <input
-                    id="cnfpword"
-                    name="cnfpword"
-                    className="validate"
-                    type="password"
-                    minLength="8"
-                    maxLength="255"
-                    pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
-                    required
-                  />
-                  <label htmlFor="cnfpword">Confirm Password</label>
-                  <span id="cnfpworderror" className="helper-text"></span>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="input-field col s12">
-                  <input
-                    id="email"
-                    name="email"
-                    className="validate"
-                    type="email"
-                    minLength="5"
-                    maxLength="50"
-                    pattern="^.+@.+\..+$"
-                    required
-                  />
-                  <label htmlFor="email">Email</label>
-                  <span id="emailerror" className="helper-text"></span>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="input-field col s12">
-                  <input
-                    id="profilepic"
-                    name="profilepic"
-                    className="validate"
-                    type="text"
-                    required
-                  />
-                  <label htmlFor="profilepic">Profile Pic</label>
-                  <span id="profilepicerror" className="helper-text"></span>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="input-field col s12">
-                  <input
-                    id="ighandle"
-                    name="ighandle"
-                    className="validate"
-                    type="text"
-                    maxLength="30"
-                    required
-                  />
-                  <label htmlFor="ighandle">Instagram Handle</label>
-                  <span id="ighandleerror" className="helper-text"></span>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="input-field col s12">
-                  <input
-                    id="workurl"
-                    name="workurl"
-                    className="validate"
-                    type="text"
-                    maxLength="255"
-                    required
-                  />
-                  <label htmlFor="workurl">Portfolio OR Website URL</label>
-                  <span id="workurlerror" className="helper-text"></span>
-                </div>
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <p>
-                <label>
-                  <input
-                    id="checkadduseracc"
-                    name="checkadduseracc"
-                    type="checkbox"
-                    className="filled-in"
-                    onChange={toggleadduseracc}
-                  />
-                  <span>User Account</span>
-                </label>
-              </p>
-              <fieldset id="adduseracc" hidden={hiddenadduseracc}>
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="fname"
-                      name="fname"
-                      className="validate"
-                      type="text"
-                      minLength="2"
-                      maxLength="255"
-                      pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
-                      required
-                    />
-                    <label htmlFor="fname">First Name</label>
-                    <span id="fnameerror" className="helper-text"></span>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="lname"
-                      name="lname"
-                      className="validate"
-                      type="text"
-                      minLength="2"
-                      maxLength="255"
-                      pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
-                      required
-                    />
-                    <label htmlFor="lname">Last Name</label>
-                    <span id="lnameerror" className="helper-text"></span>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="bio"
-                      name="bio"
-                      className="validate"
-                      type="text"
-                      required
-                    />
-                    <label htmlFor="bio">Bio</label>
-                    <span id="bioerror" className="helper-text"></span>
-                  </div>
-                </div>
-              </fieldset>
-
-              <p>
-                <label>
-                  <input
-                    id="checkaddlocationacc"
-                    name="checkaddlocationacc"
-                    type="checkbox"
-                    className="filled-in"
-                    onChange={toggleaddlocacc}
-                  />
-                  <span>Location Account</span>
-                </label>
-              </p>
-
-              <fieldset id="addlocationacc" hidden={hiddenaddlocacc}>
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="locname"
-                      name="locname"
-                      className="validate"
-                      type="text"
-                      minLength="2"
-                      maxLength="255"
-                      pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
-                      required
-                    />
-                    <label htmlFor="locname">Location Name</label>
-                    <span id="locnameerror" className="helper-text"></span>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="locaddress"
-                      name="locaddress"
-                      className="validate"
-                      type="text"
-                      minLength="2"
-                      maxLength="255"
-                      required
-                    />
-                    <label htmlFor="locaddress">Address</label>
-                    <span id="locaddresserror" className="helper-text"></span>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="loccity"
-                      name="loccity"
-                      className="validate"
-                      type="text"
-                      minLength="2"
-                      maxLength="255"
-                      pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
-                      required
-                    />
-                    <label htmlFor="loccity">City</label>
-                    <span id="loccityerror" className="helper-text"></span>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="locstate"
-                      name="locstate"
-                      className="validate"
-                      type="text"
-                      minLength="2"
-                      maxLength="3"
-                      pattern="^[A-Z]*$"
-                      required
-                    />
-                    <label htmlFor="locstate">State</label>
-                    <span id="locstateerror" className="helper-text"></span>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="locpostcode"
-                      name="locpostcode"
-                      className="validate"
-                      type="number"
-                      max="9999"
-                      required
-                    />
-                    <label htmlFor="locpostcode">Post Code</label>
-                    <span id="locpostcodeerror" className="helper-text"></span>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="locdescript"
-                      name="locdescript"
-                      className="validate"
-                      type="text"
-                      required
-                    />
-                    <label htmlFor="locdescript">Description</label>
-                    <span id="locdescripterror" className="helper-text"></span>
-                  </div>
-                </div>
-              </fieldset>
-            </fieldset>
-
-            <fieldset>
-              <p>
-                <label htmlFor="terms">
-                  <input type="checkbox" id="terms" />
-                  <span>
-                    Agree to
-                    <a className="modal-trigger" href="#termsmodal">
-                      Terms
-                    </a>
-                  </span>
-                </label>
-              </p>
-              <TermsModal />
-            </fieldset>
-
-            <fieldset>
-              <button
-                id="signupbtn"
-                className="btn waves-effect waves-light"
-                type="button"
-                disabled
-              >
-                SIGN UP<i className="material-icons right">send</i>
-              </button>
-            </fieldset>
-          </form>
+          <UserSignup />
           <UserLogin />
         </div>
-
-        <div id="userlogout" className="row" hidden>
-          <div className="row">
-            <button
-              id="logoutbtn"
-              className="btn waves-effect waves-light"
-              type="button"
-            >
-              LOGOUT<i className="material-icons right">send</i>
-            </button>
-          </div>
-        </div>
+        <UserLogout />
       </div>
     </>
   );
 }
 
 class Profile extends Component {
-  state = {profiledata: [],
-  loading: false,
-response401: false,
-response412: false,
-response200: false}
+  state = {
+    profiledata: [],
+    loaded: false,
+    response401: false,
+    response412: false,
+    response200: false,
+  };
 
   componentDidMount() {
-    this.setState({loading: true})
-    fetch('http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayuserprofile')
-    .then(response => {
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayuserprofile"
+    ).then((response) => {
       console.log(response);
       if (response.status === 401) {
-        M.toast({ html: 'Please log in to view your profile', classes: 'red' });
-        this.setState({loading: false, response401: true})
+        M.toast({ html: "Please log in to view your profile", classes: "red" });
+        this.setState({ loaded: true, response401: true });
       }
       if (response.status === 412) {
-        M.toast({ html: 'Too Many Requests', classes: 'red' });
-        this.setState({loading: false, response412: true})
+        M.toast({ html: "Too Many Requests", classes: "red" });
+        this.setState({ loaded: true, response412: true });
       }
       if (response.status === 200) {
-        response.json()
-        .then((data) => {
-          console.log(data)
-          this.setState({profiledata: data, loading: false, response200: true})
-        })
+        response.json().then((data) => {
+          console.log(data);
+          this.setState({ loaded: true, response200: true, profiledata: data });
+        });
       }
-  });
+    });
   }
 
   render() {
-    const {profiledata, responsestatus} = this.state;
-  return (
-    <>
-    {this.state.response200 ?
-    <div>
-      <p>okay</p>
-    </div>
-    : ''}
-        {this.state.response412 ?
-    <div>
-      <p>Too Many Requests</p>
-    </div>
-    : ''}
-            {this.state.response401 ?
-    <div>
-      <p>Please log in to view your profile</p>
-    </div>
-    : ''}
+    const {
+      loaded,
+      profiledata,
+      response401,
+      response412,
+      response200,
+    } = this.state;
+    if (!loaded) {
+      return (
+        <div className="preloader-wrapper small active">
+          <div className="spinner-layer spinner-blue-only">
+            <div className="circle-clipper left">
+              <div className="circle"></div>
+            </div>
+            <div className="gap-patch">
+              <div className="circle"></div>
+            </div>
+            <div className="circle-clipper right">
+              <div className="circle"></div>
+            </div>
+          </div>
+        </div>
+      );
+    } else if (response401) {
+      return (
+        <div id="profile" className="container">
+          <p>Please log in to view your profile</p>
+        </div>
+      );
+    } else if (response412) {
+      return (
+        <div id="profile" className="container">
+          <p>Too Many Requests</p>
+        </div>
+      );
+    } else if (response200) {
+      return (
+        <div id="profile" className="container">
+          <div className="row">
+            <div className="col s6">
+              <img
+                className="profileimg circle"
+                src={profiledata.ProfilePicture}
+              />
+            </div>
 
-    </>
+            <div className="col s6">
+              <h5>
+                {profiledata.FirstName} {profiledata.LastName}
+              </h5>
+              <p>{profiledata.Email}</p>
+            </div>
+          </div>
 
-//  <>
-//     {this.state.loading 
-//     ?
-//     <div className="preloader-wrapper small active"><div className="spinner-layer spinner-blue-only"><div className="circle-clipper left"><div className="circle"></div></div><div className="gap-patch"><div className="circle"></div></div><div className="circle-clipper right"><div className="circle"></div></div></div></div> 
-//     :
-//     <div id="profile" className="container">
-//     {this.state.data.map(user => {
-//       <>
-//         <div className="row">
-//           <div className="col s6">
-//             <img
-//               className="profileimg circle"
-//               src={user.ProfilePicture}
-//             />
-//           </div>
+          <div className="section">
+            <p>About {profiledata.FirstName}</p>
+            <p>{profiledata.Bio}</p>
+          </div>
 
-//           <div className="col s6">
-//             <h5>
-//               {user.FirstName} {user.LastName}
-//             </h5>
-//             <p>{user.Email}</p>
-//           </div>
-//         </div>
-
-//         <div className="section">
-//           <p>About {user.FirstName}</p>
-//           <p>{user.Bio}</p>
-//         </div>
-
-//         <div className="section">
-//           <p>
-//             <a href={user.InstagramHandle}>INSTAGRAM</a>
-//           </p>
-//           <p>
-//             <a href={user.PortfolioURL}>VIEW PORTFOLIO</a>
-//           </p>
-//         </div> 
-//         </>     
-//     })}
-//     </div>
-//   }
-//     </> 
-
-  );
+          <div className="section">
+            <p>
+              <a href={profiledata.InstagramHandle}>INSTAGRAM</a>
+            </p>
+            <p>
+              <a href={profiledata.PortfolioURL}>VIEW PORTFOLIO</a>
+            </p>
+          </div>
+        </div>
+      );
+    } else {
+      return <div>There was an issue retrieving the data</div>;
+    }
   }
 }
 
