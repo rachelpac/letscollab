@@ -569,6 +569,10 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
 
     }
 
+    if ($_GET['getData'] == 'nulluser') {
+        http_response_code(401);
+    }
+
 
 } else {
     http_response_code(501);

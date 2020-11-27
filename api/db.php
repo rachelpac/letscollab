@@ -522,7 +522,7 @@ function displayTeam($collaborationID)
 
     try {
         
-        $stmt = $this->dbconn->prepare('SELECT TeamMember.Role, User.FirstName, User.LastName FROM TeamMember INNER JOIN User ON TeamMember.UserID = User.UserID WHERE TeamMember.CollaborationID = :cID');
+        $stmt = $this->dbconn->prepare('SELECT TeamMember.Role, User.FirstName, User.LastName, User.UserID FROM TeamMember INNER JOIN User ON TeamMember.UserID = User.UserID WHERE TeamMember.CollaborationID = :cID');
         $stmt->bindValue(':cID', $collaborationID);
         $stmt->execute();
         if ($stmt->rowCount() > 0) {

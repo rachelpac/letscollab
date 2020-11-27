@@ -4,47 +4,27 @@ import "./index.css";
 import "materialize-css/dist/css/materialize.min.css";
 import M from "materialize-css";
 
-const mycollablist = [
-  {
-    CollaborationID: 28,
-    Title: "test owner id",
-  },
-  {
-    CollaborationID: 29,
-    Title: "testauthpass",
-  },
-  {
-    CollaborationID: 30,
-    Title: "testfaillocacc",
-  },
-];
-
-const myjoinedcollablist = [
-  {
-    Title: "collab title",
-    TeamMemberRequestID: 6,
-    TeamMemberSearchID: 1,
-    UserID: 5,
-    RequestStatus: "Pending",
-    CollaborationID: 1,
-  },
-  {
-    Title: "test7",
-    TeamMemberRequestID: 7,
-    TeamMemberSearchID: 2,
-    UserID: 5,
-    RequestStatus: "Pending",
-    CollaborationID: 7,
-  },
-  {
-    Title: "test",
-    TeamMemberRequestID: 8,
-    TeamMemberSearchID: 21,
-    UserID: 5,
-    RequestStatus: "Approved",
-    CollaborationID: 39,
-  },
-];
+class Loader extends Component {
+  render() {
+    return (
+      <div id="profile" className="container">
+        <div className="preloader-wrapper small active">
+          <div className="spinner-layer spinner-blue-only">
+            <div className="circle-clipper left">
+              <div className="circle"></div>
+            </div>
+            <div className="gap-patch">
+              <div className="circle"></div>
+            </div>
+            <div className="circle-clipper right">
+              <div className="circle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
 
 class TopNav extends Component {
   componentDidMount() {
@@ -1131,11 +1111,36 @@ class Profile extends Component {
     response401: false,
     response412: false,
     response200: false,
+    loggedinuser: false,
+    loggedinloc: false,
+  };
+
+  setUser = () => {
+    var loggedin = "nulluser";
+    if (localStorage.getItem("loggedinuserid") !== "null") {
+      loggedin = "displayuserprofile";
+    } else if (localStorage.getItem("loggedinlocid") !== "null") {
+      loggedin = "displaylocprofile";
+    } else {
+      loggedin = "nulluser";
+    }
+    console.log(loggedin);
+    return loggedin;
   };
 
   componentDidMount() {
+    const fetchloggedin = this.setUser();
+    console.log(fetchloggedin);
+    if (fetchloggedin === "displayuserprofile") {
+      this.setState({ loggedinuser: true });
+    } else if (fetchloggedin === "displaylocprofile") {
+      this.setState({ loggedinloc: true });
+    } else {
+      this.setState({ loggedinuser: false, loggedinloc: false });
+    }
+
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayuserprofile"
+      `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchloggedin}`
     ).then((response) => {
       console.log(response);
       if (response.status === 401) {
@@ -1162,23 +1167,11 @@ class Profile extends Component {
       response401,
       response412,
       response200,
+      loggedinuser,
+      loggedinloc,
     } = this.state;
     if (!loaded) {
-      return (
-        <div className="preloader-wrapper small active">
-          <div className="spinner-layer spinner-blue-only">
-            <div className="circle-clipper left">
-              <div className="circle"></div>
-            </div>
-            <div className="gap-patch">
-              <div className="circle"></div>
-            </div>
-            <div className="circle-clipper right">
-              <div className="circle"></div>
-            </div>
-          </div>
-        </div>
-      );
+      return <Loader />;
     } else if (response401) {
       return (
         <div id="profile" className="container">
@@ -1192,176 +1185,589 @@ class Profile extends Component {
         </div>
       );
     } else if (response200) {
-      return (
-        <div id="profile" className="container">
-          <div className="row">
-            <div className="col s6">
-              <img
-                className="profileimg circle"
-                src={profiledata.ProfilePicture}
-              />
+      if (loggedinuser) {
+        return (
+          <div id="profile" className="container">
+            <div className="row">
+              <div className="col s6">
+                <img
+                  className="profileimg circle"
+                  src={profiledata.ProfilePicture}
+                />
+              </div>
+
+              <div className="col s6">
+                <h5>
+                  {profiledata.FirstName} {profiledata.LastName}
+                </h5>
+                <p>{profiledata.Email}</p>
+              </div>
             </div>
 
-            <div className="col s6">
-              <h5>
-                {profiledata.FirstName} {profiledata.LastName}
-              </h5>
-              <p>{profiledata.Email}</p>
+            <div className="section">
+              <p>About {profiledata.FirstName}</p>
+              <p>{profiledata.Bio}</p>
+            </div>
+
+            <div className="section">
+              <p>
+                <a href={profiledata.InstagramHandle}>INSTAGRAM</a>
+              </p>
+              <p>
+                <a href={profiledata.PortfolioURL}>VIEW PORTFOLIO</a>
+              </p>
             </div>
           </div>
+        );
+      } else if (loggedinloc) {
+        return (
+          <div id="profile" className="container">
+            <div className="row">
+              <div className="col s6">
+                <img
+                  className="profileimg circle"
+                  src={profiledata.ProfilePicture}
+                />
+              </div>
 
-          <div className="section">
-            <p>About {profiledata.FirstName}</p>
-            <p>{profiledata.Bio}</p>
-          </div>
+              <div className="col s6">
+                <h5>{profiledata.Name}</h5>
+                <p>
+                  {profiledata.City} {profiledata.State}
+                </p>
+                <p>{profiledata.Email}</p>
+              </div>
+            </div>
 
-          <div className="section">
-            <p>
-              <a href={profiledata.InstagramHandle}>INSTAGRAM</a>
-            </p>
-            <p>
-              <a href={profiledata.PortfolioURL}>VIEW PORTFOLIO</a>
-            </p>
+            <div className="section">
+              <p>About {profiledata.LocationName}</p>
+              <p>{profiledata.Description}</p>
+            </div>
+
+            <div className="section">
+              <p>
+                <a href={profiledata.InstagramHandle}>INSTAGRAM</a>
+              </p>
+              <p>
+                <a href={profiledata.PortfolioURL}>VIEW PORTFOLIO</a>
+              </p>
+            </div>
           </div>
-        </div>
-      );
+        );
+      } else {
+        return (
+          <div id="profile" className="container">
+            <p>Please log in to view your profile</p>
+          </div>
+        );
+      }
     } else {
       return <div>There was an issue retrieving the data</div>;
     }
   }
 }
 
-function MyCollabs({ mycollabs }) {
-  return (
-    <>
-      <div id="mycollab" className="col s12">
-        <div id="mycollablist" className="col s12">
-          <h5>My Collaborations</h5>
-          <table id="mycollablisttbl" className="highlight">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mycollabs.map((collab) => (
-                <tr key={collab.CollaborationID}>
-                  <td>{collab.Title}</td>
-                  <td>
-                    <a
-                      className="btn-floating btn-large waves-effect waves-light"
-                      collab-id={collab.CollaborationID}
-                    >
-                      <i className="material-icons">send</i>
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div id="viewmycollab" className="hide">
-          <div id="collabinfo">
-            <h5></h5>
-            <p></p>
-            <p></p>
-          </div>
-
-          <h5>Location</h5>
-          <table id="mycollabloctbl" className="highlight">
-            <thead>
-              <tr>
-                <th>Location</th>
-                <th>Profile</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-
-          <h5>Location Requests</h5>
-          <table id="mycollablocreqtbl" className="highlight">
-            <thead>
-              <tr>
-                <th>Location</th>
-                <th>Profile</th>
-                <th>Approve</th>
-                <th>Deny</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-
-          <h5>Team</h5>
-          <table id="mycollabteamtbl" className="highlight">
-            <thead>
-              <tr>
-                <th>Member</th>
-                <th>Profile</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-
-          <h5>Team Requests</h5>
-          <table id="mycollabteamreqtbl" className="highlight">
-            <thead>
-              <tr>
-                <th>Member</th>
-                <th>Profile</th>
-                <th>Approve</th>
-                <th>Deny</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+class MyLocCollabs extends Component {
+  render() {
+    return (
+      <div>
+        <p>Location Account: Please see Joined Collab tab</p>
       </div>
-    </>
-  );
+    );
+  }
 }
 
-function JoinedCollabs({ myjoinedcollabs }) {
-  return (
-    <>
-      <div id="joinedcollab" className="col s12">
-        <h5>Joined Collab Requests</h5>
-        <table id="myreqtbl" className="highlight">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Details</th>
-              <th>Status</th>
-              <th>Withdraw</th>
-            </tr>
-          </thead>
-          <tbody>
-            {myjoinedcollabs.map((collab) => (
-              <tr key={collab.CollaborationID}>
-                <td>{collab.Title}</td>
-                <td>
-                  <a className="btn-floating btn-large waves-effect waves-light">
-                    <i className="material-icons">send</i>
-                  </a>
-                </td>
-                <td>
-                  <p className="yellow-text text-darken-4">
-                    {collab.RequestStatus}
-                  </p>
-                </td>
-                <td>
-                  <a className="btn-floating btn-large waves-effect waves-light red">
-                    <i className="material-icons">clear</i>
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
-  );
+class MyCollabs extends Component {
+  state = {
+    collablist: [],
+    loaded: false,
+    response401: false,
+    response412: false,
+    response200: false,
+    collabinforequested: false,
+    collabinfo: [],
+    locfound: false,
+    locinfo: [],
+    locrequestsmade: false,
+    locrequests: [],
+    teaminfo: [],
+    teamrequestsmade: false,
+    teamrequests: [],
+  };
+
+  componentDidMount() {
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayusercollabs"
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 401) {
+        M.toast({ html: "Please log in to view your profile", classes: "red" });
+        this.setState({ loaded: true, response401: true });
+      }
+      if (response.status === 412) {
+        M.toast({ html: "Too Many Requests", classes: "red" });
+        this.setState({ loaded: true, response412: true });
+      }
+      if (response.status === 200) {
+        response.json().then((data) => {
+          console.log(data);
+          this.setState({ loaded: true, response200: true, collablist: data });
+        });
+      }
+    });
+  }
+
+  showMyCollab = (e) => {
+    this.setState({ collabinforequested: true });
+    var id = e.currentTarget.getAttribute("collab-id");
+    console.log(id);
+    const collabid = { collabid: id };
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayusercollab",
+      {
+        method: "POST",
+        body: JSON.stringify(collabid),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        this.setState({ collabinfo: data });
+      });
+
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaylocation",
+      {
+        method: "POST",
+        body: JSON.stringify(collabid),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (data === false) {
+          this.setState({ locfound: false });
+          fetch(
+            "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaylocrequests",
+            {
+              method: "POST",
+              body: JSON.stringify(collabid),
+            }
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              if (data === false) {
+                this.setState({ locrequestsmade: false });
+              } else {
+                this.setState({ locrequestsmade: true, locrequests: data });
+              }
+            });
+        } else {
+          this.setState({ locfound: true, locinfo: data });
+        }
+      });
+
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayteam",
+      {
+        method: "POST",
+        body: JSON.stringify(collabid),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        this.setState({ teaminfo: data });
+      });
+
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayteamrequests",
+      {
+        method: "POST",
+        body: JSON.stringify(collabid),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (data === false) {
+          this.setState({ teamrequestsmade: false });
+        } else {
+          this.setState({ teamrequestsmade: true, teamrequests: data });
+        }
+      });
+  };
+
+  render() {
+    const {
+      loaded,
+      collablist,
+      response401,
+      response412,
+      response200,
+      collabinfo,
+      locinfo,
+      locrequests,
+      teaminfo,
+      teamrequests,
+    } = this.state;
+    if (!loaded) {
+      return <Loader />;
+    } else if (response401) {
+      return (
+        <div>
+          <p>Please log in to view your profile</p>
+        </div>
+      );
+    } else if (response412) {
+      return (
+        <div>
+          <p>Too Many Requests</p>
+        </div>
+      );
+    } else if (response200) {
+      if (collablist === false) {
+        return (
+          <div>
+            <p>You have not started any collaboration</p>
+          </div>
+        );
+      } else {
+        return (
+          <div id="mycollab" className="col s12">
+            <div id="mycollablist" className="col s12">
+              <h5>My Collaborations</h5>
+              <table id="mycollablisttbl" className="highlight">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {collablist.map((collab) => (
+                    <tr key={collab.CollaborationID}>
+                      <td>{collab.Title}</td>
+                      <td>
+                        <a
+                          className="btn-floating btn-large waves-effect waves-light"
+                          collab-id={collab.CollaborationID}
+                          onClick={this.showMyCollab}
+                        >
+                          <i className="material-icons">send</i>
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {this.state.collabinforequested ? (
+              <div id="viewmycollab">
+                <div id="collabinfo">
+                  <h5>{collabinfo.Title}</h5>
+                  <p>{collabinfo.Description}</p>
+                  <p>{collabinfo.Date}</p>
+                </div>
+
+                <h5>Location</h5>
+                {this.state.locfound ? (
+                  <table id="mycollabloctbl" className="highlight">
+                    <thead>
+                      <tr>
+                        <th>Location</th>
+                        <th>Profile</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          {locinfo.Name} {locinfo.City} {locinfo.State}
+                        </td>
+                        <td>
+                          <a className="btn-floating btn-large waves-effect waves-light">
+                            <i className="material-icons">location_on</i>
+                          </a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                ) : (
+                  <table id="mycollabloctbl" className="highlight">
+                    <tbody>
+                      <tr>
+                        <td> Location search in progress </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                )}
+
+                <h5>Location Requests</h5>
+
+                {this.state.locfound ? (
+                  <table id="mycollablocreqtbl" className="highlight">
+                    <tbody>
+                      <tr>
+                        <td> Location has been found </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                ) : (
+                  <>
+                    {this.state.locrequestsmade ? (
+                      <table id="mycollablocreqtbl" className="highlight">
+                        <thead>
+                          <tr>
+                            <th>Location</th>
+                            <th>Profile</th>
+                            <th>Approve</th>
+                            <th>Deny</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {locrequests.map((request) => (
+                            <tr key={request.LocationRequestID}>
+                              <td>
+                                {request.Name} {request.City} {request.State}
+                              </td>
+                              <td>
+                                <a className="btn-floating btn-large waves-effect waves-light">
+                                  <i className="material-icons">location_on</i>
+                                </a>
+                              </td>
+                              <td>
+                                <a
+                                  className="btn-floating btn-large waves-effect waves-light green"
+                                  loc-id={request.LocationID}
+                                  collab-id={request.CollaborationID}
+                                  loc-request-id={request.LocationRequestID}
+                                  loc-search-id={request.LocationSearchID}
+                                >
+                                  <i className="material-icons">done</i>
+                                </a>
+                              </td>
+                              <td>
+                                <a
+                                  className="btn-floating btn-large waves-effect waves-light red"
+                                  loc-request-id={request.LocationRequestID}
+                                >
+                                  <i className="material-icons">clear</i>
+                                </a>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <table id="mycollablocreqtbl" className="highlight">
+                        <tbody>
+                          <tr>
+                            <td> No location requests </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    )}
+                  </>
+                )}
+
+                <h5>Team</h5>
+
+                <table id="mycollabteamtbl" className="highlight">
+                  <thead>
+                    <tr>
+                      <th>Member</th>
+                      <th>Profile</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teaminfo.map((member) => (
+                      <tr key={member.UserID}>
+                        <td>
+                          {member.FirstName} {member.LastName} {member.Role}{" "}
+                        </td>
+                        <td>
+                          <a className="btn-floating btn-large waves-effect waves-light">
+                            <i className="material-icons">person</i>
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <h5>Team Requests</h5>
+                {this.state.teamrequestsmade ? (
+                  <table id="mycollabteamreqtbl" className="highlight">
+                    <thead>
+                      <tr>
+                        <th>Member</th>
+                        <th>Profile</th>
+                        <th>Approve</th>
+                        <th>Deny</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {teamrequests.map((member) => (
+                        <tr>
+                          <td>
+                            {member.FirstName} {member.LastName} {member.Role}
+                          </td>
+                          <td>
+                            <a class="btn-floating btn-large waves-effect waves-light">
+                              <i class="material-icons">person</i>
+                            </a>
+                          </td>
+                          <td>
+                            <a
+                              class="btn-floating btn-large waves-effect waves-light green"
+                              tm-role={member.Role}
+                              user-id={member.UserID}
+                              collab-id={member.CollaborationID}
+                              tm-request-id={member.TeamMemberRequestID}
+                              tm-search-id={member.TeamMemberSearchID}
+                            >
+                              <i class="material-icons">done</i>
+                            </a>
+                          </td>
+                          <td>
+                            <a
+                              class="btn-floating btn-large waves-effect waves-light red"
+                              tm-request-id={member.TeamMemberRequestID}
+                            >
+                              <i class="material-icons">clear</i>
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <table id="mycollabteamreqtbl" className="highlight">
+                    <tbody>
+                      <tr>
+                        <td> No team requests </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            ) : (
+              <div id="viewmycollab">
+                <p>Select A Collab To See More</p>
+              </div>
+            )}
+          </div>
+        );
+      }
+    }
+  }
+}
+
+class JoinedCollabs extends Component {
+  state = {
+    requestlist: [],
+    loaded: false,
+    response401: false,
+    response200: false,
+  };
+
+  setUser = () => {
+    var loggedin = "nulluser";
+    if (localStorage.getItem("loggedinuserid") !== "null") {
+      loggedin = "displayuserrequests";
+    } else if (localStorage.getItem("loggedinlocid") !== "null") {
+      loggedin = "displayuserlocrequests";
+    } else {
+      loggedin = "nulluser";
+    }
+    console.log(loggedin);
+    return loggedin;
+  };
+
+  componentDidMount() {
+    const fetchuserrequests = this.setUser();
+    console.log(fetchuserrequests);
+    fetch(
+      `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchuserrequests}`
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 401) {
+        M.toast({
+          html: "Please log in to view your collaborations requests",
+          classes: "red",
+        });
+        this.setState({ loaded: true, response401: true });
+      }
+      if (response.status === 200) {
+        response.json().then((data) => {
+          console.log(data);
+          this.setState({ loaded: true, response200: true, requestlist: data });
+        });
+      }
+    });
+  }
+
+  render() {
+    const { loaded, requestlist, response401, response200 } = this.state;
+
+    if (!loaded) {
+      return <Loader />;
+    } else if (response401) {
+      return (
+        <div>
+          <p>Please log in to view your collaborations requests</p>
+        </div>
+      );
+    } else if (response200) {
+      if (requestlist === false) {
+        return (
+          <div>
+            <p>You have not made any requests</p>
+          </div>
+        );
+      } else {
+        return (
+          <div id="joinedcollab" className="col s12">
+            <h5>Joined Collab Requests</h5>
+            <table id="myreqtbl" className="highlight">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Details</th>
+                  <th>Status</th>
+                  <th>Withdraw</th>
+                </tr>
+              </thead>
+              <tbody>
+                {requestlist.map((collab) => (
+                  <tr key={collab.CollaborationID}>
+                    <td>{collab.Title}</td>
+                    <td>
+                      <a className="btn-floating btn-large waves-effect waves-light">
+                        <i className="material-icons">send</i>
+                      </a>
+                    </td>
+                    <td>
+                      <p className="yellow-text text-darken-4">
+                        {collab.RequestStatus}
+                      </p>
+                    </td>
+                    <td>
+                      <a className="btn-floating btn-large waves-effect waves-light red">
+                        <i className="material-icons">clear</i>
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+    }
+  }
 }
 
 function UserCollab() {
@@ -1371,6 +1777,20 @@ function UserCollab() {
   ];
 
   const [viewTab, setTab] = useState("mycollab");
+  const [viewUserTab, setUser] = useState(getUser());
+
+  function getUser() {
+    var loggedin = "";
+    if (localStorage.getItem("loggedinuserid") !== "null") {
+      loggedin = "userprofile";
+    } else if (localStorage.getItem("loggedinlocid") !== "null") {
+      loggedin = "locprofile";
+    } else {
+      loggedin = "";
+    }
+    console.log(loggedin);
+    return loggedin;
+  }
 
   return (
     <>
@@ -1391,9 +1811,17 @@ function UserCollab() {
 
         <div className="container">
           {viewTab === "mycollab" ? (
-            <MyCollabs mycollabs={mycollablist} />
+            <>
+              {viewUserTab === "userprofile" ? (
+                <MyCollabs />
+              ) : viewUserTab === "locprofile" ? (
+                <MyLocCollabs />
+              ) : (
+                <h3>There was an issue loading the page</h3>
+              )}
+            </>
           ) : viewTab === "joinedcollab" ? (
-            <JoinedCollabs myjoinedcollabs={myjoinedcollablist} />
+            <JoinedCollabs />
           ) : (
             <h3>There was an issue loading the page</h3>
           )}
