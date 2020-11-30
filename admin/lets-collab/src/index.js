@@ -118,65 +118,353 @@ function Navigation() {
   );
 }
 
-function BrowseCollabs() {
-  const [data, setData] = useState(null);
-  useEffect(() => {
+class BrowseCollabs extends Component {
+  state = {
+    loaded: false,
+    collablist: [],
+    response200: false,
+    response412: false,
+    collabinfo: [],
+    teaminfo: [],
+    locfound: false,
+    locinfo: [],
+    hiddenbrowse: false,
+    hiddenjoin: true,
+  };
+
+  componentDidMount() {
+    M.AutoInit();
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollabs"
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 412) {
+        M.toast({ html: "Too Many Requests", classes: "red" });
+        this.setState({ loaded: true, response412: true });
+      }
+      if (response.status === 200) {
+        response.json().then((data) => {
+          console.log(data);
+          this.setState({ loaded: true, response200: true, collablist: data });
+        });
+      }
+    });
+  }
+
+  addLocationRequest = (e) => {
+    var locreqsearchid = e.currentTarget.getAttribute("loc-search-id");
+    const lrdata = { lrsid: locreqsearchid };
+    console.log(lrdata);
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddlocrequest",
+      {
+        method: "POST",
+        body: JSON.stringify(lrdata),
+      }
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 412) {
+        M.toast({ html: "Too Many Requests", classes: "red" });
+      }
+      if (response.status === 406) {
+        M.toast({ html: "Location Request Already Submitted", classes: "red" });
+      }
+      if (response.status === 401) {
+        M.toast({
+          html:
+            "You must be logged in as a Location Account to submit a Location Request",
+          classes: "red",
+        });
+      }
+      if (response.status === 400) {
+        M.toast({ html: "Could not add Location Request", classes: "red" });
+      }
+      if (response.status === 201) {
+        M.toast({ html: "Location Request Submitted", classes: "green" });
+      }
+    });
+  };
+
+  addTeamRequest = (e) => {
+    var teamreqsearchid = e.currentTarget.getAttribute("tm-search-id");
+    const tmrdata = { tmrsid: teamreqsearchid };
+    console.log(tmrdata);
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddteamrequest",
+      {
+        method: "POST",
+        body: JSON.stringify(tmrdata),
+      }
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 412) {
+        M.toast({ html: "Too Many Requests", classes: "red" });
+      }
+      if (response.status === 406) {
+        M.toast({ html: "Team Request Already Submitted", classes: "red" });
+      }
+      if (response.status === 401) {
+        M.toast({
+          html:
+            "You must be logged in as a User Account to submit a Team Request",
+          classes: "red",
+        });
+      }
+      if (response.status === 400) {
+        M.toast({ html: "Could not add Team Request", classes: "red" });
+      }
+      if (response.status === 201) {
+        M.toast({ html: "Team Request Submitted", classes: "green" });
+      }
+    });
+  };
+
+  showJoinCollab = (e) => {
+    this.setState({ hiddenjoin: false, hiddenbrowse: true });
+    var id = e.currentTarget.getAttribute("id");
+    console.log(id);
+    const collabid = { collabid: id };
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollab",
+      {
+        method: "POST",
+        body: JSON.stringify(collabid),
+      }
     )
-      .then((result) => result.json())
-      .then(setData)
-      .catch(console.error);
-  }, []);
-  if (data) {
-    console.log(data);
-    return (
-      <>
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        this.setState({ collabinfo: data });
+      });
+
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayteam",
+      {
+        method: "POST",
+        body: JSON.stringify(collabid),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        this.setState({ teaminfo: data });
+      });
+
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaylocation",
+      {
+        method: "POST",
+        body: JSON.stringify(collabid),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (data === false) {
+          this.setState({ locfound: false });
+        } else {
+          this.setState({ locfound: true, locinfo: data });
+        }
+      });
+  };
+
+  render() {
+    const {
+      loaded,
+      response412,
+      response200,
+      collablist,
+      collabinfo,
+      teaminfo,
+      locfound,
+      locinfo,
+      hiddenbrowse,
+      hiddenjoin,
+    } = this.state;
+    if (!loaded) {
+      return <Loader />;
+    } else if (response412) {
+      return (
         <div id="browsecollab" className="container">
-          {data.map((collab) => (
-            <div key={collab.CollaborationID} className="collabpost">
-              <div className="card teal darken-3">
-                <div className="card-content white-text">
-                  <span className="card-title">{collab.Title}</span>
-                  <p>{collab.Description}</p>
-                </div>
-                <div className="card-content teal lighten-4">
-                  <div className="row">
-                    <div
-                      className="section col s6"
-                      loc-search-id={collab.LocationSearchID}
-                    >
-                      <h6> I NEED A LOCATION </h6>
-                      <p>
-                        {collab.City} - {collab.LocationBookingFee}
-                      </p>
+          <p>Too Many Requests</p>
+        </div>
+      );
+    } else if (response200) {
+      if (collablist === false) {
+        return (
+          <div id="browsecollab" className="container">
+            <p>No Collaboraations to Browse</p>
+          </div>
+        );
+      } else {
+        return (
+          <>
+            <div id="browsecollab" className="container" hidden={hiddenbrowse}>
+              {collablist.map((collab) => (
+                <div key={collab.CollaborationID} className="collabpost">
+                  <div className="card teal darken-3">
+                    <div className="card-content white-text">
+                      <span className="card-title">{collab.Title}</span>
+                      <p>{collab.Description}</p>
                     </div>
-                    <div
-                      className="section col s6"
-                      tm-search-id={collab.TeamMemberSearchID}
-                    >
-                      <h6> I NEED PEOPLE </h6>
-                      <p>
-                        {collab.Role} - {collab.TeamMemberBookingFee}
-                      </p>
+                    <div className="card-content teal lighten-4">
+                      <div className="row">
+                        <div
+                          className="section col s6"
+                          loc-search-id={collab.LocationSearchID}
+                        >
+                          <h6> I NEED A LOCATION </h6>
+                          <p>
+                            {collab.City} - {collab.LocationBookingFee}
+                          </p>
+                        </div>
+                        <div
+                          className="section col s6"
+                          tm-search-id={collab.TeamMemberSearchID}
+                        >
+                          <h6> I NEED PEOPLE </h6>
+                          <p>
+                            {collab.Role} - {collab.TeamMemberBookingFee}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        id={collab.CollaborationID}
+                        className="btn waves-effect waves-light teal darken-3"
+                        type="button"
+                        onClick={this.showJoinCollab}
+                      >
+                        JOIN<i className="material-icons right">send</i>
+                      </button>
                     </div>
                   </div>
-                  <button
-                    id={collab.CollaborationID}
-                    className="btn waves-effect waves-light teal darken-3"
-                    type="button"
-                  >
-                    JOIN<i className="material-icons right">send</i>
-                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div id="joincollab" hidden={hiddenjoin}>
+              <div className="col s12">
+                <div className="teal">
+                  <ul className="tabs tabs-transparent">
+                    <li className="tab col s6">
+                      <a href="#collabsearch">JOIN THE TEAM</a>
+                    </li>
+                    <li className="tab col s6">
+                      <a href="#collabteam">CHECK OUT THE TEAM</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="container">
+                <div id="collabsearch">
+                  <div id="collabsearchinfo" className="section">
+                    <h5>{collabinfo.Title}</h5>
+                    <p>{collabinfo.Date}</p>
+                    <p>{collabinfo.Description}</p>
+                  </div>
+
+                  <div id="locationsearchinfo" className="section">
+                    <h5>Have this location?</h5>
+                    <div>
+                      <p>{collabinfo.City}</p>
+                      <p>{collabinfo.LocationBookingFee}</p>
+                      <p>{collabinfo.LocationDescription}</p>
+                      <button
+                        id="addlocbtn"
+                        className="btn waves-effect waves-light"
+                        type="button"
+                        loc-search-id={collabinfo.LocationSearchID}
+                        onClick={this.addLocationRequest}
+                      >
+                        ADD LOCATION<i className="material-icons right">send</i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div id="teamsearchinfo" className="section">
+                    <h5> Sound like you?</h5>
+                    <div>
+                      <p>{collabinfo.Role}</p>
+                      <p>{collabinfo.TeamMemberBookingFee}</p>
+                      <p>{collabinfo.TeamMemberDescription}</p>
+                      <button
+                        id="jointeambtn"
+                        className="btn waves-effect waves-light"
+                        type="button"
+                        tm-search-id={collabinfo.TeamMemberSearchID}
+                        onClick={this.addTeamRequest}
+                      >
+                        JOIN COLLAB<i className="material-icons right">send</i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="collabteam">
+                  <h5>Check Out The Location</h5>
+                  {this.state.locfound ? (
+                    <table id="collabloctbl" className="highlight">
+                      <thead>
+                        <tr>
+                          <th>Location</th>
+                          <th>Profile</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            {locinfo.Name} {locinfo.City} {locinfo.State}
+                          </td>
+                          <td>
+                            <a className="btn-floating btn-large waves-effect waves-light">
+                              <i className="material-icons">location_on</i>
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  ) : (
+                    <table id="collabloctbl" className="highlight">
+                      <tbody>
+                        <tr>
+                          <td> Location search in progress </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  )}
+
+                  <h5>Check Out The Team</h5>
+                  <table id="collabteamtbl" className="highlight">
+                    <thead>
+                      <tr>
+                        <th>Member</th>
+                        <th>Profile</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {teaminfo.map((member) => (
+                        <tr key={member.UserID}>
+                          <td>
+                            {member.FirstName} {member.LastName} {member.Role}
+                          </td>
+                          <td>
+                            <a className="btn-floating btn-large waves-effect waves-light">
+                              <i className="material-icons">person</i>
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </>
-    );
+          </>
+        );
+      }
+    }
   }
-  return null;
 }
 
 class OwnerSelect extends Component {
@@ -1317,6 +1605,96 @@ class MyCollabs extends Component {
     });
   }
 
+  approveLocRequest = (e) => {
+    var locationID = e.currentTarget.getAttribute("loc-id");
+    var collaborationID = e.currentTarget.getAttribute("collab-id");
+    var locrequestID = e.currentTarget.getAttribute("loc-request-id");
+    var locsearchID = e.currentTarget.getAttribute("loc-search-id");
+    const lrdata = {
+      lid: locationID,
+      cid: collaborationID,
+      lrid: locrequestID,
+      lsid: locsearchID,
+    };
+    console.log(lrdata);
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=approvelocrequest",
+      {
+        method: "POST",
+        body: JSON.stringify(lrdata),
+      }
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 201) {
+        M.toast({ html: "Location Request Approved", classes: "green" });
+      }
+    });
+  };
+
+  denyLocRequest = (e) => {
+    var locrequestID = e.currentTarget.getAttribute("loc-request-id");
+    const lrdata = { lrid: locrequestID };
+    console.log(lrdata);
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=denylocrequests",
+      {
+        method: "POST",
+        body: JSON.stringify(lrdata),
+      }
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 201) {
+        M.toast({ html: "Location Request Denied", classes: "red" });
+      }
+    });
+  };
+
+  approveTeamRequest = (e) => {
+    var role = e.currentTarget.getAttribute("tm-role");
+    var userID = e.currentTarget.getAttribute("user-id");
+    var collaborationID = e.currentTarget.getAttribute("collab-id");
+    var tmrequestID = e.currentTarget.getAttribute("tm-request-id");
+    var tmsearchID = e.currentTarget.getAttribute("tm-search-id");
+    const trdata = {
+      tmrole: role,
+      uid: userID,
+      cid: collaborationID,
+      tmrid: tmrequestID,
+      tmsid: tmsearchID,
+    };
+    console.log(trdata);
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=approveteamrequests",
+      {
+        method: "POST",
+        body: JSON.stringify(trdata),
+      }
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 201) {
+        M.toast({ html: "Team Request Approved", classes: "green" });
+      }
+    });
+  };
+
+  denyTeamRequest = (e) => {
+    var tmrequestID = e.currentTarget.getAttribute("tm-request-id");
+    const trdata = { tmrid: tmrequestID };
+    console.log(trdata);
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=denyteamrequests",
+      {
+        method: "POST",
+        body: JSON.stringify(trdata),
+      }
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 201) {
+        M.toast({ html: "Team Request Denied", classes: "red" });
+      }
+    });
+  };
+
   showMyCollab = (e) => {
     this.setState({ collabinforequested: true });
     var id = e.currentTarget.getAttribute("collab-id");
@@ -1544,6 +1922,7 @@ class MyCollabs extends Component {
                                   collab-id={request.CollaborationID}
                                   loc-request-id={request.LocationRequestID}
                                   loc-search-id={request.LocationSearchID}
+                                  onClick={this.approveLocRequest}
                                 >
                                   <i className="material-icons">done</i>
                                 </a>
@@ -1552,6 +1931,7 @@ class MyCollabs extends Component {
                                 <a
                                   className="btn-floating btn-large waves-effect waves-light red"
                                   loc-request-id={request.LocationRequestID}
+                                  onClick={this.denyLocRequest}
                                 >
                                   <i className="material-icons">clear</i>
                                 </a>
@@ -1585,7 +1965,7 @@ class MyCollabs extends Component {
                     {teaminfo.map((member) => (
                       <tr key={member.UserID}>
                         <td>
-                          {member.FirstName} {member.LastName} {member.Role}{" "}
+                          {member.FirstName} {member.LastName} {member.Role}
                         </td>
                         <td>
                           <a className="btn-floating btn-large waves-effect waves-light">
@@ -1615,28 +1995,30 @@ class MyCollabs extends Component {
                             {member.FirstName} {member.LastName} {member.Role}
                           </td>
                           <td>
-                            <a class="btn-floating btn-large waves-effect waves-light">
-                              <i class="material-icons">person</i>
+                            <a className="btn-floating btn-large waves-effect waves-light">
+                              <i className="material-icons">person</i>
                             </a>
                           </td>
                           <td>
                             <a
-                              class="btn-floating btn-large waves-effect waves-light green"
+                              className="btn-floating btn-large waves-effect waves-light green"
                               tm-role={member.Role}
                               user-id={member.UserID}
                               collab-id={member.CollaborationID}
                               tm-request-id={member.TeamMemberRequestID}
                               tm-search-id={member.TeamMemberSearchID}
+                              onClick={this.approveTeamRequest}
                             >
-                              <i class="material-icons">done</i>
+                              <i className="material-icons">done</i>
                             </a>
                           </td>
                           <td>
                             <a
-                              class="btn-floating btn-large waves-effect waves-light red"
+                              className="btn-floating btn-large waves-effect waves-light red"
                               tm-request-id={member.TeamMemberRequestID}
+                              onClick={this.denyTeamRequest}
                             >
-                              <i class="material-icons">clear</i>
+                              <i className="material-icons">clear</i>
                             </a>
                           </td>
                         </tr>

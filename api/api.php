@@ -252,6 +252,7 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
                 $useraction = 'Browse Collaborations';
                 $db->LogUserRequest($useraction);
                 $result = $db->displayCollabs();
+                http_response_code(200);
             } else {
                 http_response_code(412);
             }
@@ -260,6 +261,7 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
                 $useraction = 'Browse Collaborations';
                 $db->LogUserRequest($useraction);
                 $result = $db->displayCollabs();
+                http_response_code(200);
             } else {
                 http_response_code(412);
             }
@@ -523,6 +525,76 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
     } 
 
     /// REACT CHANGES 
+
+    if ($_GET['getData'] == 'reactaddlocrequest') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        if ($_SESSION['se']->IsLocationLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
+                if ($data->lrsid == '') {
+                    $useraction = 'Failed Submit Location Request';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(400);
+                } else {
+                    $locsearchID = $data->lrsid;
+                    $locationID = $_SESSION["locationID"];
+                    $locationrequestsent = $db->checkLocRequestUser($locationID, $locsearchID);
+                    if ($locationrequestsent == false) {
+                        $db->addLocationRequest($locationID, $locsearchID);
+                        $useraction = 'Submit Location Request';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(201);
+                    } else {
+                        $useraction = 'Failed Submit Location Request';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(406);
+                    }
+                }
+            } else {
+                http_response_code(412);
+            }
+        } else {
+            $useraction = 'Failed Submit Location Request';
+            $db->LogUserRequest($useraction);
+            http_response_code(401);
+        }
+    }
+
+    if ($_GET['getData'] == 'reactaddteamrequest') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        if ($_SESSION['se']->IsUserLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
+        if ($data->tmrsid == '') {
+            $useraction = 'Failed Submit Team Member Request';
+            $db->LogUserRequest($useraction);
+            http_response_code(400);
+        } else {
+            $tmsearchID = $data->tmrsid;
+            $userID = $_SESSION["userID"]; 
+            $tmrequestsent = $db->checkTeamRequestUser($userID, $tmsearchID);
+                if ($tmrequestsent == false) {
+                    $db->addTeamMemberRequest($tmsearchID, $userID);
+                    $useraction = 'Submit Team Member Request';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(201);
+                } else {
+                    $useraction = 'Failed Submit Team Member Request';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(406);
+                }                  
+        }         
+            }  else {
+                http_response_code(412);
+            }
+        } else {
+                $useraction = 'Failed Submit Team Member Request';
+                $db->LogUserRequest($useraction);
+                http_response_code(401);
+            }
+    }
+
+
     if ($_GET['getData'] == 'reactlogin') {
         $json = file_get_contents('php://input');
         $data = json_decode($json);
