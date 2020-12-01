@@ -12,13 +12,13 @@
 
 # TECHNOLOGIES
 
-Materalize - Version 1.0.0, implemented using CDN and installed via npm 
+Materalize - Version 1.0.0, implemented using CDN and installed via npm as the layout framework
 
-React - Version 17.0.1, implemented via npm using create-react-app
+React - Version 17.0.1, implemented via npm using create-react-app as the front end framework for the admin pages
 
 PHP - Version 7.4.12, implemented in the API code
  
-HTML, CSS, and JS 
+HTML, CSS, and JS implemented in additional code added to front end 
 
 # NAVIGATING THE APP 
 Browse Collaborations - All users can browse started collaborations 
@@ -31,10 +31,10 @@ Settings - All users can changes settings
 # CREDENTIALS:
 
 USER account login:
-username: testusertypeloc
-password: Testusertypelocpass1!
+username: testuseracc
+password: Testuseracc1!
 
 LOCATION account login
-username: testlocloguser
-password: Testlocloguser1!
+username: testuserloc
+password: Testuserloc1!
 

@@ -151,7 +151,6 @@ function submitLogin() {
       method: "POST",
       body: formData,
     }).then((response) => {
-      console.log(response);
       if (response.status === 409) {
         M.toast({ html: "You are already logged in", classes: "red" });
       }
@@ -169,7 +168,6 @@ function submitLogin() {
       }
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           localStorage.setItem("loggedinuser", data.username);
           localStorage.setItem("loggedinuserid", data.userid);
           localStorage.setItem("loggedinlocid", data.locid);
@@ -191,7 +189,6 @@ logoutbtn.addEventListener("click", submitLogout, false);
 
 function submitLogout() {
   fetch("../api/api.php?getData=logout").then((response) => {
-    console.log(response);
     if (response.status === 409) {
       M.toast({ html: "You were not logged in", classes: "red" });
       unsetUserSession();
@@ -218,7 +215,6 @@ function submitLocationRequest() {
     method: "POST",
     body: formData,
   }).then((response) => {
-    console.log(response);
     if (response.status === 412) {
       M.toast({ html: "Too Many Requests", classes: "red" });
     }
@@ -248,7 +244,6 @@ function submitTeamRequest() {
     method: "POST",
     body: formData,
   }).then((response) => {
-    console.log(response);
     if (response.status === 412) {
       M.toast({ html: "Too Many Requests", classes: "red" });
     }
@@ -282,12 +277,10 @@ function approveLocationRequests() {
     lrid: locrequestID,
     lsid: locsearchID,
   };
-  console.log(lrdata);
   fetch("../api/api.php?getData=approvelocrequest", {
     method: "POST",
     body: JSON.stringify(lrdata),
   }).then((response) => {
-    console.log(response);
     if (response.status === 201) {
       M.toast({ html: "Location Request Approved", classes: "green" });
     }
@@ -307,12 +300,11 @@ function approveTeamRequests() {
     tmrid: tmrequestID,
     tmsid: tmsearchID,
   };
-  console.log(trdata);
+
   fetch("../api/api.php?getData=approveteamrequests", {
     method: "POST",
     body: JSON.stringify(trdata),
   }).then((response) => {
-    console.log(response);
     if (response.status === 201) {
       M.toast({ html: "Team Request Approved", classes: "green" });
     }
@@ -322,12 +314,11 @@ function approveTeamRequests() {
 function denyLocationRequests() {
   var locrequestID = this.getAttribute("loc-request-id");
   const lrdata = { lrid: locrequestID };
-  console.log(lrdata);
+
   fetch("../api/api.php?getData=denylocrequests", {
     method: "POST",
     body: JSON.stringify(lrdata),
   }).then((response) => {
-    console.log(response);
     if (response.status === 201) {
       M.toast({ html: "Location Request Denied", classes: "red" });
     }
@@ -337,12 +328,11 @@ function denyLocationRequests() {
 function denyTeamRequests() {
   var tmrequestID = this.getAttribute("tm-request-id");
   const trdata = { tmrid: tmrequestID };
-  console.log(trdata);
+
   fetch("../api/api.php?getData=denyteamrequests", {
     method: "POST",
     body: JSON.stringify(trdata),
   }).then((response) => {
-    console.log(response);
     if (response.status === 201) {
       M.toast({ html: "Team Request Denied", classes: "red" });
     }
@@ -379,7 +369,6 @@ function showProfile() {
 
   if (localStorage.getItem("loggedinuserid") != "null") {
     fetch("../api/api.php?getData=displayuserprofile").then((response) => {
-      console.log(response);
       if (response.status === 401) {
         profile.innerHTML = "<p> Please log in to view your profile </p>";
       }
@@ -398,7 +387,6 @@ function showProfile() {
       }
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           profileError.innerHTML = " ";
           profileIMG.hidden = false;
           profileLinks[0].hidden = false;
@@ -415,7 +403,6 @@ function showProfile() {
     });
   } else if (localStorage.getItem("loggedinlocid") != "null") {
     fetch("../api/api.php?getData=displaylocprofile").then((response) => {
-      console.log(response);
       if (response.status === 401) {
         profile.innerHTML = "<p> Please log in to view your profile </p>";
       }
@@ -434,7 +421,6 @@ function showProfile() {
       }
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           profileError.innerHTML = " ";
           profileIMG.hidden = false;
           profileLinks[0].hidden = false;
@@ -490,7 +476,6 @@ function showUserCollab() {
     mycollablisthead.hidden = false;
 
     fetch("../api/api.php?getData=displayusercollabs").then((response) => {
-      console.log(response);
       if (response.status === 412) {
         mycollablisttbl.innerHTML = loader;
         M.toast({ html: "Too Many Requests", classes: "red" });
@@ -505,7 +490,6 @@ function showUserCollab() {
         response
           .json()
           .then((data) => {
-            console.log(data);
             if (data == false) {
               mycollablisttbl.innerHTML =
                 "<tr>" +
@@ -542,7 +526,6 @@ function showUserCollab() {
     });
 
     fetch("../api/api.php?getData=displayuserrequests").then((response) => {
-      console.log(response);
       if (response.status === 401) {
         mycollablisttbl.innerHTML =
           "<tr>" +
@@ -551,7 +534,6 @@ function showUserCollab() {
       }
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           if (data == false) {
             myreqtbl.innerHTML =
               "<tr>" + "<td> You have not made any requests </td>" + "</tr>";
@@ -586,7 +568,6 @@ function showUserCollab() {
       "</tr>";
 
     fetch("../api/api.php?getData=displayuserlocrequests").then((response) => {
-      console.log(response);
       if (response.status === 401) {
         mycollablisttbl.innerHTML =
           "<tr>" +
@@ -595,7 +576,6 @@ function showUserCollab() {
       }
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           if (data == false) {
             myreqtbl.innerHTML =
               "<tr>" + "<td> You have not made any requests </td>" + "</tr>";
@@ -635,7 +615,6 @@ function showMyCollab() {
   viewmycollab.classList.remove("hide");
 
   var id = this.getAttribute("collab-id");
-  console.log(id);
   const ucdata = { collabid: id };
 
   fetch("../api/api.php?getData=displayusercollab", {
@@ -644,7 +623,6 @@ function showMyCollab() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       collabTitle.innerHTML = data.Title;
       collabInfo[0].innerHTML = data.Date;
       collabInfo[1].innerHTML = data.Description;
@@ -656,7 +634,6 @@ function showMyCollab() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       if (data == false) {
         mycollabloctbl.innerHTML =
           "<tr>" + "<td> Location search in progress </td>" + "</tr>";
@@ -666,7 +643,6 @@ function showMyCollab() {
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log(data);
             if (data == false) {
               mycollablocreqtbl.innerHTML =
                 "<tr>" + "<td> No location requests </td>" + "</tr>";
@@ -746,7 +722,6 @@ function showMyCollab() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       mycollabteam.innerHTML = " ";
       data.forEach((row) => {
         mycollabteam.innerHTML +=
@@ -769,7 +744,6 @@ function showMyCollab() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       if (data == false) {
         mycollabteamreqtbl.innerHTML =
           "<tr>" + "<td> No team requests </td>" + "</tr>";
@@ -837,7 +811,6 @@ function showBrowseCollab() {
   var collabpost = document.querySelector("#browsecollab");
   collabpost.innerHTML = loader;
   fetch("../api/api.php?getData=displaycollabs").then((response) => {
-    console.log(response);
     if (response.status === 412) {
       M.toast({ html: "Too Many Requests", classes: "red" });
     }
@@ -845,7 +818,6 @@ function showBrowseCollab() {
       response
         .json()
         .then((data) => {
-          console.log(data);
           if (data == false) {
             collabpost.innerHTML = " ";
             collabpost.innerHTML = "<p> No Collabs Found </p>";
@@ -939,7 +911,6 @@ function showJoinCollab() {
   joincollab.classList.remove("hide");
   localStorage.setItem("selectedpage", "joincollab");
   var id = this.getAttribute("id");
-  console.log(id);
   const cdata = { collabid: id };
   fetch("../api/api.php?getData=displaycollab", {
     method: "POST",
@@ -947,7 +918,6 @@ function showJoinCollab() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       collabSearchTitle.innerHTML = data.Title;
       collabSearchInfo[0].innerHTML = data.Date;
       collabSearchInfo[1].innerHTML = data.Description;
@@ -984,7 +954,6 @@ function showJoinCollab() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       collabteam.innerHTML = " ";
       data.forEach((row) => {
         collabteam.innerHTML +=
@@ -1007,7 +976,6 @@ function showJoinCollab() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       if (data == false) {
         collabloctbl.innerHTML =
           "<tr>" + "<td> Location Search In Progress</td>" + "</tr>";
@@ -1145,7 +1113,6 @@ function submitCollab() {
       method: "POST",
       body: formData,
     }).then((response) => {
-      console.log(response);
       if (response.status === 412) {
         M.toast({ html: "Too Many Requests", classes: "red" });
       }
@@ -1510,7 +1477,6 @@ function registerUser() {
       method: "POST",
       body: formData,
     }).then((response) => {
-      console.log(response);
       if (response.status === 412) {
         M.toast({ html: "Too Many Requests", classes: "red" });
       }
