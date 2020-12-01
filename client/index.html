@@ -22,10 +22,14 @@
     <meta name="apple-mobile-web-app-stautus-bar-style" content="default">
     <link rel="apple-touch-startup-image" href="apple-touch-icon.png">
 
-    <link rel="apple-touch-startup-image" href="apple-splash-640.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="apple-splash-750.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="apple-splash-1242.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="apple-splash-1125.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="apple-splash-640.png"
+        media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="apple-splash-750.png"
+        media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="apple-splash-1242.png"
+        media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="apple-splash-1125.png"
+        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
 </head>
 
 <body>
@@ -74,14 +78,16 @@
                         <legend>Collaboration Details <i class="small material-icons">info</i></legend>
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="ctitle" name="ctitle" class="validate" type="text" minlength="2" maxlength="50" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                <input id="ctitle" name="ctitle" class="validate" type="text" minlength="2"
+                                    maxlength="50" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
                                 <label for="ctitle">Collaboration Title</label>
                                 <span id="ctitleerror" class="helper-text"></span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
-                                <textarea id="cdescript" name="cdescript" class="materialize-textarea validate" required></textarea>
+                                <textarea id="cdescript" name="cdescript" class="materialize-textarea validate"
+                                    required></textarea>
                                 <label for="cdescript">Collaboration Description</label>
                                 <span id="cdescripterror" class="helper-text"></span>
                             </div>
@@ -118,7 +124,8 @@
                         <fieldset id="addlocation" hidden>
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="locationuname" name="locationuname" class="validate" type="text" minlength="5" maxlength="30" required>
+                                    <input id="locationuname" name="locationuname" class="validate" type="text"
+                                        minlength="5" maxlength="30" required>
                                     <label for="locationuname">Username</label>
                                     <span id="locationunameerror" class="helper-text"></span>
                                 </div>
@@ -136,7 +143,8 @@
                         <fieldset id="searchlocation" hidden>
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="lcity" name="lcity" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <input id="lcity" name="lcity" class="validate" type="text" minlength="2"
+                                        maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
                                     <label for="lcity">City</label>
                                     <span id="lcityerror" class="helper-text"></span>
                                 </div>
@@ -144,7 +152,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="lbookingfee" name="lbookingfee" class="validate" type="number" min="0" max="1000000" required>
+                                    <input id="lbookingfee" name="lbookingfee" class="validate" type="number" min="0"
+                                        max="1000000" required>
                                     <label for="lbookingfee">Booking Fee</label>
                                     <span id="lbookingfeeerror" class="helper-text"></span>
                                 </div>
@@ -152,7 +161,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <textarea id="ldescript" name="ldescript" class="materialize-textarea validate" required></textarea>
+                                    <textarea id="ldescript" name="ldescript" class="materialize-textarea validate"
+                                        required></textarea>
                                     <label for="ldescript">Description</label>
                                     <span id="ldescripterror" class="helper-text"></span>
                                 </div>
@@ -199,7 +209,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="tmuname" name="tmuname" class="validate" type="text" minlength="5" maxlength="30" required>
+                                    <input id="tmuname" name="tmuname" class="validate" type="text" minlength="5"
+                                        maxlength="30" required>
                                     <label for="tmuname">Username</label>
                                     <span id="tmunameerror" class="helper-text"></span>
                                 </div>
@@ -230,7 +241,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="tmbookingfee" name="tmbookingfee" class="validate" type="number" min="0" max="1000000" required>
+                                    <input id="tmbookingfee" name="tmbookingfee" class="validate" type="number" min="0"
+                                        max="1000000" required>
                                     <label for="tmbookingfee">Booking Fee</label>
                                     <span id="tmbookingfeeerror" class="helper-text"></span>
                                 </div>
@@ -238,7 +250,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <textarea id="tmdescript" name="tmdescript" class="materialize-textarea validate" required></textarea>
+                                    <textarea id="tmdescript" name="tmdescript" class="materialize-textarea validate"
+                                        required></textarea>
                                     <label for="tmdescript">Description</label>
                                     <span id="tmdescripterror" class="helper-text"></span>
                                 </div>
@@ -247,7 +260,8 @@
                     </fieldset>
 
                     <fieldset>
-                        <button id="submitcollabbtn" class="btn waves-effect waves-light" type="button" disabled>Submit<i class="material-icons right">send</i></button>
+                        <button id="submitcollabbtn" class="btn waves-effect waves-light" type="button"
+                            disabled>Submit<i class="material-icons right">send</i></button>
                     </fieldset>
 
                 </form>
@@ -295,7 +309,8 @@
                     <fieldset>
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="uname" name="uname" class="validate" type="text" minlength="5" maxlength="30" required>
+                                <input id="uname" name="uname" class="validate" type="text" minlength="5" maxlength="30"
+                                    required>
                                 <label for="uname">Username</label>
                                 <span id="unameerror" class="helper-text"></span>
                             </div>
@@ -303,7 +318,9 @@
 
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="pword" name="pword" class="validate" type="password" minlength="8" maxlength="255" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
+                                <input id="pword" name="pword" class="validate" type="password" minlength="8"
+                                    maxlength="255"
+                                    pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
                                 <label for="pword">Password</label>
                                 <span id="pworderror" class="helper-text"></span>
                             </div>
@@ -311,7 +328,9 @@
 
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="cnfpword" name="cnfpword" class="validate" type="password" minlength="8" maxlength="255" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
+                                <input id="cnfpword" name="cnfpword" class="validate" type="password" minlength="8"
+                                    maxlength="255"
+                                    pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$" required>
                                 <label for="cnfpword">Confirm Password</label>
                                 <span id="cnfpworderror" class="helper-text"></span>
                             </div>
@@ -319,7 +338,8 @@
 
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="email" name="email" class="validate" type="email" minlength="5" maxlength="50" pattern="^.+@.+\..+$" required>
+                                <input id="email" name="email" class="validate" type="email" minlength="5"
+                                    maxlength="50" pattern="^.+@.+\..+$" required>
                                 <label for="email">Email</label>
                                 <span id="emailerror" class="helper-text"></span>
                             </div>
@@ -335,7 +355,8 @@
 
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="ighandle" name="ighandle" class="validate" type="text" maxlength="30" required>
+                                <input id="ighandle" name="ighandle" class="validate" type="text" maxlength="30"
+                                    required>
                                 <label for="ighandle">Instagram Handle</label>
                                 <span id="ighandleerror" class="helper-text"></span>
                             </div>
@@ -343,7 +364,8 @@
 
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="workurl" name="workurl" class="validate" type="text" maxlength="255" required>
+                                <input id="workurl" name="workurl" class="validate" type="text" maxlength="255"
+                                    required>
                                 <label for="workurl">Portfolio OR Website URL</label>
                                 <span id="workurlerror" class="helper-text"></span>
                             </div>
@@ -360,7 +382,8 @@
                         <fieldset id="adduseracc" hidden>
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="fname" name="fname" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <input id="fname" name="fname" class="validate" type="text" minlength="2"
+                                        maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
                                     <label for="fname">First Name</label>
                                     <span id="fnameerror" class="helper-text"></span>
                                 </div>
@@ -368,7 +391,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="lname" name="lname" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <input id="lname" name="lname" class="validate" type="text" minlength="2"
+                                        maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
                                     <label for="lname">Last Name</label>
                                     <span id="lnameerror" class="helper-text"></span>
                                 </div>
@@ -396,7 +420,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="locname" name="locname" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <input id="locname" name="locname" class="validate" type="text" minlength="2"
+                                        maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
                                     <label for="locname">Location Name</label>
                                     <span id="locnameerror" class="helper-text"></span>
                                 </div>
@@ -404,7 +429,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="locaddress" name="locaddress" class="validate" type="text" minlength="2" maxlength="255" required>
+                                    <input id="locaddress" name="locaddress" class="validate" type="text" minlength="2"
+                                        maxlength="255" required>
                                     <label for="locaddress">Address</label>
                                     <span id="locaddresserror" class="helper-text"></span>
                                 </div>
@@ -412,7 +438,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="loccity" name="loccity" class="validate" type="text" minlength="2" maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
+                                    <input id="loccity" name="loccity" class="validate" type="text" minlength="2"
+                                        maxlength="255" pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$" required>
                                     <label for="loccity">City</label>
                                     <span id="loccityerror" class="helper-text"></span>
                                 </div>
@@ -420,7 +447,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="locstate" name="locstate" class="validate" type="text" minlength="2" maxlength="3" pattern="^[A-Z]*$" required>
+                                    <input id="locstate" name="locstate" class="validate" type="text" minlength="2"
+                                        maxlength="3" pattern="^[A-Z]*$" required>
                                     <label for="locstate">State</label>
                                     <span id="locstateerror" class="helper-text"></span>
                                 </div>
@@ -428,7 +456,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="locpostcode" name="locpostcode" class="validate" type="number" max="9999" required>
+                                    <input id="locpostcode" name="locpostcode" class="validate" type="number" max="9999"
+                                        required>
                                     <label for="locpostcode">Post Code</label>
                                     <span id="locpostcodeerror" class="helper-text"></span>
                                 </div>
@@ -460,7 +489,8 @@
                             </div>
                             <div class="modal-footer">
                                 <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="agree">Agree</a>
-                                <a href="#!" class="modal-close waves-effect waves-red btn-flat" id="disagree">Disagree</a>
+                                <a href="#!" class="modal-close waves-effect waves-red btn-flat"
+                                    id="disagree">Disagree</a>
                             </div>
                         </div>
                     </fieldset>
@@ -494,7 +524,8 @@
                             </div>
 
                             <div class="row">
-                                <button id="loginbtn" class="modal-close btn waves-effect waves-light" type="button">LOGIN<i class="material-icons right">send</i></button>
+                                <button id="loginbtn" class="modal-close btn waves-effect waves-light"
+                                    type="button">LOGIN<i class="material-icons right">send</i></button>
                             </div>
 
 
@@ -741,6 +772,44 @@
 
     <!-- END JOIN COLLAB -->
 
+    <!-- HELP TEXT  -->
+
+    <div id="helptext" class="modal">
+        <div class="modal-content">
+            <h4>HTML Help Document</h4>
+            <h6>Installation</h6>
+            <p>1. Upload a copy of the site files and folders as found in the git repo
+                https://github.com/rachelpac/letscollab to the local root directory of your local web server (MAMP or
+                WAMP etc.) OR to the root directory (public_html folder) of your hosting environment</p>
+            <p>2. Create a database, add a user and set privileges using MySQL Databases in the C-Panel of the hosting
+                environment OR phpMyAdmin of your local web server</p>
+            <p>3. Import a copy of the database file letscollab.sql found at in the /api/sql folder to the database
+                created in phpMyAdmin</p>
+            <p>4. Add localhost or your site domain to the CheckRefer() function by editing the ses.php file found in
+                the /api folder</p>
+            <p>5. Update the fetch request URLS to match your site domain or localhost. </p>
+            <p>6. Change the database name, user and password to the credentials you created above by editing the
+                credentials in the database connection object found in the file db.php in the /api folder </p>
+            <p>7. Access the site on your local web server or live on the domain</p>
+
+            <h6>Navigating the Application</h6>
+            <ul>
+                <li>Browse Collaborations - All users can browse started collaborations by clicking the icon<i
+                        class="material-icons">search</i></li>
+                <li>Start Collaborations - Registered user accounts can start collaborations by clicking the icon <i
+                        class="material-icons">add</i></li>
+                <li>SignUp/ Login - Registered users can log in and unregistered users can sign up by clicking the
+                    icon<i class="material-icons">login</i></li>
+                <li>My Collaborations - Registered users can view collaboration they have started or joined by clicking
+                    the icon<i class="material-icons">group</i></li>
+                <li>My Profile - Registered users can view their profiles by clicking the icon<i
+                        class="material-icons">person</i></li>
+                <li>Settings - All users can changes settings by clicking the icon<i class="material-icons">settings</i>
+                </li>
+            </ul>
+        </div>
+    </div>
+
     <nav class="teal">
         <ul id="bottom-nav">
             <li><a href="#browsecollab"><i class="material-icons">search</i></a></li>
@@ -748,6 +817,7 @@
             <li><a href="#usercollab"><i class="material-icons">group</i></a></li>
             <li><a href="#profile"><i class="material-icons">person</i></a></li>
             <li><a href="#signup"><i class="material-icons">login</i></a></li>
+            <li><a class="modal-trigger" href="#helptext"><i class="material-icons">help</i></a></li>
         </ul>
     </nav>
 
