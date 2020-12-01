@@ -641,6 +641,103 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
 
     }
 
+    if ($_GET['getData'] == 'reactaddcollab') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        if ($_SESSION['se']->IsUserLoggedIn()) {
+            if ($_SESSION['se']->IsRequestOkUser()) {
+                if (($data->ctitle == '') || ($data->cdescript == '') || ($data->cdate == '') || ($data->ctime == '') || ($data->ownerrole == '')) {
+                    $useraction = 'Failed Submit Collaboration';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(400);
+                } else if (($data->hiddenaddloc == false) && ($data->locationuname == '')) {
+                    $useraction = 'Failed Submit Collaboration';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(400);
+                } else if (($data->hiddensearchloc == false) && (($data->lcity == '') || ($data->lbookingfee == '') || ($data->ldescript == ''))) {
+                    $useraction = 'Failed Submit Collaboration';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(400);
+                } else if (($data->hiddenaddmember == false) && (($data->tmuname == '') || ($data->tmrole == ''))) {
+                    $useraction = 'Failed Submit Collaboration';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(400);
+                } else if (($data->hiddensearchmember == false) && (($data->tmsearchrole == '') || ($data->tmbookingfee == '') || ($data->tmdescript == ''))) {
+                    $useraction = 'Failed Submit Collaboration';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(400);
+                } else {
+                    $title = $db->inputFilter($data->ctitle);
+                    $description = $db->inputFilter($data->cdescript);
+                    $date = $db->inputFilter($data->cdate);
+                    $time = $db->inputFilter($data->ctime);
+                    $datetime = $date . " " . $time;
+                    $datetime = date('Y-m-d H:i:s', strtotime($datetime));
+                    $ownerrole = $db->inputFilter($data->ownerrole);
+                    $userID = $_SESSION["userID"];
+
+                    if ($data->hiddenaddloc == false) {
+                        $locationusername = $db->inputFilter($data->locationuname);
+                        $locationexists = $db->checkLocation($locationusername);
+                    }
+
+                    if ($data->hiddenaddmember == false) {
+                        $tmusername = $db->inputFilter($data->tmuname);
+                        $tmrole = $db->inputFilter($data->tmrole);
+                        $userexists = $db->checkUser($tmusername);
+                    }
+
+                    if ($data->hiddensearchloc == false) {
+                        $locationcity = $db->inputFilter($data->lcity);
+                        $locationbookingfee = $db->inputFilter($data->lbookingfee);
+                        $locationdescript = $db->inputFilter($data->ldescript);
+                    }
+
+                    if ($data->hiddensearchmember == false) {
+                        $tmsearchrole = $db->inputFilter($data->tmsearchrole);
+                        $tmbookingfee = $db->inputFilter($data->tmbookingfee);
+                        $tmdescription = $db->inputFilter($data->tmdescript);
+                    }
+                }
+
+                if ((($data->hiddenaddloc == false) && ($locationexists == false)) || (($data->hiddenaddmember == false) && ($userexists == false))) {
+                    $useraction = 'Failed Submit Collaboration';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(404);
+                } else {
+                    $insertcollab = $db->addCollab($title, $description, $datetime, $userID);
+                    $collaborationID = $insertcollab;
+                    $db->addTeamMember($ownerrole, $userID, $collaborationID);
+
+                    if ($data->hiddenaddloc == false) {
+                        $locationID = $locationexists;
+                        $db->addLocation($locationID, $collaborationID);
+                    }
+                    if ($data->hiddensearchloc == false) {
+                        $db->addLocationSearch($locationcity, $locationbookingfee, $locationdescript, $collaborationID);
+                    }
+                    if ($data->hiddenaddmember == false) {
+                        $userID = $userexists;
+                        $db->addTeamMember($tmrole, $userID, $collaborationID);
+                    }
+                    if ($data->hiddensearchmember == false) {
+                        $db->addTeamMemberSearch($tmsearchrole, $tmbookingfee, $tmdescription, $collaborationID);
+                    }
+                    $useraction = 'Submit Collaboration';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(201);
+                }
+            } else {
+                http_response_code(412);
+            }
+
+        } else {
+            $useraction = 'Failed Submit Collaboration';
+            $db->LogUserRequest($useraction);
+            http_response_code(401);
+        }
+    } // end addcolab
+
     if ($_GET['getData'] == 'nulluser') {
         http_response_code(401);
     }

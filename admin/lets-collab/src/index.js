@@ -100,7 +100,7 @@ function Navigation() {
       ) : viewMenuItem === "signup" ? (
         <SignUp />
       ) : (
-        <h3>There was an issue loading the page</h3>
+        <h6>There was an issue loading the page</h6>
       )}
 
       <nav className="teal">
@@ -128,14 +128,13 @@ class BrowseCollabs extends Component {
     teaminfo: [],
     locfound: false,
     locinfo: [],
-    hiddenbrowse: false,
-    hiddenjoin: true,
+    joincollabrequested: false,
   };
 
   componentDidMount() {
     M.AutoInit();
     fetch(
-      "https://rachelpac.com/api/api.php?getData=displaycollabs"
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollabs"
     ).then((response) => {
       console.log(response);
       if (response.status === 412) {
@@ -156,7 +155,7 @@ class BrowseCollabs extends Component {
     const lrdata = { lrsid: locreqsearchid };
     console.log(lrdata);
     fetch(
-      "https://rachelpac.com/api/api.php?getData=reactaddlocrequest",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddlocrequest",
       {
         method: "POST",
         body: JSON.stringify(lrdata),
@@ -190,7 +189,7 @@ class BrowseCollabs extends Component {
     const tmrdata = { tmrsid: teamreqsearchid };
     console.log(tmrdata);
     fetch(
-      "https://rachelpac.com/api/api.php?getData=reactaddteamrequest",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddteamrequest",
       {
         method: "POST",
         body: JSON.stringify(tmrdata),
@@ -220,12 +219,12 @@ class BrowseCollabs extends Component {
   };
 
   showJoinCollab = (e) => {
-    this.setState({ hiddenjoin: false, hiddenbrowse: true });
+    this.setState({ joincollabrequested: true });
     var id = e.currentTarget.getAttribute("id");
     console.log(id);
     const collabid = { collabid: id };
     fetch(
-      "https://rachelpac.com/api/api.php?getData=displaycollab",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollab",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -238,7 +237,7 @@ class BrowseCollabs extends Component {
       });
 
     fetch(
-      "https://rachelpac.com/api/api.php?getData=displayteam",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayteam",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -251,7 +250,7 @@ class BrowseCollabs extends Component {
       });
 
     fetch(
-      "https://rachelpac.com/api/api.php?getData=displaylocation",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaylocation",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -278,8 +277,7 @@ class BrowseCollabs extends Component {
       teaminfo,
       locfound,
       locinfo,
-      hiddenbrowse,
-      hiddenjoin,
+      joincollabrequested,
     } = this.state;
     if (!loaded) {
       return <Loader />;
@@ -297,9 +295,10 @@ class BrowseCollabs extends Component {
           </div>
         );
       } else {
+        M.AutoInit();
         return (
           <>
-            <div id="browsecollab" className="container" hidden={hiddenbrowse}>
+            <div id="browsecollab" className="container">
               {collablist.map((collab) => (
                 <div key={collab.CollaborationID} className="collabpost">
                   <div className="card teal darken-3">
@@ -342,124 +341,132 @@ class BrowseCollabs extends Component {
               ))}
             </div>
 
-            <div id="joincollab" hidden={hiddenjoin}>
-              <div className="col s12">
-                <div className="teal">
-                  <ul className="tabs tabs-transparent">
-                    <li className="tab col s6">
-                      <a href="#collabsearch">JOIN THE TEAM</a>
-                    </li>
-                    <li className="tab col s6">
-                      <a href="#collabteam">CHECK OUT THE TEAM</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="container">
-                <div id="collabsearch">
-                  <div id="collabsearchinfo" className="section">
-                    <h5>{collabinfo.Title}</h5>
-                    <p>{collabinfo.Date}</p>
-                    <p>{collabinfo.Description}</p>
-                  </div>
-
-                  <div id="locationsearchinfo" className="section">
-                    <h5>Have this location?</h5>
-                    <div>
-                      <p>{collabinfo.City}</p>
-                      <p>{collabinfo.LocationBookingFee}</p>
-                      <p>{collabinfo.LocationDescription}</p>
-                      <button
-                        id="addlocbtn"
-                        className="btn waves-effect waves-light"
-                        type="button"
-                        loc-search-id={collabinfo.LocationSearchID}
-                        onClick={this.addLocationRequest}
-                      >
-                        ADD LOCATION<i className="material-icons right">send</i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div id="teamsearchinfo" className="section">
-                    <h5> Sound like you?</h5>
-                    <div>
-                      <p>{collabinfo.Role}</p>
-                      <p>{collabinfo.TeamMemberBookingFee}</p>
-                      <p>{collabinfo.TeamMemberDescription}</p>
-                      <button
-                        id="jointeambtn"
-                        className="btn waves-effect waves-light"
-                        type="button"
-                        tm-search-id={collabinfo.TeamMemberSearchID}
-                        onClick={this.addTeamRequest}
-                      >
-                        JOIN COLLAB<i className="material-icons right">send</i>
-                      </button>
-                    </div>
+            {this.state.joincollabrequested ? (
+              <div id="joincollab">
+                <div className="col s12">
+                  <div className="teal">
+                    <ul className="tabs tabs-transparent">
+                      <li className="tab col s6">
+                        <a href="#collabsearch">JOIN THE TEAM</a>
+                      </li>
+                      <li className="tab col s6">
+                        <a href="#collabteam">CHECK OUT THE TEAM</a>
+                      </li>
+                    </ul>
                   </div>
                 </div>
 
-                <div id="collabteam">
-                  <h5>Check Out The Location</h5>
-                  {this.state.locfound ? (
-                    <table id="collabloctbl" className="highlight">
+                <div className="container">
+                  <div id="collabsearch">
+                    <div id="collabsearchinfo" className="section">
+                      <h5>{collabinfo.Title}</h5>
+                      <p>{collabinfo.Date}</p>
+                      <p>{collabinfo.Description}</p>
+                    </div>
+
+                    <div id="locationsearchinfo" className="section">
+                      <h5>Have this location?</h5>
+                      <div>
+                        <p>{collabinfo.City}</p>
+                        <p>{collabinfo.LocationBookingFee}</p>
+                        <p>{collabinfo.LocationDescription}</p>
+                        <button
+                          id="addlocbtn"
+                          className="btn waves-effect waves-light"
+                          type="button"
+                          loc-search-id={collabinfo.LocationSearchID}
+                          onClick={this.addLocationRequest}
+                        >
+                          ADD LOCATION
+                          <i className="material-icons right">send</i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div id="teamsearchinfo" className="section">
+                      <h5> Sound like you?</h5>
+                      <div>
+                        <p>{collabinfo.Role}</p>
+                        <p>{collabinfo.TeamMemberBookingFee}</p>
+                        <p>{collabinfo.TeamMemberDescription}</p>
+                        <button
+                          id="jointeambtn"
+                          className="btn waves-effect waves-light"
+                          type="button"
+                          tm-search-id={collabinfo.TeamMemberSearchID}
+                          onClick={this.addTeamRequest}
+                        >
+                          JOIN COLLAB
+                          <i className="material-icons right">send</i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="collabteam">
+                    <h5>Check Out The Location</h5>
+                    {this.state.locfound ? (
+                      <table id="collabloctbl" className="highlight">
+                        <thead>
+                          <tr>
+                            <th>Location</th>
+                            <th>Profile</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>
+                              {locinfo.Name} {locinfo.City} {locinfo.State}
+                            </td>
+                            <td>
+                              <a className="btn-floating btn-large waves-effect waves-light">
+                                <i className="material-icons">location_on</i>
+                              </a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    ) : (
+                      <table id="collabloctbl" className="highlight">
+                        <tbody>
+                          <tr>
+                            <td> Location search in progress </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    )}
+
+                    <h5>Check Out The Team</h5>
+                    <table id="collabteamtbl" className="highlight">
                       <thead>
                         <tr>
-                          <th>Location</th>
+                          <th>Member</th>
                           <th>Profile</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>
-                            {locinfo.Name} {locinfo.City} {locinfo.State}
-                          </td>
-                          <td>
-                            <a className="btn-floating btn-large waves-effect waves-light">
-                              <i className="material-icons">location_on</i>
-                            </a>
-                          </td>
-                        </tr>
+                        {teaminfo.map((member) => (
+                          <tr key={member.UserID}>
+                            <td>
+                              {member.FirstName} {member.LastName} {member.Role}
+                            </td>
+                            <td>
+                              <a className="btn-floating btn-large waves-effect waves-light">
+                                <i className="material-icons">person</i>
+                              </a>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
-                  ) : (
-                    <table id="collabloctbl" className="highlight">
-                      <tbody>
-                        <tr>
-                          <td> Location search in progress </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  )}
-
-                  <h5>Check Out The Team</h5>
-                  <table id="collabteamtbl" className="highlight">
-                    <thead>
-                      <tr>
-                        <th>Member</th>
-                        <th>Profile</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {teaminfo.map((member) => (
-                        <tr key={member.UserID}>
-                          <td>
-                            {member.FirstName} {member.LastName} {member.Role}
-                          </td>
-                          <td>
-                            <a className="btn-floating btn-large waves-effect waves-light">
-                              <i className="material-icons">person</i>
-                            </a>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div id="joincollab">
+                <h6>Select A Collab to Join</h6>
+              </div>
+            )}
           </>
         );
       }
@@ -467,398 +474,510 @@ class BrowseCollabs extends Component {
   }
 }
 
-class OwnerSelect extends Component {
+class StartCollab extends Component {
   componentDidMount() {
     M.AutoInit();
   }
+
+  state = {
+    hiddenaddloc: true,
+    disablesearchloc: false,
+    hiddensearchloc: true,
+    disableaddloc: false,
+    hiddenaddmember: true,
+    hiddensearchmember: true,
+    ctitle: "",
+    cdescript: "",
+    cdate: "Dec 15, 2020",
+    ctime: "09:00 AM",
+    ownerrole: "",
+    locationuname: "",
+    tmuname: "",
+    tmrole: "",
+    lcity: "",
+    lbookingfee: "",
+    ldescript: "",
+    tmsearchrole: "",
+    tmbookingfee: "",
+    tmdescript: "",
+  };
+
+  toggleaddloc = () => {
+    this.setState((prevState) => ({
+      hiddenaddloc: !prevState.hiddenaddloc,
+    }));
+  };
+
+  toggledisablesearchloc = () => {
+    this.setState((prevState) => ({
+      disablesearchloc: !prevState.disablesearchloc,
+    }));
+  };
+
+  togglesearchloc = () => {
+    this.setState((prevState) => ({
+      hiddensearchloc: !prevState.hiddensearchloc,
+    }));
+  };
+
+  toggledisableaddloc = () => {
+    this.setState((prevState) => ({
+      disableaddloc: !prevState.disableaddloc,
+    }));
+  };
+
+  toggleaddmember = () => {
+    this.setState((prevState) => ({
+      hiddenaddmember: !prevState.hiddenaddmember,
+    }));
+  };
+
+  togglesearchmember = () => {
+    this.setState((prevState) => ({
+      hiddensearchmember: !prevState.hiddensearchmember,
+    }));
+  };
+
+  AddLocEvents = () => {
+    this.toggleaddloc();
+    this.toggledisablesearchloc();
+  };
+
+  SearchLocEvents = () => {
+    this.togglesearchloc();
+    this.toggledisableaddloc();
+  };
+
+  onChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  onSubmit = (e) => {
+    e.preventDefault();
+    fetch(
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddcollab",
+      {
+        method: "POST",
+        body: JSON.stringify(this.state),
+      }
+    ).then((response) => {
+      console.log(response);
+      if (response.status === 412) {
+        M.toast({ html: "Too Many Requests", classes: "red" });
+      }
+      if (response.status === 401) {
+        M.toast({
+          html:
+            "You must be logged in to a User Account to submit a collaboration",
+          classes: "red",
+        });
+      }
+      if (response.status === 400) {
+        M.toast({ html: "Collaboration could not be added", classes: "red" });
+      }
+      if (response.status === 404) {
+        M.toast({
+          html: "User not found and could not be added",
+          classes: "red",
+        });
+      }
+      if (response.status === 201) {
+        M.toast({ html: "Collaboration submitted", classes: "green" });
+      }
+    });
+  };
+
   render() {
+    const {
+      hiddenaddloc,
+      disablesearchloc,
+      hiddensearchloc,
+      disableaddloc,
+      hiddenaddmember,
+      hiddensearchmember,
+      ctitle,
+      cdescript,
+      cdate,
+      ctime,
+      ownerrole,
+      locationuname,
+      tmuname,
+      tmrole,
+      lcity,
+      lbookingfee,
+      ldescript,
+      tmsearchrole,
+      tmbookingfee,
+      tmdescript,
+    } = this.state;
     return (
-      <div className="row">
-        <div className="input-field col s12">
-          <select id="ownerrole" name="ownerrole" className="validate" required>
-            <option value="" disabled>
-              Choose your role
-            </option>
-            <option value="photographer">Photographer</option>
-            <option value="model">Model</option>
-            <option value="makeupartist">Make-up Artist</option>
-          </select>
-          <label htmlFor="ownerrole">My Role</label>
-          <span id="ownerroleerror" className="helper-text"></span>
-        </div>
-      </div>
-    );
-  }
-}
-
-class TeamMemberSearchSelect extends Component {
-  componentDidMount() {
-    M.AutoInit();
-  }
-  render() {
-    return (
-      <div className="row">
-        <div className="input-field col s12">
-          <select
-            id="tmsearchrole"
-            name="tmsearchrole"
-            className="validate"
-            required
-          >
-            <option value="" disabled>
-              Choose their role
-            </option>
-            <option value="photographer">Photographer</option>
-            <option value="model">Model</option>
-            <option value="makeupartist">Make-up Artist</option>
-          </select>
-          <label htmlFor="tmsearchrole">Role</label>
-          <span id="tmsearchroleerror" className="helper-text"></span>
-        </div>
-      </div>
-    );
-  }
-}
-
-class TeamMemberAddSelect extends Component {
-  componentDidMount() {
-    M.AutoInit();
-  }
-  render() {
-    return (
-      <div className="row">
-        <div className="input-field col s12">
-          <select id="tmrole" name="tmrole" className="validate" required>
-            <option value="" disabled>
-              Choose their role
-            </option>
-            <option value="photographer">Photographer</option>
-            <option value="model">Model</option>
-            <option value="makeupartist">Make-up Artist</option>
-          </select>
-          <label htmlFor="tmrole">Role</label>
-          <span id="tmroleerror" className="helper-text"></span>
-        </div>
-      </div>
-    );
-  }
-}
-
-function StartCollab() {
-  const [hiddenaddloc, toggleaddloc] = useReducer((hidden) => !hidden, true);
-  const [disablesearchloc, toggledisablesearchloc] = useReducer(
-    (disabled) => !disabled,
-    false
-  );
-  const [hiddensearchloc, togglesearchloc] = useReducer(
-    (hidden) => !hidden,
-    true
-  );
-  const [disableaddloc, toggledisableaddloc] = useReducer(
-    (disabled) => !disabled,
-    false
-  );
-  const [hiddenaddmember, toggleaddmember] = useReducer(
-    (hidden) => !hidden,
-    true
-  );
-  const [hiddensearchmember, togglesearchmember] = useReducer(
-    (hidden) => !hidden,
-    true
-  );
-
-  function AddLocEvents() {
-    toggleaddloc();
-    toggledisablesearchloc();
-  }
-
-  function SearchLocEvents() {
-    togglesearchloc();
-    toggledisableaddloc();
-  }
-
-  return (
-    <>
-      <div id="startcollab" className="container">
-        <div className="row">
-          <form
-            id="submitcollabform"
-            method="POST"
-            action="../api/api.php?getData=addcollab"
-            className="col s12"
-          >
-            <fieldset>
-              <legend>
-                Collaboration Details{" "}
-                <i className="small material-icons">info</i>
-              </legend>
-              <div className="row">
-                <div className="input-field col s12">
-                  <input
-                    id="ctitle"
-                    name="ctitle"
-                    className="validate"
-                    type="text"
-                    minLength="2"
-                    maxLength="50"
-                    pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
-                    required
-                  />
-                  <label htmlFor="ctitle">Collaboration Title</label>
-                  <span id="ctitleerror" className="helper-text"></span>
-                </div>
-              </div>
-              <div className="row">
-                <div className="input-field col s12">
-                  <textarea
-                    id="cdescript"
-                    name="cdescript"
-                    className="materialize-textarea validate"
-                    required
-                  ></textarea>
-                  <label htmlFor="cdescript">Collaboration Description</label>
-                  <span id="cdescripterror" className="helper-text"></span>
-                </div>
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend>
-                When is the Collaboration?
-                <i className="small material-icons">today</i>
-              </legend>
-              <div className="row">
-                <div className="col s6">
-                  <label htmlFor="cdate">Date</label>
-                  <input
-                    id="cdate"
-                    name="cdate"
-                    type="text"
-                    className="datepicker validate"
-                    required
-                  />
-                  <span id="cdateerror" className="helper-text"></span>
-                </div>
-                <div className="col s6">
-                  <label htmlFor="ctime">Time</label>
-                  <input
-                    id="ctime"
-                    name="ctime"
-                    type="text"
-                    className="timepicker validate"
-                    required
-                  />
-                  <span id="ctimeerror" className="helper-text"></span>
-                </div>
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend>
-                Where is the Collaboration?
-                <i className="small material-icons">place</i>
-              </legend>
-              <p>
-                <label htmlFor="checkaddlocation">
-                  {disableaddloc ? true : false}
-                  <input
-                    id="checkaddlocation"
-                    name="checkaddlocation"
-                    type="checkbox"
-                    className="filled-in"
-                    onChange={AddLocEvents}
-                    disabled={disableaddloc}
-                  />
-                  <span>I have a location</span>
-                </label>
-              </p>
-              <fieldset id="addlocation" hidden={hiddenaddloc}>
-                {hiddenaddloc ? true : false}
+      <>
+        <div id="startcollab" className="container">
+          <div className="row">
+            <form
+              id="submitcollabform"
+              method="POST"
+              onSubmit={this.onSubmit}
+              className="col s12"
+              noValidate
+            >
+              <fieldset>
+                <legend>
+                  Collaboration Details
+                  <i className="small material-icons">info</i>
+                </legend>
                 <div className="row">
                   <div className="input-field col s12">
                     <input
-                      id="locationuname"
-                      name="locationuname"
-                      className="validate"
-                      type="text"
-                      minLength="5"
-                      maxLength="30"
-                      required
-                    />
-                    <label htmlFor="locationuname">Username</label>
-                    <span
-                      id="locationunameerror"
-                      className="helper-text"
-                    ></span>
-                  </div>
-                </div>
-              </fieldset>
-
-              <p>
-                <label htmlFor="checksearchlocation">
-                  {disablesearchloc ? true : false}
-                  <input
-                    id="checksearchlocation"
-                    name="checksearchlocation"
-                    type="checkbox"
-                    className="filled-in"
-                    onChange={SearchLocEvents}
-                    disabled={disablesearchloc}
-                  />
-                  <span>I'm looking for a location</span>
-                </label>
-              </p>
-
-              <fieldset id="searchlocation" hidden={hiddensearchloc}>
-                {hiddensearchloc ? true : false}
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="lcity"
-                      name="lcity"
+                      id="ctitle"
+                      name="ctitle"
+                      value={ctitle}
+                      onChange={this.onChange}
                       className="validate"
                       type="text"
                       minLength="2"
-                      maxLength="255"
+                      maxLength="50"
                       pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
                       required
                     />
-                    <label htmlFor="lcity">City</label>
-                    <span id="lcityerror" className="helper-text"></span>
+                    <label htmlFor="ctitle">Collaboration Title</label>
+                    <span id="ctitleerror" className="helper-text"></span>
                   </div>
                 </div>
-
-                <div className="row">
-                  <div className="input-field col s12">
-                    <input
-                      id="lbookingfee"
-                      name="lbookingfee"
-                      className="validate"
-                      type="number"
-                      min="0"
-                      max="1000000"
-                      required
-                    />
-                    <label htmlFor="lbookingfee">Booking Fee</label>
-                    <span id="lbookingfeeerror" className="helper-text"></span>
-                  </div>
-                </div>
-
                 <div className="row">
                   <div className="input-field col s12">
                     <textarea
-                      id="ldescript"
-                      name="ldescript"
+                      id="cdescript"
+                      name="cdescript"
+                      value={cdescript}
+                      onChange={this.onChange}
                       className="materialize-textarea validate"
                       required
                     ></textarea>
-                    <label htmlFor="ldescript">Description</label>
-                    <span id="ldescripterror" className="helper-text"></span>
+                    <label htmlFor="cdescript">Collaboration Description</label>
+                    <span id="cdescripterror" className="helper-text"></span>
                   </div>
                 </div>
               </fieldset>
-            </fieldset>
 
-            <fieldset>
-              <legend>
-                Collaboration Team
-                <i className="small material-icons">people_alt</i>
-              </legend>
-              <OwnerSelect />
-              <p>
-                <label>
-                  <input
-                    id="checkaddmember"
-                    name="checkaddmember"
-                    type="checkbox"
-                    className="filled-in"
-                    onChange={toggleaddmember}
-                  />
-                  <span>Add people to the collaboration</span>
-                </label>
-              </p>
-
-              <fieldset id="addmember" hidden={hiddenaddmember}>
-                {hiddenaddmember ? true : false}
-                <TeamMemberAddSelect />
+              <fieldset>
+                <legend>
+                  When is the Collaboration?
+                  <i className="small material-icons">today</i>
+                </legend>
                 <div className="row">
-                  <div className="input-field col s12">
+                  <div className="col s6">
+                    <label htmlFor="cdate">Date</label>
                     <input
-                      id="tmuname"
-                      name="tmuname"
-                      className="validate"
+                      id="cdate"
+                      name="cdate"
+                      value={cdate}
+                      onChange={this.onChange}
                       type="text"
-                      minLength="5"
-                      maxLength="30"
+                      className="datepicker validate"
                       required
                     />
-                    <label htmlFor="tmuname">Username</label>
-                    <span id="tmunameerror" className="helper-text"></span>
+                    <span id="cdateerror" className="helper-text"></span>
                   </div>
-                </div>
-              </fieldset>
-
-              <p>
-                <label>
-                  <input
-                    id="checksearchmember"
-                    name="checksearchmember"
-                    type="checkbox"
-                    className="filled-in"
-                    onChange={togglesearchmember}
-                  />
-                  <span>Look for people to join the collaboration</span>
-                </label>
-              </p>
-
-              <fieldset id="searchmember" hidden={hiddensearchmember}>
-                {hiddensearchmember ? true : false}
-                <TeamMemberSearchSelect />
-                <div className="row">
-                  <div className="input-field col s12">
+                  <div className="col s6">
+                    <label htmlFor="ctime">Time</label>
                     <input
-                      id="tmbookingfee"
-                      name="tmbookingfee"
-                      className="validate"
-                      type="number"
-                      min="0"
-                      max="1000000"
+                      id="ctime"
+                      name="ctime"
+                      value={ctime}
+                      onChange={this.onChange}
+                      type="text"
+                      className="timepicker validate"
                       required
                     />
-                    <label htmlFor="tmbookingfee">Booking Fee</label>
-                    <span id="tmbookingfeeerror" className="helper-text"></span>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="input-field col s12">
-                    <textarea
-                      id="tmdescript"
-                      name="tmdescript"
-                      className="materialize-textarea validate"
-                      required
-                    ></textarea>
-                    <label htmlFor="tmdescript">Description</label>
-                    <span id="tmdescripterror" className="helper-text"></span>
+                    <span id="ctimeerror" className="helper-text"></span>
                   </div>
                 </div>
               </fieldset>
-            </fieldset>
 
-            <fieldset>
-              <button
-                id="submitcollabbtn"
-                className="btn waves-effect waves-light"
-                type="button"
-              >
-                Submit<i className="material-icons right">send</i>
-              </button>
-            </fieldset>
-          </form>
+              <fieldset>
+                <legend>
+                  Where is the Collaboration?
+                  <i className="small material-icons">place</i>
+                </legend>
+                <p>
+                  <label htmlFor="checkaddlocation">
+                    <input
+                      id="checkaddlocation"
+                      name="checkaddlocation"
+                      type="checkbox"
+                      className="filled-in"
+                      onChange={this.AddLocEvents}
+                      disabled={disableaddloc}
+                    />
+                    <span>I have a location</span>
+                  </label>
+                </p>
+                <fieldset id="addlocation" hidden={hiddenaddloc}>
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <input
+                        id="locationuname"
+                        name="locationuname"
+                        value={locationuname}
+                        onChange={this.onChange}
+                        className="validate"
+                        type="text"
+                        minLength="5"
+                        maxLength="30"
+                        required
+                      />
+                      <label htmlFor="locationuname">Username</label>
+                      <span
+                        id="locationunameerror"
+                        className="helper-text"
+                      ></span>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <p>
+                  <label htmlFor="checksearchlocation">
+                    <input
+                      id="checksearchlocation"
+                      name="checksearchlocation"
+                      type="checkbox"
+                      className="filled-in"
+                      onChange={this.SearchLocEvents}
+                      disabled={disablesearchloc}
+                    />
+                    <span>I'm looking for a location</span>
+                  </label>
+                </p>
+
+                <fieldset id="searchlocation" hidden={hiddensearchloc}>
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <input
+                        id="lcity"
+                        name="lcity"
+                        value={lcity}
+                        onChange={this.onChange}
+                        className="validate"
+                        type="text"
+                        minLength="2"
+                        maxLength="255"
+                        pattern="^[A-Za-z]*((-|'|\s)*[A-Za-z])*$"
+                        required
+                      />
+                      <label htmlFor="lcity">City</label>
+                      <span id="lcityerror" className="helper-text"></span>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <input
+                        id="lbookingfee"
+                        name="lbookingfee"
+                        value={lbookingfee}
+                        onChange={this.onChange}
+                        className="validate"
+                        type="number"
+                        min="0"
+                        max="1000000"
+                        required
+                      />
+                      <label htmlFor="lbookingfee">Booking Fee</label>
+                      <span
+                        id="lbookingfeeerror"
+                        className="helper-text"
+                      ></span>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <textarea
+                        id="ldescript"
+                        name="ldescript"
+                        value={ldescript}
+                        onChange={this.onChange}
+                        className="materialize-textarea validate"
+                        required
+                      ></textarea>
+                      <label htmlFor="ldescript">Description</label>
+                      <span id="ldescripterror" className="helper-text"></span>
+                    </div>
+                  </div>
+                </fieldset>
+              </fieldset>
+
+              <fieldset>
+                <legend>
+                  Collaboration Team
+                  <i className="small material-icons">people_alt</i>
+                </legend>
+                <div className="row">
+                  <div className="input-field col s12">
+                    <select
+                      id="ownerrole"
+                      name="ownerrole"
+                      value={ownerrole}
+                      onChange={this.onChange}
+                      className="validate"
+                      required
+                    >
+                      <option value="" disabled>
+                        Choose your role
+                      </option>
+                      <option value="photographer">Photographer</option>
+                      <option value="model">Model</option>
+                      <option value="makeupartist">Make-up Artist</option>
+                    </select>
+                    <label htmlFor="ownerrole">My Role</label>
+                    <span id="ownerroleerror" className="helper-text"></span>
+                  </div>
+                </div>
+                <p>
+                  <label>
+                    <input
+                      id="checkaddmember"
+                      name="checkaddmember"
+                      type="checkbox"
+                      className="filled-in"
+                      onChange={this.toggleaddmember}
+                    />
+                    <span>Add people to the collaboration</span>
+                  </label>
+                </p>
+
+                <fieldset id="addmember" hidden={hiddenaddmember}>
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <select
+                        id="tmrole"
+                        name="tmrole"
+                        value={tmrole}
+                        onChange={this.onChange}
+                        className="validate"
+                        required
+                      >
+                        <option value="" disabled>
+                          Choose their role
+                        </option>
+                        <option value="photographer">Photographer</option>
+                        <option value="model">Model</option>
+                        <option value="makeupartist">Make-up Artist</option>
+                      </select>
+                      <label htmlFor="tmrole">Role</label>
+                      <span id="tmroleerror" className="helper-text"></span>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <input
+                        id="tmuname"
+                        name="tmuname"
+                        value={tmuname}
+                        onChange={this.onChange}
+                        className="validate"
+                        type="text"
+                        minLength="5"
+                        maxLength="30"
+                        required
+                      />
+                      <label htmlFor="tmuname">Username</label>
+                      <span id="tmunameerror" className="helper-text"></span>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <p>
+                  <label>
+                    <input
+                      id="checksearchmember"
+                      name="checksearchmember"
+                      type="checkbox"
+                      className="filled-in"
+                      onChange={this.togglesearchmember}
+                    />
+                    <span>Look for people to join the collaboration</span>
+                  </label>
+                </p>
+
+                <fieldset id="searchmember" hidden={hiddensearchmember}>
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <select
+                        id="tmsearchrole"
+                        name="tmsearchrole"
+                        value={tmsearchrole}
+                        onChange={this.onChange}
+                        className="validate"
+                        required
+                      >
+                        <option value="" disabled>
+                          Choose their role
+                        </option>
+                        <option value="photographer">Photographer</option>
+                        <option value="model">Model</option>
+                        <option value="makeupartist">Make-up Artist</option>
+                      </select>
+                      <label htmlFor="tmsearchrole">Role</label>
+                      <span
+                        id="tmsearchroleerror"
+                        className="helper-text"
+                      ></span>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <input
+                        id="tmbookingfee"
+                        name="tmbookingfee"
+                        value={tmbookingfee}
+                        onChange={this.onChange}
+                        className="validate"
+                        type="number"
+                        min="0"
+                        max="1000000"
+                        required
+                      />
+                      <label htmlFor="tmbookingfee">Booking Fee</label>
+                      <span
+                        id="tmbookingfeeerror"
+                        className="helper-text"
+                      ></span>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="input-field col s12">
+                      <textarea
+                        id="tmdescript"
+                        name="tmdescript"
+                        value={tmdescript}
+                        onChange={this.onChange}
+                        className="materialize-textarea validate"
+                        required
+                      ></textarea>
+                      <label htmlFor="tmdescript">Description</label>
+                      <span id="tmdescripterror" className="helper-text"></span>
+                    </div>
+                  </div>
+                </fieldset>
+              </fieldset>
+
+              <fieldset>
+                <button
+                  id="submitcollabbtn"
+                  className="btn waves-effect waves-light"
+                >
+                  Submit<i className="material-icons right">send</i>
+                </button>
+              </fieldset>
+            </form>
+          </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 }
 
 class UserLogin extends Component {
@@ -877,9 +996,8 @@ class UserLogin extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    const { luname, lpword } = this.state;
     fetch(
-      "https://rachelpac.com/api/api.php?getData=reactlogin",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactlogin",
       {
         method: "POST",
         body: JSON.stringify(this.state),
@@ -927,6 +1045,7 @@ class UserLogin extends Component {
               method="POST"
               onSubmit={this.onSubmit}
               className="col s12"
+              noValidate
             >
               <div className="row">
                 <div className="input-field col s12">
@@ -1348,7 +1467,7 @@ class UserSignup extends Component {
 class UserLogout extends Component {
   logout() {
     fetch(
-      "https://rachelpac.com/api/api.php?getData=logout"
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=logout"
     ).then((response) => {
       console.log(response);
       if (response.status === 409) {
@@ -1428,11 +1547,10 @@ class Profile extends Component {
     }
 
     fetch(
-      `https://rachelpac.com/api/api.php?getData=${fetchloggedin}`
+      `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchloggedin}`
     ).then((response) => {
       console.log(response);
       if (response.status === 401) {
-        M.toast({ html: "Please log in to view your profile", classes: "red" });
         this.setState({ loaded: true, response401: true });
       }
       if (response.status === 412) {
@@ -1467,11 +1585,7 @@ class Profile extends Component {
         </div>
       );
     } else if (response412) {
-      return (
-        <div id="profile" className="container">
-          <p>Too Many Requests</p>
-        </div>
-      );
+      return <Loader />;
     } else if (response200) {
       if (loggedinuser) {
         return (
@@ -1585,11 +1699,10 @@ class MyCollabs extends Component {
 
   componentDidMount() {
     fetch(
-      "https://rachelpac.com/api/api.php?getData=displayusercollabs"
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayusercollabs"
     ).then((response) => {
       console.log(response);
       if (response.status === 401) {
-        M.toast({ html: "Please log in to view your profile", classes: "red" });
         this.setState({ loaded: true, response401: true });
       }
       if (response.status === 412) {
@@ -1618,7 +1731,7 @@ class MyCollabs extends Component {
     };
     console.log(lrdata);
     fetch(
-      "https://rachelpac.com/api/api.php?getData=approvelocrequest",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=approvelocrequest",
       {
         method: "POST",
         body: JSON.stringify(lrdata),
@@ -1636,7 +1749,7 @@ class MyCollabs extends Component {
     const lrdata = { lrid: locrequestID };
     console.log(lrdata);
     fetch(
-      "https://rachelpac.com/api/api.php?getData=denylocrequests",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=denylocrequests",
       {
         method: "POST",
         body: JSON.stringify(lrdata),
@@ -1664,7 +1777,7 @@ class MyCollabs extends Component {
     };
     console.log(trdata);
     fetch(
-      "https://rachelpac.com/api/api.php?getData=approveteamrequests",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=approveteamrequests",
       {
         method: "POST",
         body: JSON.stringify(trdata),
@@ -1682,7 +1795,7 @@ class MyCollabs extends Component {
     const trdata = { tmrid: tmrequestID };
     console.log(trdata);
     fetch(
-      "https://rachelpac.com/api/api.php?getData=denyteamrequests",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=denyteamrequests",
       {
         method: "POST",
         body: JSON.stringify(trdata),
@@ -1701,7 +1814,7 @@ class MyCollabs extends Component {
     console.log(id);
     const collabid = { collabid: id };
     fetch(
-      "https://rachelpac.com/api/api.php?getData=displayusercollab",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayusercollab",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -1714,7 +1827,7 @@ class MyCollabs extends Component {
       });
 
     fetch(
-      "https://rachelpac.com/api/api.php?getData=displaylocation",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaylocation",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -1726,7 +1839,7 @@ class MyCollabs extends Component {
         if (data === false) {
           this.setState({ locfound: false });
           fetch(
-            "https://rachelpac.com/api/api.php?getData=displaylocrequests",
+            "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaylocrequests",
             {
               method: "POST",
               body: JSON.stringify(collabid),
@@ -1747,7 +1860,7 @@ class MyCollabs extends Component {
       });
 
     fetch(
-      "https://rachelpac.com/api/api.php?getData=displayteam",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayteam",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -1760,7 +1873,7 @@ class MyCollabs extends Component {
       });
 
     fetch(
-      "https://rachelpac.com/api/api.php?getData=displayteamrequests",
+      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayteamrequests",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -1799,11 +1912,7 @@ class MyCollabs extends Component {
         </div>
       );
     } else if (response412) {
-      return (
-        <div>
-          <p>Too Many Requests</p>
-        </div>
-      );
+      return <Loader />;
     } else if (response200) {
       if (collablist === false) {
         return (
@@ -2072,14 +2181,10 @@ class JoinedCollabs extends Component {
     const fetchuserrequests = this.setUser();
     console.log(fetchuserrequests);
     fetch(
-      `https://rachelpac.com/api/api.php?getData=${fetchuserrequests}`
+      `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchuserrequests}`
     ).then((response) => {
       console.log(response);
       if (response.status === 401) {
-        M.toast({
-          html: "Please log in to view your collaborations requests",
-          classes: "red",
-        });
         this.setState({ loaded: true, response401: true });
       }
       if (response.status === 200) {
@@ -2199,13 +2304,13 @@ function UserCollab() {
               ) : viewUserTab === "locprofile" ? (
                 <MyLocCollabs />
               ) : (
-                <h3>There was an issue loading the page</h3>
+                <h6>Please log in to view your collaborations</h6>
               )}
             </>
           ) : viewTab === "joinedcollab" ? (
             <JoinedCollabs />
           ) : (
-            <h3>There was an issue loading the page</h3>
+            <h6>Please log in to view your collaboration requests</h6>
           )}
         </div>
       </div>
