@@ -456,7 +456,8 @@
 
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="locpostcode" name="locpostcode" class="validate" type="number" max="9999"
+                                    <input id="locpostcode" name="locpostcode" class="validate" type="text" minlength="4"
+                                    maxlength="4" pattern="^[0-9]*$" 
                                         required>
                                     <label for="locpostcode">Post Code</label>
                                     <span id="locpostcodeerror" class="helper-text"></span>
@@ -502,6 +503,8 @@
 
 
                 </form>
+
+                <button id="test">TEST</button>
 
                 <p>Already have an account? <a class="modal-trigger" href="#login">Login</a></p>
                 <div id="login" class="modal">

@@ -1,4 +1,4 @@
-var cacheName = 'CSv1';
+/* var cacheName = 'CSv1';
 var cachedFiles = [
     'index.html',
     'manifest.json',
@@ -54,4 +54,4 @@ function fetchServiceWorkerRequests(evt) {
             return response || fetch(evt.request);
         })
     );
-}
+} */

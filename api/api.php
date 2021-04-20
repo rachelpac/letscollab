@@ -7,13 +7,13 @@ $db = new dbObj;
 require 'ses.php';
 $_SESSION['se'] = new sessObj;
 
-$_SESSION['se']->setRequestHeader();
+// $_SESSION['se']->setRequestHeader();
 
 // The API only allows certain requests to be made
 // It will check if the request is allowed by checking the request in the if statements
 // If the request is not allowed it results in a 501 error and dies 
 
-if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
+// if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
     if ($_GET['getData'] == 'login') {
         // function checks to see if the user is logged in before each request and returns true or false 
         // if authentication is required for the request it will result in a 401 
@@ -80,11 +80,16 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
             http_response_code(409);
         } else {
             if ($_SESSION['se']->IsRequestOkIP()) {
-                if ((!isset($_POST['uname'])) || (!isset($_POST['pword'])) || (!isset($_POST['email'])) || (!isset($_POST['profilepic'])) || (!isset($_POST['ighandle'])) || (!isset($_POST['workurl'])) || ((!isset($_POST['checkadduseracc'])) && (!isset($_POST['checkaddlocationacc'])))) {
+                if ((empty($_POST['uname'])) || (empty($_POST['pword'])) || (empty($_POST['email'])) || (empty($_POST['profilepic'])) || (empty($_POST['ighandle'])) || (empty($_POST['workurl'])) || ((empty($_POST['checkadduseracc'])) && (empty($_POST['checkaddlocationacc'])))) {
                     $useraction = 'Failed Register Account';
                     $db->LogUserRequest($useraction);
                     http_response_code(400);
-                } else {
+                } else if ((($db->checkLength($_POST['uname'], 30, 5)) == false) || (($db->checkLength($_POST['pword'], 255, 8)) == false) || (($db->checkLength($_POST['email'], 50, 5)) == false) || (($db->checkLength($_POST['ighandle'], 30, 1)) == false) || (($db->checkLength($_POST['workurl'], 255, 1)) == false)) {
+                    http_response_code(400);
+                } else if ($db->checkEmail($_POST['email']) == false) {
+                    http_response_code(400);
+                }                
+                else {
                     $username = $db->inputFilter($_POST['uname']);
                     $password = $db->inputFilter($_POST['pword']);
                     $email = $db->inputFilter($_POST['email']);
@@ -94,11 +99,16 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
                     $hpassword = password_hash($password, PASSWORD_DEFAULT);
                 }
                 if (isset($_POST['checkadduseracc'])) {
-                    if ((!isset($_POST['fname'])) || (!isset($_POST['lname'])) || (!isset($_POST['bio']))) {
+                    if ((empty($_POST['fname'])) || (empty($_POST['lname'])) || (empty($_POST['bio']))) {
                         $useraction = 'Failed Register Account';
                         $db->LogUserRequest($useraction);
                         http_response_code(400);
-                    } else {
+                    } else if ((($db->checkLength($_POST['fname'], 255, 2)) == false) || (($db->checkLength($_POST['lname'], 255, 2)) == false)) {
+                        http_response_code(400);
+                    }
+
+                        
+                     else {
                         $firstname = $db->inputFilter($_POST['fname']);
                         $lastname = $db->inputFilter($_POST['lname']);
                         $bio = $db->inputFilter($_POST['bio']);
@@ -118,9 +128,15 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
                     }
                 }
                 if (isset($_POST['checkaddlocationacc'])) {
-                    if ((!isset($_POST['locname'])) || (!isset($_POST['locaddress'])) || (!isset($_POST['loccity'])) || (!isset($_POST['locstate'])) || (!isset($_POST['locpostcode'])) || (!isset($_POST['locdescript']))) {
+                    if ((empty($_POST['locname'])) || (empty($_POST['locaddress'])) || (empty($_POST['loccity'])) || (empty($_POST['locstate'])) || (empty($_POST['locpostcode'])) || (empty($_POST['locdescript']))) {
                         $useraction = 'Failed Register Account';
                         $db->LogUserRequest($useraction);
+                        http_response_code(400);
+                    } else if ((($db->checkLength($_POST['locname'], 255, 2)) == false) || (($db->checkLength($_POST['locaddress'], 255, 2)) == false) || (($db->checkLength($_POST['loccity'], 255, 2)) == false) || (($db->checkLength($_POST['locstate'], 3, 2)) == false) || (($db->checkLength($_POST['locpostcode'], 4, 4)) == false)) {
+                        http_response_code(400);
+                    } else if ($db->checkPostCode($_POST['locpostcode']) == false) {
+                    http_response_code(400);
+                    }  else if ($db->checkState($_POST['locstate']) == false) {
                         http_response_code(400);
                     } else {
                         $name = $db->inputFilter($_POST['locname']);
@@ -742,11 +758,18 @@ if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
         http_response_code(401);
     }
 
+if ($_GET['getData'] == 'testdata') {
+         $json = file_get_contents('php://input');
+         $data = json_decode($json);
+         $state = $data->state;
+         $result = $db->checkState($state);
+    }
 
-} else {
-    http_response_code(501);
-    die;
-}
+
+// } else {
+//     http_response_code(501);
+//     die;
+// }
 
 if (isset($result)) {
     echo json_encode($result);

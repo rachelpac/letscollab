@@ -1,7 +1,7 @@
 <?php
 class sessObj {
 
-function setRequestHeader(){
+/* function setRequestHeader(){
 
 if(isset($_SERVER["HTTP_ORIGIN"]))
 {
@@ -24,7 +24,7 @@ if($_SERVER["REQUEST_METHOD"] == "OPTIONS")
         header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
     exit(0);
 }
-}
+} */
 
 function CheckCurrentRequest($lastrequest, $currentrequest)
 {

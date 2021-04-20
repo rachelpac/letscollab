@@ -791,6 +791,53 @@ function inputFilter($data)
     return $data;
 }
 
+function checkLength($tdata, $maxlength, $minlength) {
+    if (strlen($tdata) < $minlength) {
+        return false;
+        // return Array('datalength' => strlen($tdata), 'minlength' => $minlength,
+        // 'false' => 'false');
+    } else if (strlen($tdata) > $maxlength) {
+        return false;
+        // return Array('datalength' => strlen($tdata), 'maxlength' => $maxlength,
+        // 'false' => 'false');
+    } else {
+        return true;
+        // return Array('datalength' => strlen($tdata), 'minlength' => $minlength, 'maxlength' => $maxlength,
+        // 'true' => 'true');
+    }
+}
+
+function checkEmail($email) {
+if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    return true;
+    // return Array('data' => $temail, 'true' => 'true');
+} else {
+    return false;
+    // return Array('data' => $temail, 'false' => 'false');
+}
+}
+
+function checkPostCode($postcode) {
+    if (filter_var($postcode, FILTER_VALIDATE_REGEXP,array("options"=>array("regexp"=>"/^[0-9]+$/")))) {
+        return true;
+        // return Array('data' => $postcode, 'true' => 'true');
+    } else {
+        return false;
+        // return Array('data' => $postcode, 'false' => 'false');
+    }
+}
+
+function checkState($state) {
+    if (filter_var($state, FILTER_VALIDATE_REGEXP,array("options"=>array("regexp"=>"/^[A-Z]+$/")))) {
+        return true;
+        // return Array('data' => $state, 'true' => 'true');
+    } else {
+        return false;
+        // return Array('data' => $state, 'false' => 'false');
+    }
+}
+
+
 }
 
 

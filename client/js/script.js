@@ -339,6 +339,22 @@ function denyTeamRequests() {
   });
 }
 
+test.addEventListener("click", testState, false);
+
+function testState() {
+  var state = document.getElementById("locstate").value;
+  const testdata = { state: state };
+
+  fetch("../api/api.php?getData=testdata", {
+    method: "POST",
+    body: JSON.stringify(testdata),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    });
+}
+
 (function () {
   var links = document.querySelectorAll(
     "#joinedcollab .btn-floating.btn-large.waves-effect.waves-light.red"
@@ -1105,40 +1121,40 @@ function showSearchMember() {
 submitcollabbtn.addEventListener("click", submitCollab, false);
 
 function submitCollab() {
-  isdatavalid = validateCollab();
-  if (isdatavalid == true) {
-    var form = document.querySelector("#submitcollabform");
-    var formData = new FormData(form);
-    fetch("../api/api.php?getData=addcollab", {
-      method: "POST",
-      body: formData,
-    }).then((response) => {
-      if (response.status === 412) {
-        M.toast({ html: "Too Many Requests", classes: "red" });
-      }
-      if (response.status === 401) {
-        M.toast({
-          html:
-            "You must be logged in to a User Account to submit a collaboration",
-          classes: "red",
-        });
-      }
-      if (response.status === 400) {
-        M.toast({ html: "Collaboration could not be added", classes: "red" });
-      }
-      if (response.status === 404) {
-        M.toast({
-          html: "User not found and could not be added",
-          classes: "red",
-        });
-      }
-      if (response.status === 201) {
-        M.toast({ html: "Collaboration submitted", classes: "green" });
-      }
-    });
-  } else {
-    M.toast({ html: "Please fix errors", classes: "red" });
-  }
+  // isdatavalid = validateCollab();
+  // if (isdatavalid == true) {
+  var form = document.querySelector("#submitcollabform");
+  var formData = new FormData(form);
+  fetch("../api/api.php?getData=addcollab", {
+    method: "POST",
+    body: formData,
+  }).then((response) => {
+    if (response.status === 412) {
+      M.toast({ html: "Too Many Requests", classes: "red" });
+    }
+    if (response.status === 401) {
+      M.toast({
+        html:
+          "You must be logged in to a User Account to submit a collaboration",
+        classes: "red",
+      });
+    }
+    if (response.status === 400) {
+      M.toast({ html: "Collaboration could not be added", classes: "red" });
+    }
+    if (response.status === 404) {
+      M.toast({
+        html: "User not found and could not be added",
+        classes: "red",
+      });
+    }
+    if (response.status === 201) {
+      M.toast({ html: "Collaboration submitted", classes: "green" });
+    }
+  });
+  // } else {
+  //   M.toast({ html: "Please fix errors", classes: "red" });
+  // }
 }
 
 function validateCollab() {
@@ -1469,36 +1485,37 @@ function disagreeTerms() {
 signupbtn.addEventListener("click", registerUser, false);
 
 function registerUser() {
-  isdatavalid = validateUserReg();
-  if (isdatavalid == true) {
-    var form = document.querySelector("#signupform");
-    var formData = new FormData(form);
-    fetch("../api/api.php?getData=adduseracc", {
-      method: "POST",
-      body: formData,
-    }).then((response) => {
-      if (response.status === 412) {
-        M.toast({ html: "Too Many Requests", classes: "red" });
-      }
-      if (response.status === 409) {
-        M.toast({
-          html: "You are already Registered and Logged in",
-          classes: "red",
-        });
-      }
-      if (response.status === 400) {
-        M.toast({ html: "Could not complete registration", classes: "red" });
-      }
-      if (response.status === 406) {
-        M.toast({ html: "User Already Exists", classes: "red" });
-      }
-      if (response.status === 201) {
-        M.toast({ html: "Thank you for signing up", classes: "green" });
-      }
-    });
-  } else {
-    M.toast({ html: "Please fix errors", classes: "red" });
-  }
+  // isdatavalid = validateUserReg();
+  // if (isdatavalid == true) {
+  var form = document.querySelector("#signupform");
+  var formData = new FormData(form);
+  fetch("../api/api.php?getData=adduseracc", {
+    method: "POST",
+    body: formData,
+  }).then((response) => {
+    console.log(response);
+    if (response.status === 412) {
+      M.toast({ html: "Too Many Requests", classes: "red" });
+    }
+    if (response.status === 409) {
+      M.toast({
+        html: "You are already Registered and Logged in",
+        classes: "red",
+      });
+    }
+    if (response.status === 400) {
+      M.toast({ html: "Could not complete registration", classes: "red" });
+    }
+    if (response.status === 406) {
+      M.toast({ html: "User Already Exists", classes: "red" });
+    }
+    if (response.status === 201) {
+      M.toast({ html: "Thank you for signing up", classes: "green" });
+    }
+  });
+  // } else {
+  //   M.toast({ html: "Please fix errors", classes: "red" });
+  // }
 }
 
 uname.addEventListener("blur", showErrorUsername, false);
@@ -1830,7 +1847,7 @@ function showErrorState() {
   } else if (locstate.validity.patternMismatch) {
     locstateerror.setAttribute(
       "data-error",
-      "State entered can only contain letters"
+      "State entered can only contain captial letters"
     );
   } else {
     locstateerror.setAttribute("data-success", "State entered");
@@ -1840,15 +1857,20 @@ function showErrorState() {
 function showErrorPostCode() {
   if (locpostcode.validity.valueMissing) {
     locpostcodeerror.setAttribute("data-error", "You must enter a Post Code");
-  } else if (locpostcode.validity.typeMismatch) {
+  } else if (locpostcode.validity.tooShort) {
+    locpostcodeerror.setAttribute(
+      "data-error",
+      "Post Code can only contain " + locpostcode.minLength + " digits"
+    );
+  } else if (locpostcode.validity.tooLong) {
+    locpostcodeerror.setAttribute(
+      "data-error",
+      "Post Code can only contain " + locpostcode.maxLength + " digits"
+    );
+  } else if (locpostcode.validity.patternMismatch) {
     locpostcodeerror.setAttribute(
       "data-error",
       "Post Code can only contain digits"
-    );
-  } else if (locpostcode.validity.rangeOverflow) {
-    locpostcodeerror.setAttribute(
-      "data-error",
-      "Post Code can only be a max of  " + locpostcode.max
     );
   } else {
     locpostcodeerror.setAttribute("data-success", "Post Code entered");
@@ -1877,7 +1899,7 @@ function unsetUserSession() {
 
 // SERVICE WORKER
 
-if ("serviceWorker" in navigator) {
+/* if ("serviceWorker" in navigator) {
   navigator.serviceWorker
     .register("sw.js")
     .then((result) => {
@@ -1891,3 +1913,4 @@ if ("serviceWorker" in navigator) {
 } else {
   console.log("Service Workers Not Supported");
 }
+ */
