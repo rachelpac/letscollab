@@ -1,4 +1,4 @@
-import React, { useState, useReducer, Component, useEffect } from "react";
+import React, { useState, Component } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import "materialize-css/dist/css/materialize.min.css";
@@ -129,6 +129,8 @@ class BrowseCollabs extends Component {
     locfound: false,
     locinfo: [],
     joincollabrequested: false,
+    hiddenjoincollab: true,
+    hiddenbrowsecollab: false,
   };
 
   componentDidMount() {
@@ -219,7 +221,11 @@ class BrowseCollabs extends Component {
   };
 
   showJoinCollab = (e) => {
-    this.setState({ joincollabrequested: true });
+    this.setState({
+      joincollabrequested: true,
+      hiddenjoincollab: false,
+      hiddenbrowsecollab: true,
+    });
     var id = e.currentTarget.getAttribute("id");
     console.log(id);
     const collabid = { collabid: id };
@@ -275,9 +281,9 @@ class BrowseCollabs extends Component {
       collablist,
       collabinfo,
       teaminfo,
-      locfound,
       locinfo,
-      joincollabrequested,
+      hiddenjoincollab,
+      hiddenbrowsecollab,
     } = this.state;
     if (!loaded) {
       return <Loader />;
@@ -298,7 +304,11 @@ class BrowseCollabs extends Component {
         M.AutoInit();
         return (
           <>
-            <div id="browsecollab" className="container">
+            <div
+              id="browsecollab"
+              className="container"
+              hidden={hiddenbrowsecollab}
+            >
               {collablist.map((collab) => (
                 <div key={collab.CollaborationID} className="collabpost">
                   <div className="card teal darken-3">
@@ -342,7 +352,7 @@ class BrowseCollabs extends Component {
             </div>
 
             {this.state.joincollabrequested ? (
-              <div id="joincollab">
+              <div id="joincollab" hidden={hiddenjoincollab}>
                 <div className="col s12">
                   <div className="teal">
                     <ul className="tabs tabs-transparent">
@@ -463,7 +473,7 @@ class BrowseCollabs extends Component {
                 </div>
               </div>
             ) : (
-              <div id="joincollab">
+              <div id="joincollab" hidden={hiddenjoincollab}>
                 <h6>Select A Collab to Join</h6>
               </div>
             )}
@@ -524,35 +534,35 @@ class StartCollab extends Component {
     tmbookingfee: "",
     tmdescript: "",
 
-    ctitleerror: "null",
-    cdescripterror: "null",
-    cdateerror: "null",
-    ctimeerror: "null",
-    ownerroleerror: "null",
+    ctitleerror: "Error",
+    cdescripterror: "Error",
+    cdateerror: "Error",
+    ctimeerror: "Error",
+    ownerroleerror: "Error",
     locationunameerror: "",
-    tmunameerror: "null",
-    tmroleerror: "null",
-    lcityerror: "null",
-    lbookingfeeerror: "null",
-    ldescripterror: "null",
-    tmsearchroleerror: "null",
-    tmbookingfeeerror: "null",
-    tmdescripterror: "null",
+    tmunameerror: "Error",
+    tmroleerror: "Error",
+    lcityerror: "Error",
+    lbookingfeeerror: "Error",
+    ldescripterror: "Error",
+    tmsearchroleerror: "Error",
+    tmbookingfeeerror: "Error",
+    tmdescripterror: "Error",
 
-    ctitlesuccess: "null",
-    cdescriptsuccess: "null",
-    cdatesuccess: "null",
-    ctimesuccess: "null",
-    ownerrolesuccess: "null",
+    ctitlesuccess: "Success",
+    cdescriptsuccess: "Success",
+    cdatesuccess: "Success",
+    ctimesuccess: "Success",
+    ownerrolesuccess: "Success",
     locationunamesuccess: "",
-    tmunamesuccess: "null",
-    tmrolesuccess: "null",
-    lcitysuccess: "null",
-    lbookingfeesuccess: "null",
-    ldescriptsuccess: "null",
-    tmsearchrolesuccess: "null",
-    tmbookingfeesuccess: "null",
-    tmdescriptsuccess: "null",
+    tmunamesuccess: "Success",
+    tmrolesuccess: "Success",
+    lcitysuccess: "Success",
+    lbookingfeesuccess: "Success",
+    ldescriptsuccess: "Success",
+    tmsearchrolesuccess: "Success",
+    tmbookingfeesuccess: "Success",
+    tmdescriptsuccess: "Success",
   };
 
   toggleaddloc = () => {
@@ -728,6 +738,11 @@ class StartCollab extends Component {
         lbookingfeeerror: "Booking Fee can only contain digits",
         lbookingfeesuccess: "",
       });
+    } else if (lbookingfee.validity.stepMismatch) {
+      this.setState({
+        lbookingfeeerror: "Booking Fee can only contain upto 2 decimal places",
+        lbookingfeesuccess: "",
+      });
     } else if (lbookingfee.validity.rangeUnderflow) {
       this.setState({
         lbookingfeeerror: "Booking Fee must be a min of  " + lbookingfee.min,
@@ -852,6 +867,11 @@ class StartCollab extends Component {
         tmbookingfeeerror: "Booking Fee can only contain digits",
         tmbookingfeesuccess: "",
       });
+    } else if (tmbookingfee.validity.stepMismatch) {
+      this.setState({
+        tmbookingfeeerror: "Booking Fee can only contain upto 2 decimal places",
+        tmbookingfeesuccess: "",
+      });
     } else if (tmbookingfee.validity.rangeUnderflow) {
       this.setState({
         tmbookingfeeerror: "Booking Fee must be a min of  " + tmbookingfee.min,
@@ -966,7 +986,7 @@ class StartCollab extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    if (this.validateStartCollab() == true) {
+    if (this.validateStartCollab() === true) {
       fetch(
         "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddcollab",
         {
@@ -1268,6 +1288,7 @@ class StartCollab extends Component {
                         type="number"
                         min="0"
                         max="1000000"
+                        step=".01"
                         required
                       />
                       <label htmlFor="lbookingfee">Booking Fee</label>
@@ -1462,6 +1483,7 @@ class StartCollab extends Component {
                         type="number"
                         min="0"
                         max="1000000"
+                        step=".01"
                         required
                       />
                       <label htmlFor="tmbookingfee">Booking Fee</label>
@@ -1528,24 +1550,28 @@ class UserLogin extends Component {
   state = {
     luname: "",
     lpword: "",
-    lunameerror: "null",
-    lpworderror: "null",
-    lunamesuccess: "null",
-    lpwordsuccess: "null",
+    lunameerror: "Error",
+    lpworderror: "Error",
+    lunamesuccess: "Success",
+    lpwordsuccess: "Success",
   };
 
   validateLogin() {
-    if (this.state.lunameerror == "" && this.state.lpworderror == "") {
-      console.log("true");
-      return true;
-    } else {
-      console.log("false");
+    const luname = this.lunameInput.current;
+    const lpword = this.lpwordInput.current;
+
+    if (!luname.validity.valid || !lpword.validity.valid) {
+      this.showErrorLoginUsername();
+      this.showErrorLoginPassword();
       return false;
+    } else {
+      return true;
     }
   }
 
   showErrorLoginUsername() {
-    if (this.lunameInput.current.validity.valueMissing) {
+    const luname = this.lunameInput.current;
+    if (luname.validity.valueMissing) {
       this.setState({ lunameerror: "You must enter a Username" });
       this.setState({ lunamesuccess: "" });
     } else {
@@ -1555,7 +1581,8 @@ class UserLogin extends Component {
   }
 
   showErrorLoginPassword() {
-    if (this.lpwordInput.current.validity.valueMissing) {
+    const lpword = this.lpwordInput.current;
+    if (lpword.validity.valueMissing) {
       this.setState({ lpworderror: "You must enter a Password" });
       this.setState({ lpwordsuccess: "" });
     } else {
@@ -1718,14 +1745,15 @@ class UserSignup extends Component {
     this.locstateInput = React.createRef();
     this.locpostcodeInput = React.createRef();
     this.locdescriptInput = React.createRef();
+    this.checkadduseraccCheck = React.createRef();
+    this.checkaddlocationaccCheck = React.createRef();
   }
 
   state = {
     hiddenaddlocacc: true,
+    disableaddlocacc: false,
     hiddenadduseracc: true,
-
-    // checkadduseracc:
-    // checkaddlocacc:
+    disableadduseracc: false,
 
     uname: "",
     pword: "",
@@ -1744,39 +1772,39 @@ class UserSignup extends Component {
     locpostcode: "",
     locdescript: "",
 
-    unameerror: "null",
-    pworderror: "null",
-    cnfpworderror: "null",
-    emailerror: "null",
-    profilepicerror: "null",
-    ighandleerror: "null",
-    workurlerror: "null",
-    fnameerror: "null",
-    lnameerror: "null",
-    bioerror: "null",
-    locnameerror: "null",
-    locaddresserror: "null",
-    loccityerror: "null",
-    locstateerror: "null",
-    locpostcodeerror: "null",
-    locdescripterror: "null",
+    unameerror: "Error",
+    pworderror: "Error",
+    cnfpworderror: "Error",
+    emailerror: "Error",
+    profilepicerror: "Error",
+    ighandleerror: "Error",
+    workurlerror: "Error",
+    fnameerror: "Error",
+    lnameerror: "Error",
+    bioerror: "Error",
+    locnameerror: "Error",
+    locaddresserror: "Error",
+    loccityerror: "Error",
+    locstateerror: "Error",
+    locpostcodeerror: "Error",
+    locdescripterror: "Error",
 
-    unamesuccess: "null",
-    pwordsuccess: "null",
-    cnfpwordsuccess: "null",
-    emailsuccess: "null",
-    profilepicsuccess: "null",
-    ighandlesuccess: "null",
-    workurlsuccess: "null",
-    fnamesuccess: "null",
-    lnamesuccess: "null",
-    biosuccess: "null",
-    locnamesuccess: "null",
-    locaddresssuccess: "null",
-    loccitysuccess: "null",
-    locstatesuccess: "null",
-    locpostcodesuccess: "null",
-    locdescriptsuccess: "null",
+    unamesuccess: "Success",
+    pwordsuccess: "Success",
+    cnfpwordsuccess: "Success",
+    emailsuccess: "Success",
+    profilepicsuccess: "Success",
+    ighandlesuccess: "Success",
+    workurlsuccess: "Success",
+    fnamesuccess: "Success",
+    lnamesuccess: "Success",
+    biosuccess: "Success",
+    locnamesuccess: "Success",
+    locaddresssuccess: "Success",
+    loccitysuccess: "Success",
+    locstatesuccess: "Success",
+    locpostcodesuccess: "Success",
+    locdescriptsuccess: "Success",
   };
   componentDidMount() {
     M.AutoInit();
@@ -1788,10 +1816,32 @@ class UserSignup extends Component {
     }));
   };
 
-  toggleadduseracc = () => {
+  toggleadduseraccc = () => {
     this.setState((prevState) => ({
       hiddenadduseracc: !prevState.hiddenadduseracc,
     }));
+  };
+
+  toggledisableadduseracc = () => {
+    this.setState((prevState) => ({
+      disableadduseracc: !prevState.disableadduseracc,
+    }));
+  };
+
+  toggledisableaddlocacc = () => {
+    this.setState((prevState) => ({
+      disableaddlocacc: !prevState.disableaddlocacc,
+    }));
+  };
+
+  AddLocAccEvents = () => {
+    this.toggleaddlocacc();
+    this.toggledisableadduseracc();
+  };
+
+  AddUserAccEvents = () => {
+    this.toggleadduseraccc();
+    this.toggledisableaddlocacc();
   };
 
   showErrorUsername() {
@@ -1817,10 +1867,498 @@ class UserSignup extends Component {
     }
   }
 
-  validateUserReg() {}
+  showErrorPassword() {
+    const pword = this.pwordInput.current;
+    if (pword.validity.valueMissing) {
+      this.setState({
+        pworderror: "You must enter a Password",
+        pwordsuccess: "",
+      });
+    } else if (pword.validity.tooShort) {
+      this.setState({
+        pworderror:
+          "Password must be at least " + pword.minLength + " characters",
+        pwordsuccess: "",
+      });
+    } else if (pword.validity.tooLong) {
+      this.setState({
+        pworderror: "Password can only be " + pword.maxLength + " characters",
+        pwordsuccess: "",
+      });
+    } else if (pword.validity.patternMismatch) {
+      this.setState({
+        pworderror:
+          "Password must have 1 lowercase letter, 1 uppercase letter, 1 number, 1 special character (#?!@$%^&*-) and be at least 8 characters long",
+        pwordsuccess: "",
+      });
+    } else {
+      this.setState({
+        pworderror: "",
+        pwordsuccess: "Password entered",
+      });
+    }
+  }
+
+  showErrorPasswordMatch() {
+    const pword = this.pwordInput.current;
+    const cnfpword = this.cnfpwordInput.current;
+    if (pword.value !== cnfpword.value) {
+      this.setState({
+        cnfpworderror: "The Passwords do not match",
+        cnfpwordsuccess: "",
+      });
+    } else {
+      this.setState({
+        cnfpworderror: "",
+        cnfpwordsuccess: "Passwords match",
+      });
+    }
+  }
+
+  showErrorEmail() {
+    const email = this.emailInput.current;
+    if (email.validity.valueMissing) {
+      this.setState({
+        emailerror: "You must enter a Email",
+        emailsuccess: "",
+      });
+    } else if (email.validity.typeMismatch) {
+      this.setState({
+        emailerror: "Entered value needs to be an email address",
+        emailsuccess: "",
+      });
+    } else if (email.validity.tooShort) {
+      this.setState({
+        emailerror: "Email must be at least " + email.minLength + " characters",
+        emailsuccess: "",
+      });
+    } else if (email.validity.tooLong) {
+      this.setState({
+        emailerror: "Email can only be " + email.maxLength + " characters",
+        emailsuccess: "",
+      });
+    } else if (email.validity.patternMismatch) {
+      this.setState({
+        emailerror: "Entered value not a valid email address",
+        emailsuccess: "",
+      });
+    } else {
+      this.setState({
+        emailerror: "",
+        emailsuccess: "Email entered",
+      });
+    }
+  }
+
+  showErrorProfilePic() {
+    const profilepic = this.profilepicInput.current;
+    if (profilepic.validity.valueMissing) {
+      this.setState({
+        profilepicerror: "You must add a Profile Pic",
+        profilepicsuccess: "",
+      });
+    } else {
+      this.setState({
+        profilepicerror: "",
+        profilepicsuccess: "Profile Pic added",
+      });
+    }
+  }
+
+  showErrorInstagramHandle() {
+    const ighandle = this.ighandleInput.current;
+    if (ighandle.validity.valueMissing) {
+      this.setState({
+        ighandleerror: "You must enter a Instagram Handle",
+        ighandlesuccess: "",
+      });
+    } else if (ighandle.validity.tooLong) {
+      this.setState({
+        ighandleerror:
+          "Instagram Handle can only be " + ighandle.maxLength + " characters",
+        ighandlesuccess: "",
+      });
+    } else {
+      this.setState({
+        ighandleerror: "",
+        ighandlesuccess: "Instagram Handle entered",
+      });
+    }
+  }
+
+  showErrorWorkUrl() {
+    const workurl = this.workurlInput.current;
+    if (workurl.validity.valueMissing) {
+      this.setState({
+        workurlerror: "You must enter a Work Url",
+        workurlsuccess: "",
+      });
+    } else if (workurl.validity.tooLong) {
+      this.setState({
+        workurlerror:
+          "Work Url can only be " + workurl.maxLength + " characters",
+        workurlsuccess: "",
+      });
+    } else {
+      this.setState({
+        workurlerror: "",
+        workurlsuccess: "Work Url entered",
+      });
+    }
+  }
+
+  showErrorFirstName() {
+    const fname = this.fnameInput.current;
+    if (fname.validity.valueMissing) {
+      this.setState({
+        fnameerror: "You must enter a First Name",
+        fnamesuccess: "",
+      });
+    } else if (fname.validity.tooShort) {
+      this.setState({
+        fnameerror:
+          "First Name must be at least " + fname.minLength + " characters",
+        fnamesuccess: "",
+      });
+    } else if (fname.validity.tooLong) {
+      this.setState({
+        fnameerror: "First Name can only be " + fname.maxLength + " characters",
+        fnamesuccess: "",
+      });
+    } else if (fname.validity.patternMismatch) {
+      this.setState({
+        fnameerror:
+          "First Name entered can only contain letters, spaces and - or ' ",
+        fnamesuccess: "",
+      });
+    } else {
+      this.setState({
+        fnameerror: "",
+        fnamesuccess: "First Name entered",
+      });
+    }
+  }
+
+  showErrorLasttName() {
+    const lname = this.lnameInput.current;
+    if (lname.validity.valueMissing) {
+      this.setState({
+        lnameerror: "You must enter a Last Name",
+        lnamesuccess: "",
+      });
+    } else if (lname.validity.tooShort) {
+      this.setState({
+        lnameerror:
+          "Last Name must be at least " + lname.minLength + " characters",
+        lnamesuccess: "",
+      });
+    } else if (lname.validity.tooLong) {
+      this.setState({
+        lnameerror: "Last Name can only be " + lname.maxLength + " characters",
+        lnamesuccess: "",
+      });
+    } else if (lname.validity.patternMismatch) {
+      this.setState({
+        lnameerror:
+          "Last Name entered can only contain letters, spaces and - or ' ",
+        lnamesuccess: "",
+      });
+    } else {
+      this.setState({
+        lnameerror: "",
+        lnamesuccess: "Last Name entered",
+      });
+    }
+  }
+
+  showErrorBio() {
+    const bio = this.bioInput.current;
+    if (bio.validity.valueMissing) {
+      this.setState({
+        bioerror: "You must enter a Bio",
+        biosuccess: "",
+      });
+    } else {
+      this.setState({
+        bioerror: "",
+        biosuccess: "Bio entered",
+      });
+    }
+  }
+
+  showErrorLocationtName() {
+    const locname = this.locnameInput.current;
+    if (locname.validity.valueMissing) {
+      this.setState({
+        locnameerror: "You must enter a Location Name",
+        locnamesuccess: "",
+      });
+    } else if (locname.validity.tooShort) {
+      this.setState({
+        locnameerror:
+          "Location Name must be at least " + locname.minLength + " characters",
+        locnamesuccess: "",
+      });
+    } else if (locname.validity.tooLong) {
+      this.setState({
+        locnameerror:
+          "Location Name can only be " + locname.maxLength + " characters",
+        locnamesuccess: "",
+      });
+    } else if (locname.validity.patternMismatch) {
+      this.setState({
+        locnameerror:
+          "Location Name entered can only contain letters, spaces and - or ' ",
+        locnamesuccess: "",
+      });
+    } else {
+      this.setState({
+        locnameerror: "",
+        locnamesuccess: "Location Name entered",
+      });
+    }
+  }
+
+  showErrorAddress() {
+    const locaddress = this.locaddressInput.current;
+    if (locaddress.validity.valueMissing) {
+      this.setState({
+        locaddresserror: "You must enter an Address",
+        locaddresssuccess: "",
+      });
+    } else if (locaddress.validity.tooShort) {
+      this.setState({
+        locaddresserror:
+          "Address must be at least " + locaddress.minLength + " characters",
+        locaddresssuccess: "",
+      });
+    } else if (locaddress.validity.tooLong) {
+      this.setState({
+        locaddresserror:
+          "Address can only be " + locaddress.maxLength + " characters",
+        locaddresssuccess: "",
+      });
+    } else {
+      this.setState({
+        locaddresserror: "",
+        locaddresssuccess: "Address entered",
+      });
+    }
+  }
+
+  showErrorCity() {
+    const loccity = this.loccityInput.current;
+    if (loccity.validity.valueMissing) {
+      this.setState({
+        loccityerror: "You must enter a City",
+        loccitysuccess: "",
+      });
+    } else if (loccity.validity.tooShort) {
+      this.setState({
+        loccityerror:
+          "City must be at least " + loccity.minLength + " characters",
+        loccitysuccess: "",
+      });
+    } else if (loccity.validity.tooLong) {
+      this.setState({
+        loccityerror: "City can only be " + loccity.maxLength + " characters",
+        loccitysuccess: "",
+      });
+    } else if (loccity.validity.patternMismatch) {
+      this.setState({
+        loccityerror:
+          "City entered can only contain letters, spaces and - or ' ",
+        loccitysuccess: "",
+      });
+    } else {
+      this.setState({
+        loccityerror: "",
+        loccitysuccess: "City entered",
+      });
+    }
+  }
+
+  showErrorState() {
+    const locstate = this.locstateInput.current;
+    if (locstate.validity.valueMissing) {
+      this.setState({
+        locstateerror: "You must enter a State",
+        locstatesuccess: "",
+      });
+    } else if (locstate.validity.tooShort) {
+      this.setState({
+        locstateerror:
+          "State must be at least " + locstate.minLength + " characters",
+        locstatesuccess: "",
+      });
+    } else if (locstate.validity.tooLong) {
+      this.setState({
+        locstateerror:
+          "State can only be " + locstate.maxLength + " characters",
+        locstatesuccess: "",
+      });
+    } else if (locstate.validity.patternMismatch) {
+      this.setState({
+        locstateerror: "State entered can only contain captial letters",
+        locstatesuccess: "",
+      });
+    } else {
+      this.setState({
+        locstateerror: "",
+        locstatesuccess: "State entered",
+      });
+    }
+  }
+
+  showErrorPostCode() {
+    const locpostcode = this.locpostcodeInput.current;
+    if (locpostcode.validity.valueMissing) {
+      this.setState({
+        locpostcodeerror: "You must enter a Post Code",
+        locpostcodesuccess: "",
+      });
+    } else if (locpostcode.validity.tooShort) {
+      this.setState({
+        locpostcodeerror:
+          "Post Code can only contain " + locpostcode.minLength + " digits",
+        locpostcodesuccess: "",
+      });
+    } else if (locpostcode.validity.tooLong) {
+      this.setState({
+        locpostcodeerror:
+          "Post Code can only contain " + locpostcode.maxLength + " digits",
+        locpostcodesuccess: "",
+      });
+    } else if (locpostcode.validity.patternMismatch) {
+      this.setState({
+        locpostcodeerror: "Post Code can only contain digits",
+        locpostcodesuccess: "",
+      });
+    } else {
+      this.setState({
+        locpostcodeerror: "",
+        locpostcodesuccess: "Post Code entered",
+      });
+    }
+  }
+
+  showErrorLocationDescription() {
+    const locdescript = this.locdescriptInput.current;
+    if (locdescript.validity.valueMissing) {
+      this.setState({
+        locdescripterror: "You must enter a Location Description",
+        locdescriptsuccess: "",
+      });
+    } else {
+      this.setState({
+        locdescripterror: "",
+        locdescriptsuccess: "Location Description entered",
+      });
+    }
+  }
+
+  validateUserReg() {
+    const uname = this.unameInput.current;
+    const pword = this.pwordInput.current;
+    const cnfpword = this.cnfpwordInput.current;
+    const email = this.emailInput.current;
+    const profilepic = this.profilepicInput.current;
+    const ighandle = this.ighandleInput.current;
+    const workurl = this.workurlInput.current;
+    const fname = this.fnameInput.current;
+    const lname = this.lnameInput.current;
+    const bio = this.bioInput.current;
+    const locname = this.locnameInput.current;
+    const locaddress = this.locaddressInput.current;
+    const loccity = this.loccityInput.current;
+    const locstate = this.locstateInput.current;
+    const locpostcode = this.locpostcodeInput.current;
+    const locdescript = this.locdescriptInput.current;
+
+    const checkadduseracc = this.checkadduseraccCheck.current;
+    const checkaddlocationacc = this.checkaddlocationaccCheck.current;
+
+    if (checkadduseracc.checked) {
+      if (
+        !uname.validity.valid ||
+        !pword.validity.valid ||
+        !cnfpword.validity.valid ||
+        pword.value !== cnfpword.value ||
+        !email.validity.valid ||
+        !profilepic.validity.valid ||
+        !ighandle.validity.valid ||
+        !workurl.validity.valid ||
+        !fname.validity.valid ||
+        !lname.validity.valid ||
+        !bio.validity.valid
+      ) {
+        this.showErrorUsername();
+        this.showErrorPassword();
+        this.showErrorPasswordMatch();
+        this.showErrorEmail();
+        this.showErrorProfilePic();
+        this.showErrorInstagramHandle();
+        this.showErrorWorkUrl();
+        this.showErrorFirstName();
+        this.showErrorLastName();
+        this.showErrorBio();
+      } else {
+        return true;
+      }
+    }
+    if (checkaddlocationacc.checked) {
+      if (
+        !uname.validity.valid ||
+        !pword.validity.valid ||
+        !cnfpword.validity.valid ||
+        pword.value !== cnfpword.value ||
+        !email.validity.valid ||
+        !profilepic.validity.valid ||
+        !ighandle.validity.valid ||
+        !workurl.validity.valid ||
+        !locname.validity.valid ||
+        !locaddress.validity.valid ||
+        !loccity.validity.valid ||
+        !locstate.validity.valid ||
+        !locpostcode.validity.valid ||
+        !locdescript.validity.valid
+      ) {
+        this.showErrorUsername();
+        this.showErrorPassword();
+        this.showErrorPasswordMatch();
+        this.showErrorEmail();
+        this.showErrorProfilePic();
+        this.showErrorInstagramHandle();
+        this.showErrorWorkUrl();
+        this.showErrorLocationName();
+        this.showErrorAddress();
+        this.showErrorCity();
+        this.showErrorState();
+        this.showErrorPostCode();
+        this.showErrorLocationDescription();
+      } else {
+        return true;
+      }
+    }
+  }
 
   onBlur = () => {
     this.showErrorUsername();
+    this.showErrorPassword();
+    this.showErrorPasswordMatch();
+    this.showErrorEmail();
+    this.showErrorProfilePic();
+    this.showErrorInstagramHandle();
+    this.showErrorWorkUrl();
+    this.showErrorFirstName();
+    this.showErrorLasttName();
+    this.showErrorBio();
+    this.showErrorLocationtName();
+    this.showErrorAddress();
+    this.showErrorCity();
+    this.showErrorState();
+    this.showErrorPostCode();
+    this.showErrorLocationDescription();
   };
 
   onChange = (e) => {
@@ -1830,7 +2368,33 @@ class UserSignup extends Component {
   onSubmit = (e) => {
     e.preventDefault();
     if (this.validateUserReg() == true) {
-      M.toast({ html: "Thank you for signing up", classes: "green" });
+      fetch(
+        "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactadduseracc",
+        {
+          method: "POST",
+          body: JSON.stringify(this.state),
+        }
+      ).then((response) => {
+        console.log(response);
+        if (response.status === 412) {
+          M.toast({ html: "Too Many Requests", classes: "red" });
+        }
+        if (response.status === 409) {
+          M.toast({
+            html: "You are already Registered and Logged in",
+            classes: "red",
+          });
+        }
+        if (response.status === 400) {
+          M.toast({ html: "Could not complete registration", classes: "red" });
+        }
+        if (response.status === 406) {
+          M.toast({ html: "User Already Exists", classes: "red" });
+        }
+        if (response.status === 201) {
+          M.toast({ html: "Thank you for signing up", classes: "green" });
+        }
+      });
     } else {
       M.toast({ html: "Please fix errors", classes: "red" });
     }
@@ -1839,7 +2403,9 @@ class UserSignup extends Component {
   render() {
     const {
       hiddenaddlocacc,
+      disableaddlocacc,
       hiddenadduseracc,
+      disableadduseracc,
 
       uname,
       pword,
@@ -1898,6 +2464,7 @@ class UserSignup extends Component {
         method="POST"
         onSubmit={this.onSubmit}
         className="col s12"
+        noValidate
       >
         <fieldset>
           <div className="row">
@@ -2083,7 +2650,9 @@ class UserSignup extends Component {
                 name="checkadduseracc"
                 type="checkbox"
                 className="filled-in"
-                onChange={this.toggleadduseracc}
+                ref={this.checkadduseraccCheck}
+                disabled={disableadduseracc}
+                onChange={this.AddUserAccEvents}
               />
               <span>User Account</span>
             </label>
@@ -2172,7 +2741,9 @@ class UserSignup extends Component {
                 name="checkaddlocationacc"
                 type="checkbox"
                 className="filled-in"
-                onChange={this.toggleaddlocacc}
+                ref={this.checkaddlocationaccCheck}
+                onChange={this.AddLocAccEvents}
+                disabled={disableaddlocacc}
               />
               <span>Location Account</span>
             </label>
@@ -2289,8 +2860,10 @@ class UserSignup extends Component {
                   name="locpostcode"
                   value={locpostcode}
                   className="validate"
-                  type="number"
-                  max="9999"
+                  type="text"
+                  minLength="4"
+                  maxLength="4"
+                  pattern="^[0-9]*$"
                   onChange={this.onChange}
                   onBlur={this.onBlur}
                   ref={this.locpostcodeInput}
@@ -2368,11 +2941,7 @@ class UserSignup extends Component {
         </fieldset>
 
         <fieldset>
-          <button
-            id="signupbtn"
-            className="btn waves-effect waves-light"
-            type="button"
-          >
+          <button id="signupbtn" className="btn waves-effect waves-light">
             SIGN UP<i className="material-icons right">send</i>
           </button>
         </fieldset>
@@ -2391,6 +2960,9 @@ class UserLogout extends Component {
         M.toast({ html: "You were not logged in", classes: "red" });
       }
       if (response.status === 200) {
+        localStorage.setItem("loggedinuser", null);
+        localStorage.setItem("loggedinuserid", null);
+        localStorage.setItem("loggedinlocid", null);
         M.toast({ html: "You are now logged out", classes: "green" });
       }
     });
@@ -2414,18 +2986,47 @@ class UserLogout extends Component {
   }
 }
 
-function SignUp() {
-  return (
-    <>
-      <div id="signup" className="container">
-        <div id="userlogin" className="row">
-          <UserSignup />
-          <UserLogin />
-        </div>
-        <UserLogout />
-      </div>
-    </>
-  );
+class SignUp extends Component {
+  state = {
+    userloggedin: false,
+  };
+
+  componentDidMount() {
+    if (localStorage.getItem("loggedinuserid") !== "null") {
+      this.setState({ userloggedin: true });
+    } else if (localStorage.getItem("loggedinlocid") !== "null") {
+      this.setState({ userloggedin: true });
+    } else {
+      this.setState({ userloggedin: false });
+    }
+  }
+
+  render() {
+    const { userloggedin } = this.state;
+
+    if (userloggedin) {
+      return (
+        <>
+          <div id="signup" className="container">
+            <div id="userlogout" className="row">
+              <UserLogout />
+            </div>
+          </div>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <div id="signup" className="container">
+            <div id="userlogin" className="row">
+              <UserSignup />
+              <UserLogin />
+            </div>
+          </div>
+        </>
+      );
+    }
+  }
 }
 
 class Profile extends Component {
@@ -2463,7 +3064,9 @@ class Profile extends Component {
       this.setState({ loggedinuser: false, loggedinloc: false });
     }
 
-    fetch(`/api/api.php?getData=${fetchloggedin}`).then((response) => {
+    fetch(
+      `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchloggedin}`
+    ).then((response) => {
       console.log(response);
       if (response.status === 401) {
         this.setState({ loaded: true, response401: true });
@@ -3095,7 +3698,9 @@ class JoinedCollabs extends Component {
   componentDidMount() {
     const fetchuserrequests = this.setUser();
     console.log(fetchuserrequests);
-    fetch(`/api/api.php?getData=${fetchuserrequests}`).then((response) => {
+    fetch(
+      `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchuserrequests}`
+    ).then((response) => {
       console.log(response);
       if (response.status === 401) {
         this.setState({ loaded: true, response401: true });
@@ -3217,13 +3822,13 @@ function UserCollab() {
               ) : viewUserTab === "locprofile" ? (
                 <MyLocCollabs />
               ) : (
-                <h6>Please log in to view your collaborations</h6>
+                <p>Please log in to view your collaborations</p>
               )}
             </>
           ) : viewTab === "joinedcollab" ? (
             <JoinedCollabs />
           ) : (
-            <h6>Please log in to view your collaboration requests</h6>
+            <p>Please log in to view your collaboration requests</p>
           )}
         </div>
       </div>

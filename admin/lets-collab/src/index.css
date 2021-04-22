@@ -1,18 +1,18 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
-form>fieldset {
+form > fieldset {
   border: none;
 }
 
@@ -34,19 +34,19 @@ h3,
 h4,
 h5,
 h6 {
-    color: #004d40;
+  color: #004d40;
 }
 
 h3 {
-    text-align: center;
+  text-align: center;
 }
 
 .medium.material-icons {
-    color: #009688;
+  color: #009688;
 }
 
-#sidenav li>a {
-  color: rgba(0,0,0,0.87);
+#sidenav li > a {
+  color: rgba(0, 0, 0, 0.87);
   display: block;
   font-size: 14px;
   font-weight: 500;
@@ -55,18 +55,18 @@ h3 {
   padding: 0 32px;
 }
 
-#sidenav li>a>i.material-icons {
+#sidenav li > a > i.material-icons {
   float: left;
   height: 48px;
   line-height: 48px;
   margin: 0 32px 0 0;
   width: 24px;
-  color: rgba(0,0,0,0.54);
+  color: rgba(0, 0, 0, 0.54);
 }
 
 #usercollab .tabs,
 #joincollab .tabs {
-    border-top: solid white 3px;
+  border-top: solid white 3px;
 }
 
 #startcollab,
@@ -74,6 +74,7 @@ h3 {
 #signup,
 #profile,
 #usercollab,
-#settings {
-    min-height: 100vh;
+#settings,
+#joincollab {
+  min-height: 100vh;
 }

@@ -339,22 +339,6 @@ function denyTeamRequests() {
   });
 }
 
-test.addEventListener("click", testState, false);
-
-function testState() {
-  var state = document.getElementById("locstate").value;
-  const testdata = { state: state };
-
-  fetch("../api/api.php?getData=testdata", {
-    method: "POST",
-    body: JSON.stringify(testdata),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    });
-}
-
 (function () {
   var links = document.querySelectorAll(
     "#joinedcollab .btn-floating.btn-large.waves-effect.waves-light.red"
@@ -1321,6 +1305,11 @@ function showErrorLocationBookingFee() {
       "data-error",
       "Booking Fee can only contain digits"
     );
+  } else if (lbookingfee.validity.stepMismatch) {
+    lbookingfeeerror.setAttribute(
+      "data-error",
+      "Booking Fee can only contain upto 2 decimal places"
+    );
   } else if (lbookingfee.validity.rangeUnderflow) {
     lbookingfeeerror.setAttribute(
       "data-error",
@@ -1404,6 +1393,11 @@ function showErrorTeamMemberBookingFee() {
     tmbookingfeeerror.setAttribute(
       "data-error",
       "Booking Fee can only contain digits"
+    );
+  } else if (tmbookingfee.validity.stepMismatch) {
+    tmbookingfeeerror.setAttribute(
+      "data-error",
+      "Booking Fee can only contain upto 2 decimal places"
     );
   } else if (tmbookingfee.validity.rangeUnderflow) {
     tmbookingfeeerror.setAttribute(
@@ -1574,6 +1568,7 @@ function validateUserReg() {
       !profilepic.validity.valid ||
       !ighandle.validity.valid ||
       !workurl.validity.valid ||
+      !locname.validity.valid ||
       !locaddress.validity.valid ||
       !loccity.validity.valid ||
       !locstate.validity.valid ||
@@ -1896,6 +1891,25 @@ function unsetUserSession() {
   localStorage.setItem("loggedinuserid", null);
   localStorage.setItem("loggedinlocid", null);
 }
+
+/* test.addEventListener("click", testData, false);
+
+function testData() {
+  var fee = tmbookingfee.value;
+  var minfee = tmbookingfee.getAttribute("min");
+  var maxfee = tmbookingfee.getAttribute("max");
+
+  const testdata = { fee: fee, minfee: minfee, maxfee: maxfee };
+
+  fetch("../api/api.php?getData=testdata", {
+    method: "POST",
+    body: JSON.stringify(testdata),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    });
+} */
 
 // SERVICE WORKER
 

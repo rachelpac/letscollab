@@ -7,8 +7,6 @@ $db = new dbObj;
 require 'ses.php';
 $_SESSION['se'] = new sessObj;
 
-// $_SESSION['se']->setRequestHeader();
-
 // The API only allows certain requests to be made
 // It will check if the request is allowed by checking the request in the if statements
 // If the request is not allowed it results in a 501 error and dies 
@@ -168,99 +166,102 @@ $_SESSION['se'] = new sessObj;
     } // end adduseracc
 
     if ($_GET['getData'] == 'addcollab') {
-        if ($_SESSION['se']->IsUserLoggedIn()) {
-            if ($_SESSION['se']->IsRequestOkUser()) {
-                if ((!isset($_POST['ctitle'])) || (!isset($_POST['cdescript'])) || (!isset($_POST['cdate'])) || (!isset($_POST['ctime'])) || (!isset($_POST['ownerrole']))) {
-                    $useraction = 'Failed Submit Collaboration';
-                    $db->LogUserRequest($useraction);
-                    http_response_code(400);
-                } else if ((isset($_POST['checkaddlocation'])) && (!isset($_POST['locationuname']))) {
-                    $useraction = 'Failed Submit Collaboration';
-                    $db->LogUserRequest($useraction);
-                    http_response_code(400);
-                } else if ((isset($_POST['checksearchlocation'])) && ((!isset($_POST['lcity'])) || (!isset($_POST['lbookingfee'])) || (!isset($_POST['ldescript'])))) {
-                    $useraction = 'Failed Submit Collaboration';
-                    $db->LogUserRequest($useraction);
-                    http_response_code(400);
-                } else if ((isset($_POST['checkaddmember'])) && ((!isset($_POST['tmuname'])) || (!isset($_POST['tmrole'])))) {
-                    $useraction = 'Failed Submit Collaboration';
-                    $db->LogUserRequest($useraction);
-                    http_response_code(400);
-                } else if ((isset($_POST['checksearchmember'])) && ((!isset($_POST['tmsearchrole'])) || (!isset($_POST['tmbookingfee'])) || (!isset($_POST['tmdescript'])))) {
-                    $useraction = 'Failed Submit Collaboration';
-                    $db->LogUserRequest($useraction);
-                    http_response_code(400);
+            if ($_SESSION['se']->IsUserLoggedIn()) {
+                if ($_SESSION['se']->IsRequestOkUser()) {
+                    if ((empty($_POST['ctitle'])) || (empty($_POST['cdescript'])) || (empty($_POST['cdate'])) || (empty($_POST['ctime'])) || (empty($_POST['ownerrole']))) {
+                        $useraction = 'Failed Submit Collaboration';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(400);
+                    } else if ($db->checkLength($_POST['ctitle'], 50, 2) == false) {
+                        http_response_code(400);
+                    } else if ((isset($_POST['checkaddlocation'])) && ((empty($_POST['locationuname'])) || ($db->checkLength($_POST['locationuname'], 30, 5) == false))) {
+                        $useraction = 'Failed Submit Collaboration';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(400);
+                    } else if ((isset($_POST['checksearchlocation'])) && ((empty($_POST['lcity'])) || (empty($_POST['lbookingfee'])) || (empty($_POST['ldescript'])) || ($db->checkBookingFee($_POST['lbookingfee'], 0, 1000000) == false) || ($db->checkLength($_POST['lcity'], 255, 2) == false) )) {
+                        $useraction = 'Failed Submit Collaboration';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(400);
+                    } else if ((isset($_POST['checkaddmember'])) && ((empty($_POST['tmuname'])) || (empty($_POST['tmrole'])) || ($db->checkLength($_POST['tmuname'], 30, 5) == false) )) {
+                        $useraction = 'Failed Submit Collaboration';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(400);
+                    } else if ((isset($_POST['checksearchmember'])) && ((empty($_POST['tmsearchrole'])) || (empty($_POST['tmbookingfee'])) || (empty($_POST['tmdescript'])) || ($db->checkBookingFee($_POST['tmbookingfee'], 0, 1000000) == false))) {
+                        $useraction = 'Failed Submit Collaboration';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(400);
+                    } else {
+                        $title = $db->inputFilter($_POST['ctitle']);
+                        $description = $db->inputFilter($_POST['cdescript']);
+                        $date = $db->inputFilter($_POST['cdate']);
+                        $time = $db->inputFilter($_POST['ctime']);
+                        $datetime = $date . " " . $time;
+                        $datetime = date('Y-m-d H:i:s', strtotime($datetime));
+                        $ownerrole = $db->inputFilter($_POST['ownerrole']);
+                        $userID = $_SESSION["userID"];
+    
+                        if (isset($_POST['checkaddlocation'])) {
+                            $locationusername = $db->inputFilter($_POST['locationuname']);
+                            $locationexists = $db->checkLocation($locationusername);
+                        }
+    
+                        if (isset($_POST['checkaddmember'])) {
+                            $tmusername = $db->inputFilter($_POST['tmuname']);
+                            $tmrole = $db->inputFilter($_POST['tmrole']);
+                            $userexists = $db->checkUser($tmusername);
+                        }
+    
+                        if (isset($_POST['checksearchlocation'])) {
+                            $locationcity = $db->inputFilter($_POST['lcity']);
+                            $locationbookingfee = $db->inputFilter($_POST['lbookingfee']);
+                            $locationdescript = $db->inputFilter($_POST['ldescript']);
+                        }
+    
+                        if (isset($_POST['checksearchmember'])) {
+                            $tmsearchrole = $db->inputFilter($_POST['tmsearchrole']);
+                            $tmbookingfee = $db->inputFilter($_POST['tmbookingfee']);
+                            $tmdescription = $db->inputFilter($_POST['tmdescript']);
+                        }
+
+                    if (((isset($_POST['checkaddlocation'])) && ($locationexists == false)) || ((isset($_POST['checkaddmember'])) && ($userexists == false))) {
+                        $useraction = 'Failed Submit Collaboration';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(404);
+                    } else {
+                        $insertcollab = $db->addCollab($title, $description, $datetime, $userID);
+                        $collaborationID = $insertcollab;
+                        $db->addTeamMember($ownerrole, $userID, $collaborationID);
+    
+                        if (isset($_POST['checkaddlocation'])) {
+                            $locationID = $locationexists;
+                            $db->addLocation($locationID, $collaborationID);
+                        }
+                        if (isset($_POST['checksearchlocation'])) {
+                            $db->addLocationSearch($locationcity, $locationbookingfee, $locationdescript, $collaborationID);
+                        }
+                        if (isset($_POST['checkaddmember'])) {
+                            $userID = $userexists;
+                            $db->addTeamMember($tmrole, $userID, $collaborationID);
+                        }
+                        if (isset($_POST['checksearchmember'])) {
+                            $db->addTeamMemberSearch($tmsearchrole, $tmbookingfee, $tmdescription, $collaborationID);
+                        }
+                        $useraction = 'Submit Collaboration';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(201);
+                    }
+
+                    }
                 } else {
-                    $title = $db->inputFilter($_POST['ctitle']);
-                    $description = $db->inputFilter($_POST['cdescript']);
-                    $date = $db->inputFilter($_POST['cdate']);
-                    $time = $db->inputFilter($_POST['ctime']);
-                    $datetime = $date . " " . $time;
-                    $datetime = date('Y-m-d H:i:s', strtotime($datetime));
-                    $ownerrole = $db->inputFilter($_POST['ownerrole']);
-                    $userID = $_SESSION["userID"];
-
-                    if (isset($_POST['checkaddlocation'])) {
-                        $locationusername = $db->inputFilter($_POST['locationuname']);
-                        $locationexists = $db->checkLocation($locationusername);
-                    }
-
-                    if (isset($_POST['checkaddmember'])) {
-                        $tmusername = $db->inputFilter($_POST['tmuname']);
-                        $tmrole = $db->inputFilter($_POST['tmrole']);
-                        $userexists = $db->checkUser($tmusername);
-                    }
-
-                    if (isset($_POST['checksearchlocation'])) {
-                        $locationcity = $db->inputFilter($_POST['lcity']);
-                        $locationbookingfee = $db->inputFilter($_POST['lbookingfee']);
-                        $locationdescript = $db->inputFilter($_POST['ldescript']);
-                    }
-
-                    if (isset($_POST['checksearchmember'])) {
-                        $tmsearchrole = $db->inputFilter($_POST['tmsearchrole']);
-                        $tmbookingfee = $db->inputFilter($_POST['tmbookingfee']);
-                        $tmdescription = $db->inputFilter($_POST['tmdescript']);
-                    }
+                    http_response_code(412);
                 }
-
-                if (((isset($_POST['checkaddlocation'])) && ($locationexists == false)) || ((isset($_POST['checkaddmember'])) && ($userexists == false))) {
-                    $useraction = 'Failed Submit Collaboration';
-                    $db->LogUserRequest($useraction);
-                    http_response_code(404);
-                } else {
-                    $insertcollab = $db->addCollab($title, $description, $datetime, $userID);
-                    $collaborationID = $insertcollab;
-                    $db->addTeamMember($ownerrole, $userID, $collaborationID);
-
-                    if (isset($_POST['checkaddlocation'])) {
-                        $locationID = $locationexists;
-                        $db->addLocation($locationID, $collaborationID);
-                    }
-                    if (isset($_POST['checksearchlocation'])) {
-                        $db->addLocationSearch($locationcity, $locationbookingfee, $locationdescript, $collaborationID);
-                    }
-                    if (isset($_POST['checkaddmember'])) {
-                        $userID = $userexists;
-                        $db->addTeamMember($tmrole, $userID, $collaborationID);
-                    }
-                    if (isset($_POST['checksearchmember'])) {
-                        $db->addTeamMemberSearch($tmsearchrole, $tmbookingfee, $tmdescription, $collaborationID);
-                    }
-                    $useraction = 'Submit Collaboration';
-                    $db->LogUserRequest($useraction);
-                    http_response_code(201);
-                }
+    
             } else {
-                http_response_code(412);
+                $useraction = 'Failed Submit Collaboration';
+                $db->LogUserRequest($useraction);
+                http_response_code(401);
             }
-
-        } else {
-            $useraction = 'Failed Submit Collaboration';
-            $db->LogUserRequest($useraction);
-            http_response_code(401);
-        }
-    } // end addcolab
+        } // end addcolab
 
     if ($_GET['getData'] == 'displaycollabs') {
         if ($_SESSION['se']->IsLoggedIn()) {
@@ -658,27 +659,27 @@ $_SESSION['se'] = new sessObj;
     }
 
     if ($_GET['getData'] == 'reactaddcollab') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
         if ($_SESSION['se']->IsUserLoggedIn()) {
             if ($_SESSION['se']->IsRequestOkUser()) {
-                if (($data->ctitle == '') || ($data->cdescript == '') || ($data->cdate == '') || ($data->ctime == '') || ($data->ownerrole == '')) {
+                if (($data->ctitle) || ($data->cdescript) || ($data->cdate) || ($data->ctime) || ($data->ownerrole)) {
                     $useraction = 'Failed Submit Collaboration';
                     $db->LogUserRequest($useraction);
                     http_response_code(400);
-                } else if (($data->hiddenaddloc == false) && ($data->locationuname == '')) {
+                } else if ($db->checkLength($data->ctitle, 50, 2) == false) {
+                    http_response_code(400);
+                } else if (($data->hiddenaddloc == false) && (($data->locationuname) || ($db->checkLength($data->locationuname, 30, 5) == false))) {
                     $useraction = 'Failed Submit Collaboration';
                     $db->LogUserRequest($useraction);
                     http_response_code(400);
-                } else if (($data->hiddensearchloc == false) && (($data->lcity == '') || ($data->lbookingfee == '') || ($data->ldescript == ''))) {
+                } else if (($data->hiddensearchloc == false) && (($data->lcity) || ($data->lbookingfee) || ($data->ldescript) || ($db->checkBookingFee($data->lbookingfee, 0, 1000000) == false) || ($db->checkLength($data->lcity, 255, 2) == false) )) {
                     $useraction = 'Failed Submit Collaboration';
                     $db->LogUserRequest($useraction);
                     http_response_code(400);
-                } else if (($data->hiddenaddmember == false) && (($data->tmuname == '') || ($data->tmrole == ''))) {
+                } else if (($data->hiddenaddmember == false) && (($data->tmuname) || ($data->tmrole) || ($db->checkLength($data->tmuname, 30, 5) == false) )) {
                     $useraction = 'Failed Submit Collaboration';
                     $db->LogUserRequest($useraction);
                     http_response_code(400);
-                } else if (($data->hiddensearchmember == false) && (($data->tmsearchrole == '') || ($data->tmbookingfee == '') || ($data->tmdescript == ''))) {
+                } else if (($data->hiddensearchmember == false) && (($data->tmsearchrole) || ($data->tmbookingfee) || ($data->tmdescript) || ($db->checkBookingFee($data->tmbookingfee, 0, 1000000) == false))) {
                     $useraction = 'Failed Submit Collaboration';
                     $db->LogUserRequest($useraction);
                     http_response_code(400);
@@ -714,7 +715,6 @@ $_SESSION['se'] = new sessObj;
                         $tmbookingfee = $db->inputFilter($data->tmbookingfee);
                         $tmdescription = $db->inputFilter($data->tmdescript);
                     }
-                }
 
                 if ((($data->hiddenaddloc == false) && ($locationexists == false)) || (($data->hiddenaddmember == false) && ($userexists == false))) {
                     $useraction = 'Failed Submit Collaboration';
@@ -743,6 +743,8 @@ $_SESSION['se'] = new sessObj;
                     $db->LogUserRequest($useraction);
                     http_response_code(201);
                 }
+
+                }
             } else {
                 http_response_code(412);
             }
@@ -754,16 +756,117 @@ $_SESSION['se'] = new sessObj;
         }
     } // end addcolab
 
+    if ($_GET['getData'] == 'reactadduseracc') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        if ($_SESSION['se']->IsLoggedIn()) { 
+            $useraction = 'Failed Register Account';
+            $db->LogUserRequest($useraction);
+            http_response_code(409);
+        } else {
+            if ($_SESSION['se']->IsRequestOkIP()) {
+                if (($data->uname == '') || ($data->pword == '') || ($data->email == '') || ($data->profilepic == '') || ($data->ighandle == '') || ($data->workurl == '') || (($data->hiddenadduseracc == true) && ($data->hiddenaddlocacc == true))) {
+                    $useraction = 'Failed Register Account';
+                    $db->LogUserRequest($useraction);
+                    http_response_code(400);
+                } else if ((($db->checkLength($data->uname, 30, 5)) == false) || (($db->checkLength($data->pword, 255, 8)) == false) || (($db->checkLength($data->email, 50, 5)) == false) || (($db->checkLength($data->ighandle, 30, 1)) == false) || (($db->checkLength($data->workurl, 255, 1)) == false)) {
+                    http_response_code(400);
+                } else if ($db->checkEmail($data->email) == false) {
+                    http_response_code(400);
+                }                
+                else {
+                    $username = $db->inputFilter($data->uname);
+                    $password = $db->inputFilter($data->pword);
+                    $email = $db->inputFilter($data->email);
+                    $profilepic = $db->inputFilter($data->profilepic);
+                    $ighandle = $db->inputFilter($data->ighandle);
+                    $workurl = $db->inputFilter($data->workurl);
+                    $hpassword = password_hash($password, PASSWORD_DEFAULT);
+                }
+                if ($data->hiddenadduseracc == false) {
+                    if (($data->fname == '') || ($data->lname == '') || ($data->bio == '')) {
+                        $useraction = 'Failed Register Account';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(400);
+                    } else if ((($db->checkLength($data->fname, 255, 2)) == false) || (($db->checkLength($data->lname, 255, 2)) == false)) {
+                        http_response_code(400);
+                    }
+
+                        
+                     else {
+                        $firstname = $db->inputFilter($data->fname);
+                        $lastname = $db->inputFilter($data->lname);
+                        $bio = $db->inputFilter($data->bio);
+                        $userexists = $db->checkUserReg($username);
+                        if ($userexists == false) {
+                            $insertlogin = $db->addLogin($username, $hpassword);
+                            $loginID = $insertlogin;
+                            $db->addUserAccount($firstname, $lastname, $email, $bio, $profilepic, $ighandle, $workurl, $loginID);
+                            $useraction = 'Register Account';
+                            $db->LogUserRequest($useraction);
+                            http_response_code(201);
+                        } else {
+                            $useraction = 'Failed Register Account';
+                            $db->LogUserRequest($useraction);
+                            http_response_code(406);
+                        }
+                    }
+                }
+                if ($data->hiddenaddlocacc == false) {
+                    if (($data->locname == '') || ($data->locaddress == '') || ($data->loccity == '') || ($data->locstate == '') || ($data->locpostcode == '') || ($data->locdescript == '')) {
+                        $useraction = 'Failed Register Account';
+                        $db->LogUserRequest($useraction);
+                        http_response_code(400);
+                    } else if ((($db->checkLength($data->locname, 255, 2)) == false) || (($db->checkLength($data->locaddress, 255, 2)) == false) || (($db->checkLength($data->loccity, 255, 2)) == false) || (($db->checkLength($data->locstate, 3, 2)) == false) || (($db->checkLength($data->locpostcode, 4, 4)) == false)) {
+                        http_response_code(400);
+                    } else if ($db->checkPostCode($data->locpostcode) == false) {
+                    http_response_code(400);
+                    }  else if ($db->checkState($data->locstate) == false) {
+                        http_response_code(400);
+                    } else {
+                        $name = $db->inputFilter($data->locname);
+                        $address = $db->inputFilter($data->locaddress);
+                        $city = $db->inputFilter($data->loccity);
+                        $state = $db->inputFilter($data->locstate);
+                        $postcode = $db->inputFilter($data->locpostcode);
+                        $description = $db->inputFilter($data->locdescript);
+                        $userexists = $db->checkUserReg($username);
+                        if ($userexists == false) {
+                            $insertlogin = $db->addLogin($username, $hpassword);
+                            $loginID = $insertlogin;
+                            $db->addLocationAccount($name, $address, $city, $state, $postcode, $email, $description, $profilepic, $ighandle, $workurl, $loginID);
+                            $useraction = 'Register Account';
+                            $db->LogUserRequest($useraction);
+                            http_response_code(201);
+                        } else {
+                            $useraction = 'Failed Register Account';
+                            $db->LogUserRequest($useraction);
+                            http_response_code(406);
+                        }
+                    }
+                }                
+            } else {
+                http_response_code(412);
+            }
+        } 
+
+    } // end adduseracc
+
+
     if ($_GET['getData'] == 'nulluser') {
         http_response_code(401);
     }
 
-if ($_GET['getData'] == 'testdata') {
-         $json = file_get_contents('php://input');
-         $data = json_decode($json);
-         $state = $data->state;
-         $result = $db->checkState($state);
-    }
+/*     if ($_GET['getData'] == 'testdata') {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+        $fee = $data->fee;
+        $minfee = $data->minfee;
+        $maxfee = $data->maxfee;
+        $result = $db->checkBookingFee($fee, $minfee, $maxfee);
+   } */
+
+
 
 
 // } else {
