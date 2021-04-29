@@ -48,6 +48,16 @@ if ($domainref == $valideferdomain) {
     }
 }
 
+function CheckIP() {
+    $validIP = '::1';
+    $requestIP =  $_SERVER['REMOTE_ADDR'];
+    if ($validIP == $requestIP) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function IsLoggedIn() {
     if ((isset($_SESSION['loggedin'])) && ($_SESSION['loggedin'] == true)) {
         return true;

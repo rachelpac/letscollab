@@ -11,7 +11,7 @@ $_SESSION['se'] = new sessObj;
 // It will check if the request is allowed by checking the request in the if statements
 // If the request is not allowed it results in a 501 error and dies 
 
-// if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
+if ((isset($_GET['getData'])) && ($_SESSION['se']->CheckRefer())) {
     if ($_GET['getData'] == 'login') {
         // function checks to see if the user is logged in before each request and returns true or false 
         // if authentication is required for the request it will result in a 401 
@@ -21,7 +21,7 @@ $_SESSION['se'] = new sessObj;
             $db->LogUserRequest($useraction);
             http_response_code(409);
         } else {
-            if ((!isset($_POST['luname'])) || (!isset($_POST['lpword']))) {
+            if ((empty($_POST['luname'])) || (empty($_POST['lpword']))) {
                 $useraction = 'Failed Login';
                 $db->LogUserRequest($useraction);
                 http_response_code(400);
@@ -541,7 +541,7 @@ $_SESSION['se'] = new sessObj;
         }
     } 
 
-    /// REACT CHANGES 
+    // REACT CHANGES 
 
     if ($_GET['getData'] == 'reactaddlocrequest') {
         $json = file_get_contents('php://input');
@@ -857,22 +857,10 @@ $_SESSION['se'] = new sessObj;
         http_response_code(401);
     }
 
-/*     if ($_GET['getData'] == 'testdata') {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json);
-        $fee = $data->fee;
-        $minfee = $data->minfee;
-        $maxfee = $data->maxfee;
-        $result = $db->checkBookingFee($fee, $minfee, $maxfee);
-   } */
-
-
-
-
-// } else {
-//     http_response_code(501);
-//     die;
-// }
+} else {
+    http_response_code(501);
+    die;
+}
 
 if (isset($result)) {
     echo json_encode($result);

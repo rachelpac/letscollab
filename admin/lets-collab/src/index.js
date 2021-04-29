@@ -138,14 +138,12 @@ class BrowseCollabs extends Component {
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollabs"
     ).then((response) => {
-      console.log(response);
       if (response.status === 412) {
         M.toast({ html: "Too Many Requests", classes: "red" });
         this.setState({ loaded: true, response412: true });
       }
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           this.setState({ loaded: true, response200: true, collablist: data });
         });
       }
@@ -155,7 +153,7 @@ class BrowseCollabs extends Component {
   addLocationRequest = (e) => {
     var locreqsearchid = e.currentTarget.getAttribute("loc-search-id");
     const lrdata = { lrsid: locreqsearchid };
-    console.log(lrdata);
+
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddlocrequest",
       {
@@ -163,7 +161,6 @@ class BrowseCollabs extends Component {
         body: JSON.stringify(lrdata),
       }
     ).then((response) => {
-      console.log(response);
       if (response.status === 412) {
         M.toast({ html: "Too Many Requests", classes: "red" });
       }
@@ -189,7 +186,7 @@ class BrowseCollabs extends Component {
   addTeamRequest = (e) => {
     var teamreqsearchid = e.currentTarget.getAttribute("tm-search-id");
     const tmrdata = { tmrsid: teamreqsearchid };
-    console.log(tmrdata);
+
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddteamrequest",
       {
@@ -197,7 +194,6 @@ class BrowseCollabs extends Component {
         body: JSON.stringify(tmrdata),
       }
     ).then((response) => {
-      console.log(response);
       if (response.status === 412) {
         M.toast({ html: "Too Many Requests", classes: "red" });
       }
@@ -227,7 +223,7 @@ class BrowseCollabs extends Component {
       hiddenbrowsecollab: true,
     });
     var id = e.currentTarget.getAttribute("id");
-    console.log(id);
+
     const collabid = { collabid: id };
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollab",
@@ -238,7 +234,6 @@ class BrowseCollabs extends Component {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         this.setState({ collabinfo: data });
       });
 
@@ -251,7 +246,6 @@ class BrowseCollabs extends Component {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         this.setState({ teaminfo: data });
       });
 
@@ -264,7 +258,6 @@ class BrowseCollabs extends Component {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data === false) {
           this.setState({ locfound: false });
         } else {
@@ -297,7 +290,7 @@ class BrowseCollabs extends Component {
       if (collablist === false) {
         return (
           <div id="browsecollab" className="container">
-            <p>No Collaboraations to Browse</p>
+            <p>No Collaborations to Browse</p>
           </div>
         );
       } else {
@@ -994,7 +987,6 @@ class StartCollab extends Component {
           body: JSON.stringify(this.state),
         }
       ).then((response) => {
-        console.log(response);
         if (response.status === 412) {
           M.toast({ html: "Too Many Requests", classes: "red" });
         }
@@ -1610,7 +1602,6 @@ class UserLogin extends Component {
           body: JSON.stringify(this.state),
         }
       ).then((response) => {
-        console.log(response);
         if (response.status === 409) {
           M.toast({ html: "You are already logged in", classes: "red" });
         }
@@ -1625,7 +1616,6 @@ class UserLogin extends Component {
         }
         if (response.status === 200) {
           response.json().then((data) => {
-            console.log(data);
             localStorage.setItem("loggedinuser", data.username);
             localStorage.setItem("loggedinuserid", data.userid);
             localStorage.setItem("loggedinlocid", data.locid);
@@ -2375,7 +2365,6 @@ class UserSignup extends Component {
           body: JSON.stringify(this.state),
         }
       ).then((response) => {
-        console.log(response);
         if (response.status === 412) {
           M.toast({ html: "Too Many Requests", classes: "red" });
         }
@@ -2955,7 +2944,6 @@ class UserLogout extends Component {
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=logout"
     ).then((response) => {
-      console.log(response);
       if (response.status === 409) {
         M.toast({ html: "You were not logged in", classes: "red" });
       }
@@ -3049,13 +3037,13 @@ class Profile extends Component {
     } else {
       loggedin = "nulluser";
     }
-    console.log(loggedin);
+
     return loggedin;
   };
 
   componentDidMount() {
     const fetchloggedin = this.setUser();
-    console.log(fetchloggedin);
+
     if (fetchloggedin === "displayuserprofile") {
       this.setState({ loggedinuser: true });
     } else if (fetchloggedin === "displaylocprofile") {
@@ -3067,7 +3055,6 @@ class Profile extends Component {
     fetch(
       `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchloggedin}`
     ).then((response) => {
-      console.log(response);
       if (response.status === 401) {
         this.setState({ loaded: true, response401: true });
       }
@@ -3077,7 +3064,6 @@ class Profile extends Component {
       }
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           this.setState({ loaded: true, response200: true, profiledata: data });
         });
       }
@@ -3219,7 +3205,6 @@ class MyCollabs extends Component {
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayusercollabs"
     ).then((response) => {
-      console.log(response);
       if (response.status === 401) {
         this.setState({ loaded: true, response401: true });
       }
@@ -3229,7 +3214,6 @@ class MyCollabs extends Component {
       }
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           this.setState({ loaded: true, response200: true, collablist: data });
         });
       }
@@ -3247,7 +3231,7 @@ class MyCollabs extends Component {
       lrid: locrequestID,
       lsid: locsearchID,
     };
-    console.log(lrdata);
+
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=approvelocrequest",
       {
@@ -3255,7 +3239,6 @@ class MyCollabs extends Component {
         body: JSON.stringify(lrdata),
       }
     ).then((response) => {
-      console.log(response);
       if (response.status === 201) {
         M.toast({ html: "Location Request Approved", classes: "green" });
       }
@@ -3265,7 +3248,7 @@ class MyCollabs extends Component {
   denyLocRequest = (e) => {
     var locrequestID = e.currentTarget.getAttribute("loc-request-id");
     const lrdata = { lrid: locrequestID };
-    console.log(lrdata);
+
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=denylocrequests",
       {
@@ -3273,7 +3256,6 @@ class MyCollabs extends Component {
         body: JSON.stringify(lrdata),
       }
     ).then((response) => {
-      console.log(response);
       if (response.status === 201) {
         M.toast({ html: "Location Request Denied", classes: "red" });
       }
@@ -3293,7 +3275,7 @@ class MyCollabs extends Component {
       tmrid: tmrequestID,
       tmsid: tmsearchID,
     };
-    console.log(trdata);
+
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=approveteamrequests",
       {
@@ -3301,7 +3283,6 @@ class MyCollabs extends Component {
         body: JSON.stringify(trdata),
       }
     ).then((response) => {
-      console.log(response);
       if (response.status === 201) {
         M.toast({ html: "Team Request Approved", classes: "green" });
       }
@@ -3311,7 +3292,7 @@ class MyCollabs extends Component {
   denyTeamRequest = (e) => {
     var tmrequestID = e.currentTarget.getAttribute("tm-request-id");
     const trdata = { tmrid: tmrequestID };
-    console.log(trdata);
+
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=denyteamrequests",
       {
@@ -3319,7 +3300,6 @@ class MyCollabs extends Component {
         body: JSON.stringify(trdata),
       }
     ).then((response) => {
-      console.log(response);
       if (response.status === 201) {
         M.toast({ html: "Team Request Denied", classes: "red" });
       }
@@ -3329,7 +3309,7 @@ class MyCollabs extends Component {
   showMyCollab = (e) => {
     this.setState({ collabinforequested: true });
     var id = e.currentTarget.getAttribute("collab-id");
-    console.log(id);
+
     const collabid = { collabid: id };
     fetch(
       "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayusercollab",
@@ -3340,7 +3320,6 @@ class MyCollabs extends Component {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         this.setState({ collabinfo: data });
       });
 
@@ -3353,7 +3332,6 @@ class MyCollabs extends Component {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data === false) {
           this.setState({ locfound: false });
           fetch(
@@ -3365,7 +3343,6 @@ class MyCollabs extends Component {
           )
             .then((response) => response.json())
             .then((data) => {
-              console.log(data);
               if (data === false) {
                 this.setState({ locrequestsmade: false });
               } else {
@@ -3386,7 +3363,6 @@ class MyCollabs extends Component {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         this.setState({ teaminfo: data });
       });
 
@@ -3399,7 +3375,6 @@ class MyCollabs extends Component {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data === false) {
           this.setState({ teamrequestsmade: false });
         } else {
@@ -3691,23 +3666,21 @@ class JoinedCollabs extends Component {
     } else {
       loggedin = "nulluser";
     }
-    console.log(loggedin);
+
     return loggedin;
   };
 
   componentDidMount() {
     const fetchuserrequests = this.setUser();
-    console.log(fetchuserrequests);
+
     fetch(
       `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchuserrequests}`
     ).then((response) => {
-      console.log(response);
       if (response.status === 401) {
         this.setState({ loaded: true, response401: true });
       }
       if (response.status === 200) {
         response.json().then((data) => {
-          console.log(data);
           this.setState({ loaded: true, response200: true, requestlist: data });
         });
       }
@@ -3793,7 +3766,7 @@ function UserCollab() {
     } else {
       loggedin = "";
     }
-    console.log(loggedin);
+
     return loggedin;
   }
 

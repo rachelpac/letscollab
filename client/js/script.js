@@ -1105,40 +1105,40 @@ function showSearchMember() {
 submitcollabbtn.addEventListener("click", submitCollab, false);
 
 function submitCollab() {
-  // isdatavalid = validateCollab();
-  // if (isdatavalid == true) {
-  var form = document.querySelector("#submitcollabform");
-  var formData = new FormData(form);
-  fetch("../api/api.php?getData=addcollab", {
-    method: "POST",
-    body: formData,
-  }).then((response) => {
-    if (response.status === 412) {
-      M.toast({ html: "Too Many Requests", classes: "red" });
-    }
-    if (response.status === 401) {
-      M.toast({
-        html:
-          "You must be logged in to a User Account to submit a collaboration",
-        classes: "red",
-      });
-    }
-    if (response.status === 400) {
-      M.toast({ html: "Collaboration could not be added", classes: "red" });
-    }
-    if (response.status === 404) {
-      M.toast({
-        html: "User not found and could not be added",
-        classes: "red",
-      });
-    }
-    if (response.status === 201) {
-      M.toast({ html: "Collaboration submitted", classes: "green" });
-    }
-  });
-  // } else {
-  //   M.toast({ html: "Please fix errors", classes: "red" });
-  // }
+  isdatavalid = validateCollab();
+  if (isdatavalid == true) {
+    var form = document.querySelector("#submitcollabform");
+    var formData = new FormData(form);
+    fetch("../api/api.php?getData=addcollab", {
+      method: "POST",
+      body: formData,
+    }).then((response) => {
+      if (response.status === 412) {
+        M.toast({ html: "Too Many Requests", classes: "red" });
+      }
+      if (response.status === 401) {
+        M.toast({
+          html:
+            "You must be logged in to a User Account to submit a collaboration",
+          classes: "red",
+        });
+      }
+      if (response.status === 400) {
+        M.toast({ html: "Collaboration could not be added", classes: "red" });
+      }
+      if (response.status === 404) {
+        M.toast({
+          html: "User not found and could not be added",
+          classes: "red",
+        });
+      }
+      if (response.status === 201) {
+        M.toast({ html: "Collaboration submitted", classes: "green" });
+      }
+    });
+  } else {
+    M.toast({ html: "Please fix errors", classes: "red" });
+  }
 }
 
 function validateCollab() {
@@ -1479,37 +1479,36 @@ function disagreeTerms() {
 signupbtn.addEventListener("click", registerUser, false);
 
 function registerUser() {
-  // isdatavalid = validateUserReg();
-  // if (isdatavalid == true) {
-  var form = document.querySelector("#signupform");
-  var formData = new FormData(form);
-  fetch("../api/api.php?getData=adduseracc", {
-    method: "POST",
-    body: formData,
-  }).then((response) => {
-    console.log(response);
-    if (response.status === 412) {
-      M.toast({ html: "Too Many Requests", classes: "red" });
-    }
-    if (response.status === 409) {
-      M.toast({
-        html: "You are already Registered and Logged in",
-        classes: "red",
-      });
-    }
-    if (response.status === 400) {
-      M.toast({ html: "Could not complete registration", classes: "red" });
-    }
-    if (response.status === 406) {
-      M.toast({ html: "User Already Exists", classes: "red" });
-    }
-    if (response.status === 201) {
-      M.toast({ html: "Thank you for signing up", classes: "green" });
-    }
-  });
-  // } else {
-  //   M.toast({ html: "Please fix errors", classes: "red" });
-  // }
+  isdatavalid = validateUserReg();
+  if (isdatavalid == true) {
+    var form = document.querySelector("#signupform");
+    var formData = new FormData(form);
+    fetch("../api/api.php?getData=adduseracc", {
+      method: "POST",
+      body: formData,
+    }).then((response) => {
+      if (response.status === 412) {
+        M.toast({ html: "Too Many Requests", classes: "red" });
+      }
+      if (response.status === 409) {
+        M.toast({
+          html: "You are already Registered and Logged in",
+          classes: "red",
+        });
+      }
+      if (response.status === 400) {
+        M.toast({ html: "Could not complete registration", classes: "red" });
+      }
+      if (response.status === 406) {
+        M.toast({ html: "User Already Exists", classes: "red" });
+      }
+      if (response.status === 201) {
+        M.toast({ html: "Thank you for signing up", classes: "green" });
+      }
+    });
+  } else {
+    M.toast({ html: "Please fix errors", classes: "red" });
+  }
 }
 
 uname.addEventListener("blur", showErrorUsername, false);
@@ -1892,28 +1891,9 @@ function unsetUserSession() {
   localStorage.setItem("loggedinlocid", null);
 }
 
-/* test.addEventListener("click", testData, false);
-
-function testData() {
-  var fee = tmbookingfee.value;
-  var minfee = tmbookingfee.getAttribute("min");
-  var maxfee = tmbookingfee.getAttribute("max");
-
-  const testdata = { fee: fee, minfee: minfee, maxfee: maxfee };
-
-  fetch("../api/api.php?getData=testdata", {
-    method: "POST",
-    body: JSON.stringify(testdata),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-    });
-} */
-
 // SERVICE WORKER
 
-/* if ("serviceWorker" in navigator) {
+if ("serviceWorker" in navigator) {
   navigator.serviceWorker
     .register("sw.js")
     .then((result) => {
@@ -1927,4 +1907,3 @@ function testData() {
 } else {
   console.log("Service Workers Not Supported");
 }
- */
