@@ -22,19 +22,18 @@ HTML, CSS, and JS implemented in additional code added to front end
 
 # NAVIGATING THE APP 
 Browse Collaborations - All users can browse started collaborations 
+
 Start Collaborations - Registered user accounts can start collaborations
+
 SignUp/ Login - Registered users can log in and unregistered users can sign up 
+
 My Collaborations - Registered users can view collaboration they have started or joined
+
 My Profile - Registered users can view their profiles
+
 Settings - All users can changes settings 
 
 # CREDENTIALS:
 
-USER account login:
-username: testuseracc
-password: Testuseracc1!
-
-LOCATION account login
-username: testuserloc
-password: Testuserloc1!
+Create user account to login
 
