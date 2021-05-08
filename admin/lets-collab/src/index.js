@@ -136,7 +136,7 @@ class BrowseCollabs extends Component {
   componentDidMount() {
     M.AutoInit();
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollabs"
+      "https://rachelpacdevelopment.com/api/api.php?getData=displaycollabs"
     ).then((response) => {
       if (response.status === 412) {
         M.toast({ html: "Too Many Requests", classes: "red" });
@@ -155,7 +155,7 @@ class BrowseCollabs extends Component {
     const lrdata = { lrsid: locreqsearchid };
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddlocrequest",
+      "https://rachelpacdevelopment.com/api/api.php?getData=reactaddlocrequest",
       {
         method: "POST",
         body: JSON.stringify(lrdata),
@@ -188,7 +188,7 @@ class BrowseCollabs extends Component {
     const tmrdata = { tmrsid: teamreqsearchid };
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddteamrequest",
+      "https://rachelpacdevelopment.com/api/api.php?getData=reactaddteamrequest",
       {
         method: "POST",
         body: JSON.stringify(tmrdata),
@@ -226,7 +226,7 @@ class BrowseCollabs extends Component {
 
     const collabid = { collabid: id };
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaycollab",
+      "https://rachelpacdevelopment.com/api/api.php?getData=displaycollab",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -238,7 +238,7 @@ class BrowseCollabs extends Component {
       });
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayteam",
+      "https://rachelpacdevelopment.com/api/api.php?getData=displayteam",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -250,7 +250,7 @@ class BrowseCollabs extends Component {
       });
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaylocation",
+      "https://rachelpacdevelopment.com/api/api.php?getData=displaylocation",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -981,7 +981,7 @@ class StartCollab extends Component {
     e.preventDefault();
     if (this.validateStartCollab() === true) {
       fetch(
-        "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactaddcollab",
+        "https://rachelpacdevelopment.com/api/api.php?getData=reactaddcollab",
         {
           method: "POST",
           body: JSON.stringify(this.state),
@@ -1596,7 +1596,7 @@ class UserLogin extends Component {
     e.preventDefault();
     if (this.validateLogin() == true) {
       fetch(
-        "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactlogin",
+        "https://rachelpacdevelopment.com/api/api.php?getData=reactlogin",
         {
           method: "POST",
           body: JSON.stringify(this.state),
@@ -2359,7 +2359,7 @@ class UserSignup extends Component {
     e.preventDefault();
     if (this.validateUserReg() == true) {
       fetch(
-        "http://localhost:8888/letscollab/letscollab/api/api.php?getData=reactadduseracc",
+        "https://rachelpacdevelopment.com/api/api.php?getData=reactadduseracc",
         {
           method: "POST",
           body: JSON.stringify(this.state),
@@ -2942,7 +2942,7 @@ class UserSignup extends Component {
 class UserLogout extends Component {
   logout() {
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=logout"
+      "https://rachelpacdevelopment.com/api/api.php?getData=logout"
     ).then((response) => {
       if (response.status === 409) {
         M.toast({ html: "You were not logged in", classes: "red" });
@@ -3053,7 +3053,7 @@ class Profile extends Component {
     }
 
     fetch(
-      `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchloggedin}`
+      `https://rachelpacdevelopment.com/api/api.php?getData=${fetchloggedin}`
     ).then((response) => {
       if (response.status === 401) {
         this.setState({ loaded: true, response401: true });
@@ -3203,7 +3203,7 @@ class MyCollabs extends Component {
 
   componentDidMount() {
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayusercollabs"
+      "https://rachelpacdevelopment.com/api/api.php?getData=displayusercollabs"
     ).then((response) => {
       if (response.status === 401) {
         this.setState({ loaded: true, response401: true });
@@ -3233,7 +3233,7 @@ class MyCollabs extends Component {
     };
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=approvelocrequest",
+      "https://rachelpacdevelopment.com/api/api.php?getData=approvelocrequest",
       {
         method: "POST",
         body: JSON.stringify(lrdata),
@@ -3250,7 +3250,7 @@ class MyCollabs extends Component {
     const lrdata = { lrid: locrequestID };
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=denylocrequests",
+      "https://rachelpacdevelopment.com/api/api.php?getData=denylocrequests",
       {
         method: "POST",
         body: JSON.stringify(lrdata),
@@ -3277,7 +3277,7 @@ class MyCollabs extends Component {
     };
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=approveteamrequests",
+      "https://rachelpacdevelopment.com/api/api.php?getData=approveteamrequests",
       {
         method: "POST",
         body: JSON.stringify(trdata),
@@ -3294,7 +3294,7 @@ class MyCollabs extends Component {
     const trdata = { tmrid: tmrequestID };
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=denyteamrequests",
+      "https://rachelpacdevelopment.com/api/api.php?getData=denyteamrequests",
       {
         method: "POST",
         body: JSON.stringify(trdata),
@@ -3312,7 +3312,7 @@ class MyCollabs extends Component {
 
     const collabid = { collabid: id };
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayusercollab",
+      "https://rachelpacdevelopment.com/api/api.php?getData=displayusercollab",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -3324,7 +3324,7 @@ class MyCollabs extends Component {
       });
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaylocation",
+      "https://rachelpacdevelopment.com/api/api.php?getData=displaylocation",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -3335,7 +3335,7 @@ class MyCollabs extends Component {
         if (data === false) {
           this.setState({ locfound: false });
           fetch(
-            "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displaylocrequests",
+            "https://rachelpacdevelopment.com/api/api.php?getData=displaylocrequests",
             {
               method: "POST",
               body: JSON.stringify(collabid),
@@ -3355,7 +3355,7 @@ class MyCollabs extends Component {
       });
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayteam",
+      "https://rachelpacdevelopment.com/api/api.php?getData=displayteam",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -3367,7 +3367,7 @@ class MyCollabs extends Component {
       });
 
     fetch(
-      "http://localhost:8888/letscollab/letscollab/api/api.php?getData=displayteamrequests",
+      "https://rachelpacdevelopment.com/api/api.php?getData=displayteamrequests",
       {
         method: "POST",
         body: JSON.stringify(collabid),
@@ -3674,7 +3674,7 @@ class JoinedCollabs extends Component {
     const fetchuserrequests = this.setUser();
 
     fetch(
-      `http://localhost:8888/letscollab/letscollab/api/api.php?getData=${fetchuserrequests}`
+      `https://rachelpacdevelopment.com/api/api.php?getData=${fetchuserrequests}`
     ).then((response) => {
       if (response.status === 401) {
         this.setState({ loaded: true, response401: true });
