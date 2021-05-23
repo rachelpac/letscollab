@@ -35,5 +35,5 @@ Settings - All users can changes settings
 
 # CREDENTIALS:
 
-Create user account to login
-
+username: testuseracc
+password: Testuseraccpass1!
